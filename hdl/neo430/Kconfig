@@ -1,0 +1,78 @@
+comment "NEO430 specific configuration"
+
+config NEO430_NATIVE
+	bool "Use neo430 native configuration"
+	default "y"
+	help
+	  When selected, uses native NEO430 configuration with built-in
+	  'native' hardware support. If you wish to use the MaSoCist SoC
+	  generation system, set to 'n'.
+	  NOTE: you need to make sure, when issuing hardware in this
+	  configuration, that the licenses are compatible.
+
+menu "NEO430 hardware configuration"
+
+config NEO430_DMEM_WIDTH
+	depends on !NEO430_NATIVE
+	int "DMEM address width"
+	default "9"
+	range 10 12
+	help
+	  Data mem width, size = 2**DMEM_WIDTH
+
+config NEO430_DADD
+	bool "DADD"
+	default "n"
+
+config NEO430_MULDIV
+	depends on NEO430_NATIVE
+	bool "MULDIV"
+	default "n"
+
+config NEO430_WDT
+	depends on NEO430_NATIVE
+	bool "Watchdog"
+	default "n"
+
+config NEO430_PWM
+	depends on NEO430_NATIVE
+	bool "Watchdog"
+	default "n"
+
+config NEO430_GPIO
+	depends on NEO430_NATIVE
+	bool "GPIO"
+	default "n"
+
+config NEO430_TIMER
+	depends on NEO430_NATIVE
+	bool "TIMER"
+	default "n"
+
+config NEO430_USART
+	depends on NEO430_NATIVE
+	bool "USART"
+	default "n"
+
+config NEO430_CRC
+	depends on NEO430_NATIVE
+	bool "CRC"
+	default "n"
+
+config NEO430_TRNG
+	depends on NEO430_NATIVE
+	bool "TRNG"
+	default "n"
+
+config NEO430_BOOTLD
+	bool "BOOTLD"
+	default "n"
+
+config NEO430_IMEM_RO
+	bool "IMEM_RO"
+	default "n"
+
+endmenu
+
+
+

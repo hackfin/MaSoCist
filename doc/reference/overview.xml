@@ -1,0 +1,1002 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<chapter>
+  <title>Overview</title>
+
+  <para>The cCAP -- configurable Custom Application Processor -- is a CPU
+  design which allows to implement custom functionality 'inline', meaning,
+  that specific calculations or acceleration co-routines can be embedded into
+  the program code. Application specific hard IP cores can be implemented as
+  independent coprocessor as well.</para>
+
+  <para>The cCAP family is heavily based on the MaSoCist environment -- a
+  build and configure environment for CPUs using the Linux kernel config
+  utility and GNU make, enhanced by a proprietary tool for the SoC (System on
+  Chip) architecture generation.</para>
+
+  <para>The cCAP architecture is by default technology independent, i.e.
+  configureable and portable to many FPGA architectures. The main development
+  however is focused on Xilinx and Lattice FPGAs.</para>
+
+  <section>
+    <title>Target applications</title>
+
+    <para>The cCAP do not intend to replace any of the middle end solutions
+    provided by most FPGA vendors. It tries to match a niche where resources
+    are sparse and where IP core configuration and debugging as well as
+    optimum code density is more important than speed. Apart from the PyPS
+    core, the system is not intended to run any major operating systems, but
+    rather simple, bare metal code running with a somewhat deterministic
+    sequence.</para>
+
+    <para>Reference applications:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>Smart video I/O processor for HDMI I/O and RGB/YUV
+        conversion</para>
+      </listitem>
+
+      <listitem>
+        <para>JPEG encoder with direct Bayer to YUV ('Cottonpicken'
+        engine)</para>
+      </listitem>
+
+      <listitem>
+        <para>Simple multi channel LED PWM controller (LED matrix)</para>
+      </listitem>
+
+      <listitem>
+        <para>netpp communication stack on FPGA for IoT applications</para>
+      </listitem>
+
+      <listitem>
+        <para>Special Coprocessor DSP solutions (custom purpose
+        accelerators)</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>A few more application scenarios are listed below:</para>
+
+    <variablelist>
+      <varlistentry>
+        <term>The core is too slow for some operations, for example realtime
+        PWM control</term>
+
+        <listitem>
+          <para>Enhance CPU core by special engine 'code window'</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>You need a multitasking OS to serve several tasks</term>
+
+        <listitem>
+          <para>Instance another core and set up shared memory or inter-core
+          FIFO for communication</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>You are tired of hardware and software mismatches</term>
+
+        <listitem>
+          <para>Let configuration tools do the versioning and synchronization
+          <emphasis>automatically</emphasis>.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>You require increased security or you would like to prevent
+        cloning</term>
+
+        <listitem>
+          <para>Lock up your intellectual property behind obscurity or even
+          encryption, and bake your algorithms into hardened logic</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+
+  <section>
+    <title>cCAP Design family</title>
+
+    <para>The cCAP main line is based on the proprietary big endian ZPUng core
+    that is fully binary compatible with the classic ZPU architecture.
+    However, it can have vendor specific code extensions. It is also possible
+    for the 'a' family to change the CPU against the OpenSource Zealot
+    variant.</para>
+
+    <para>The cCAP family includes the following base peripherals:</para>
+
+    <variablelist>
+      <varlistentry>
+        <term>(TAP)</term>
+
+        <listitem>
+          <para>Test Access Port via native JTAG interface for
+          debugging</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>UART</term>
+
+        <listitem>
+          <para>UART console for interactive I/O</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>TWI</term>
+
+        <listitem>
+          <para>Two wire interface (I2C compatible)</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>SPI</term>
+
+        <listitem>
+          <para>Simple polled SPI master interface</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>TIMER/PWM</term>
+
+        <listitem>
+          <para>Rudimentary timer and PWM controller for synchronous pulse
+          width output</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+
+    <table id="tbl_cap_app" pgwide="1">
+      <title>cCAP overview</title>
+
+      <tgroup cols="3">
+        <colspec align="left" colwidth="2*"/>
+
+        <colspec align="left" colwidth="1*"/>
+
+        <colspec align="justify" colwidth="4*"/>
+
+        <thead>
+          <row>
+            <entry align="center">Name</entry>
+
+            <entry align="center">Extra Peripherals</entry>
+
+            <entry>Application</entry>
+          </row>
+        </thead>
+
+        <tbody>
+          <row>
+            <entry>agathe</entry>
+
+            <entry>8x PWM</entry>
+
+            <entry>OpenSource config processor demo first generation</entry>
+          </row>
+
+          <row>
+            <entry>anselm</entry>
+
+            <entry>"</entry>
+
+            <entry>", for MACHXO[2,3] platforms</entry>
+          </row>
+
+          <row>
+            <entry>agneta</entry>
+
+            <entry>EFB</entry>
+
+            <entry>Configuration processor for Lattice MACHXO[2,3]
+            platforms</entry>
+          </row>
+
+          <row>
+            <entry>beatrix</entry>
+
+            <entry>LCDIO, SCACHE, SPI32</entry>
+
+            <entry>embedded netpp processor</entry>
+          </row>
+
+          <row>
+            <entry>bertram</entry>
+
+            <entry>PWMplus, SCACHE, SPI32</entry>
+
+            <entry>embedded netpp processor with PWMplus extensions</entry>
+          </row>
+
+          <row>
+            <entry>cranach</entry>
+
+            <entry>SCACHE, SPI32, MAC, DMA</entry>
+
+            <entry>networked netpp/UDP processor</entry>
+          </row>
+
+          <row>
+            <entry>(cordula ZPUng)</entry>
+
+            <entry>DMA, JPEG, CPK, VPI</entry>
+
+            <entry>Video processor</entry>
+          </row>
+
+          <row>
+            <entry>dombert</entry>
+
+            <entry>DMAA, JPEG, MAC, VPI</entry>
+
+            <entry>JPEG encoder SoC (<productname>dorothea</productname>
+            successor)</entry>
+          </row>
+
+          <row>
+            <entry>dagobert</entry>
+
+            <entry>DMAA, SCACHE, MAC, LCDIO</entry>
+
+            <entry>netpp/UDP 'industrial' processor</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+
+    <para><xref linkend="tbl_family"/> shows the standard reference design
+    chip family and its typical logic resource usage in a set of supported
+    FPGAs. These designs are considered mature and stable. The more complex
+    the peripherals are, the higher ranks the naming in the alphabet.</para>
+
+    <para>The given usage percentage is based on a pessimistic maximum of the
+    number of SLICEs used and the LUT usage.</para>
+
+    <table id="tbl_family" pgwide="1">
+      <title>FPGA usage overview</title>
+
+      <tgroup cols="7">
+        <colspec align="left" colwidth="4*"/>
+
+        <colspec colwidth="2*"/>
+
+        <colspec align="justify" colwidth="1*"/>
+
+        <colspec align="justify" colwidth="1*"/>
+
+        <colspec align="justify" colwidth="1*"/>
+
+        <colspec align="justify" colwidth="1*"/>
+
+        <colspec align="justify" colwidth="1*"/>
+
+        <thead>
+          <row>
+            <entry align="center">Name</entry>
+
+            <entry align="center">CPU / FPGA &gt;</entry>
+
+            <entry align="center">MACHXO?-7000</entry>
+
+            <entry>SP3-250</entry>
+
+            <entry>SP6-LX9</entry>
+
+            <entry>ECP3-45</entry>
+
+            <entry>ECP5-45</entry>
+          </row>
+        </thead>
+
+        <tbody>
+          <row>
+            <entry>agathe</entry>
+
+            <entry>Zealot</entry>
+
+            <entry>N/A</entry>
+
+            <entry>15%</entry>
+
+            <entry>-</entry>
+
+            <entry>-</entry>
+
+            <entry>-</entry>
+          </row>
+
+          <row>
+            <entry>anselm</entry>
+
+            <entry>Zealot</entry>
+
+            <entry>25%</entry>
+
+            <entry>N/A</entry>
+
+            <entry>N/A</entry>
+
+            <entry>-</entry>
+
+            <entry>-</entry>
+          </row>
+
+          <row>
+            <entry>agneta</entry>
+
+            <entry>ZPUng</entry>
+
+            <entry>34%</entry>
+
+            <entry>N/A</entry>
+
+            <entry>-</entry>
+
+            <entry>-</entry>
+
+            <entry>-</entry>
+          </row>
+
+          <row>
+            <entry>beatrix</entry>
+
+            <entry>ZPUng</entry>
+
+            <entry>-</entry>
+
+            <entry>50%</entry>
+
+            <entry>-</entry>
+
+            <entry>-</entry>
+
+            <entry>-</entry>
+          </row>
+
+          <row>
+            <entry>bertram</entry>
+
+            <entry>ZPUng</entry>
+
+            <entry>40%</entry>
+
+            <entry>90%</entry>
+
+            <entry>20%</entry>
+
+            <entry>-</entry>
+
+            <entry>-</entry>
+          </row>
+
+          <row>
+            <entry>cordula</entry>
+
+            <entry>PyPS</entry>
+
+            <entry>-</entry>
+
+            <entry>-</entry>
+
+            <entry>-</entry>
+
+            <entry>20%</entry>
+
+            <entry>-</entry>
+          </row>
+
+          <row>
+            <entry>cranach</entry>
+
+            <entry>ZPUng</entry>
+
+            <entry>-</entry>
+
+            <entry>-</entry>
+
+            <entry>30%</entry>
+
+            <entry>15%</entry>
+
+            <entry>14%</entry>
+          </row>
+
+          <row>
+            <entry>dombert</entry>
+
+            <entry>ZPUng</entry>
+
+            <entry>-</entry>
+
+            <entry>-</entry>
+
+            <entry>N/A</entry>
+
+            <entry>N/A</entry>
+
+            <entry>29%</entry>
+          </row>
+
+          <row>
+            <entry>dagobert</entry>
+
+            <entry>ZPUng</entry>
+
+            <entry>-</entry>
+
+            <entry>-</entry>
+
+            <entry>60%</entry>
+
+            <entry>N/A</entry>
+
+            <entry>N/A</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+
+    <para>The extra peripherals are specific to the configuration:</para>
+
+    <variablelist>
+      <varlistentry>
+        <term>SCACHE</term>
+
+        <listitem>
+          <para>Virtual ROM (SPI cache). Enhances program memory up to several
+          MB of ROM code for program overlay or data storage</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>LCDIO</term>
+
+        <listitem>
+          <para>Custom LCD driver engine</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>SPI32</term>
+
+        <listitem>
+          <para>32 bit word capable SPI I/O, DMA capable</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>PWMPLUS</term>
+
+        <listitem>
+          <para>Improved PWM for realtime pulse width control</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>FX2FIFO</term>
+
+        <listitem>
+          <para>Cypress FX2 FIFO interface for fast isochronous data
+          transfer</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>MAC</term>
+
+        <listitem>
+          <para>Ethernet MAC interface for RGMII or GMII capable GigE
+          Phy</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>DMA/DMAA</term>
+
+        <listitem>
+          <para>DMA engine with optional autobuffer configuration (high speed
+          peripheral streaming)</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>JPEG</term>
+
+        <listitem>
+          <para>JPEG hardware encoder</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>CPK</term>
+
+        <listitem>
+          <para>'Cottonpicken' proprietary image processing pipeline</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>VPI</term>
+
+        <listitem>
+          <para>Parallel port peripheral video interface</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>SPORT</term>
+
+        <listitem>
+          <para>Fast serial port for audio codec I/O, DMA capable</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+
+  <section>
+    <title>MaSoCist build environment</title>
+
+    <para>A short feature overview:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>IP core instanciation and SoC configuration via XML
+        description</para>
+      </listitem>
+
+      <listitem>
+        <para>Automatic synchronization of HDL and software</para>
+      </listitem>
+
+      <listitem>
+        <para>Wishbone support</para>
+      </listitem>
+
+      <listitem>
+        <para>Optional Co-Simulation support</para>
+      </listitem>
+
+      <listitem>
+        <para>CPU and IP cores mostly open source</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>The MaSoCist environment is featured by a few number of CPU cores as
+    shown in <xref linkend="tbl_cores"/>. The SoC configuration families have
+    specific names, like agathe, beatrix, etc. Typically, the configuration is
+    independent from the CPU core, however, the address map of the CPU core
+    must correspond to the configuration, therefore the core variants may have
+    specific extensions.</para>
+
+    <table id="tbl_cores">
+      <title>Default SoC core CPU options</title>
+
+      <tgroup cols="2">
+        <thead>
+          <row>
+            <entry align="center">Name</entry>
+
+            <entry align="center">Description</entry>
+          </row>
+        </thead>
+
+        <tbody>
+          <row>
+            <entry>ZPU small core (Zealot)</entry>
+
+            <entry>OpenSource ZPU small, non pipelined</entry>
+          </row>
+
+          <row>
+            <entry>ZPUng</entry>
+
+            <entry>Proprietary, pipelined ZPU variant, configureable</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+
+    <para>Other cores (such as vendor specific CPU designs) can be integrated
+    on request. Basically, the MaSoCist environment can be customized to use
+    any other third party core with Wishbone support at possible sacrifices
+    with respect to In Circuit Emulation debugging.</para>
+
+    <para>The cCAP supports integration of third party, Wishbone compatible IP
+    cores, such as the popular I2C core from opencores.org. These will need a
+    specific description in the I/O peripheral map description.</para>
+
+    <para>This overview does not cover the details of SoC architecture
+    implementations using the devdesc XML device description. Please refer to
+    the generic netpp/SoC manual (available as separate support
+    package).</para>
+  </section>
+
+  <section>
+    <title>Licensing</title>
+
+    <para>To avoid too much complicated language, the licensing scheme is
+    simplified in this paragraph. There are several licenses and other
+    parties' rights involved in the MaSoCist:</para>
+
+    <orderedlist>
+      <listitem>
+        <para>MaSoCist components license</para>
+      </listitem>
+
+      <listitem>
+        <para>ZPU Opensource license</para>
+      </listitem>
+
+      <listitem>
+        <para>Third party (typically FPGA vendor) licenses, such as for
+        generated IP cores</para>
+      </listitem>
+    </orderedlist>
+
+    <para>The licensing terms may turn out complex when further developments
+    fall under different licenses, or may even collide with licenses of a
+    third party module. The original MaSoCist module license rules, apart from
+    the ZPU/Zealot licensing, are summarized as follows:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>You do have a license to simulate, build, and use the
+        synthesized image on the hardware whose board supply image
+        distribution you have received</para>
+      </listitem>
+
+      <listitem>
+        <para>The software tools and scripts received with the MaSoCist are
+        subject to dual licensing. For the OpenSource version, you may use the
+        tools for other projects, but you will have to publish modifications
+        and disclose their source. If you wish to use the tools in a
+        completely different project that can not be opensourced, you will
+        have to acquire a separate non-Opensource license.</para>
+      </listitem>
+
+      <listitem>
+        <para>If you have received the opensource eval distribution (to be
+        recognized by the '-opensource-$VERSION' suffix of the distribution
+        directory, all modifications you make must end up in the official
+        distribution again</para>
+      </listitem>
+
+      <listitem>
+        <para>If you received a non-opensource distribution, you are not
+        allowed to make it OpenSource without signed consent of
+        section5.</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>The dual licensing scheme does no longer apply, once a third party
+    module using a license similar to a GNU Public License is
+    introduced.</para>
+
+    <important>
+      <para>You are responsible for the licensing terms with regards to your
+      end product. section5 will not take responsability or liability for
+      license violations caused by other parties</para>
+    </important>
+  </section>
+
+  <section>
+    <title>How to read this documentation</title>
+
+    <para>This SoC documentation is set up in a modular way, where parts may
+    be shared by different architectures and SoC configurations. Therefore you
+    may find references to other SoC setups. However, the register map listed
+    in this document applies specifically to the configuration you have
+    obtained. Since the same configuration can run on different platforms,
+    there are platform specific sections listed below.</para>
+
+    <para>There may be reference to configuration variables like CONFIG_foo.
+    These are not explicitely documented in this documentation, rather, the
+    kconfig tool mentioned in <xref linkend="sec_configure"/> contains
+    built-in help functionality about each documentation variable.</para>
+
+    <para>For quick system specific reference, you may want to use the
+    following short links:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>Peripheral map of this SoC: <xref
+        linkend="tbl_devicemap_system_map"/></para>
+      </listitem>
+
+      <listitem>
+        <para>Platform specific memory and pin maps: <xref
+        linkend="app_custom"/></para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section>
+    <title>Memory map and register architecture</title>
+
+    <para>The SoC variants agathe and anselm use a 16 bit wide addressing
+    space. Configurations starting with 'b' have an extended address
+    range.</para>
+
+    <para>The address map is typically split into a memory range and memory
+    mapped register (MMR) for peripheral configuration, plus there is a range
+    specifically reserved for the stack.</para>
+
+    <para>The precise mapping is depending on the used core configuration.
+    Please refer to <xref linkend="app_custom"/> for the detailed address map
+    of your CPU variant.</para>
+
+    <section>
+      <title>Addressing</title>
+
+      <para>When accessing a memory mapped register, the address base of the
+      MMR range must be added within the physical addressing routines. This is
+      also regarded as "MMR offset" below. Note that the MMR space is a fully
+      linear address space, indirect addressing is not used.</para>
+
+      <para>For the C header generation, the address offset calculation for
+      each register is taken care of in the code. It should just be noted that
+      there are up to four offsets specified for the effective I/O address
+      calculation of a register:</para>
+
+      <orderedlist>
+        <listitem>
+          <para>The <emphasis>MMR offset</emphasis></para>
+        </listitem>
+
+        <listitem>
+          <para>The <emphasis>register map offset</emphasis></para>
+        </listitem>
+
+        <listitem>
+          <para>An <emphasis>index offset</emphasis> when several units of one
+          map are instanced (e.g. UART0, UART1, ...)</para>
+        </listitem>
+
+        <listitem>
+          <para>Finally, the <emphasis>register address
+          offset</emphasis></para>
+        </listitem>
+      </orderedlist>
+
+      <para>Detailed address generation details are covered in the generic
+      netpp/SoC manual.</para>
+    </section>
+
+    <section id="sec_regarch">
+      <title>Register architecture</title>
+
+      <para>Typically, a register map is defined per peripheral unit. Per
+      register map, a register table can be emitted, such as <xref
+      linkend="tbl_regmap_sys"/>.</para>
+
+      <para>In this SoC design, registers have the following access
+      properties:</para>
+
+      <variablelist>
+        <varlistentry>
+          <term>RO</term>
+
+          <listitem>
+            <para>Read only, writing to this register has no effect unless a
+            WO register is specified for the same address</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>WO</term>
+
+          <listitem>
+            <para>Write only, reading of this register returns undefined
+            values</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>RW</term>
+
+          <listitem>
+            <para>Read/write, instanced as a real hardware register inside the
+            MMR map</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+
+      <para>These properties are shown in the table under the
+      <property>Access</property> header. For the documentation, they are
+      rendered as shown in <xref linkend="fig_regmaplegend"/>. The MixedAccess
+      register type is not used in this architecture.</para>
+
+      <para>The single bits are typically marked with a code, when relevant,
+      denoting the default value after power up, or:</para>
+
+      <variablelist>
+        <varlistentry>
+          <term>x or X</term>
+
+          <listitem>
+            <para>Undefined, do not probe this bit for old HW revisions
+            without checking for the HWVersion register</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>s</term>
+
+          <listitem>
+            <para>Sticky status bit, clears when you write a '1' at this
+            position ('W1C')</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>S</term>
+
+          <listitem>
+            <para>Sticky status bit, clears when a device reset occurs</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>-</term>
+
+          <listitem>
+            <para>Reserved bits, do not use for own purpose or alter when
+            RW</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+
+      <para><note>
+          <para>A soft reset does not necessarily reset to the default values.
+          See next section for details.</para>
+        </note></para>
+
+      <para>If the bit is not marked but named, it is:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Not initialized in a R/W register</para>
+        </listitem>
+
+        <listitem>
+          <para>Volatile in a Read-Only register</para>
+        </listitem>
+      </itemizedlist>
+
+      <note>
+        <para>A special case is, when a RO and a WO register definition map to
+        the same register address. This is the standard solution for a 'W1C'
+        (Write one to clear) scenario. In this case, the WO register is not
+        explicitely documented, rather, the 's' notation from above will be
+        used on the RO register.</para>
+      </note>
+
+      <figure id="fig_regmaplegend">
+        <title>Register example legend</title>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="img/regmap_legend.pdf"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
+
+      <para>Registers also have a specific size, in this design up to the
+      maximum possible atomic indirect addressable data width of 32 bits (4
+      bytes). The size of the register is listed in the
+      <property>Span</property> property of the register table.</para>
+    </section>
+
+    <section id="sec_reginit">
+      <title>Register initialization</title>
+
+      <para>One important topic is the reset value initialization of registers
+      with specified defaults. There are two implementation variants:</para>
+
+      <orderedlist>
+        <listitem>
+          <para>Register is initialized at FPGA boot time (default)</para>
+        </listitem>
+
+        <listitem>
+          <para>Register is initialized using a hard/soft reset (See
+          <option>CONFIG_GENSOC_RESET_DEFAULTS</option>)</para>
+        </listitem>
+      </orderedlist>
+
+      <para>Depending on the FPGA architecture, the explicit reset pin
+      initialization might be preferred.</para>
+
+      <para>Registers that do not contain a default specification are not
+      initialized, therefore their value can be undefined.</para>
+
+      <note>
+        <para>Generally, it is considered good programming practise to only
+        use defaults where necessary and initialize registers within the
+        hardware driver routines.</para>
+      </note>
+
+      <section>
+        <title>Application examples</title>
+
+        <para>One example where defaults are necessary is the SIC_IMASK
+        register. If it is undefined, spurious interrupts may trigger an IRQ
+        while the event vector registers are yet uninitialized. The CPU will
+        then jump into undefined code at startup, which can be tricky to
+        debug. Likewise, it makes sense to initialize specific hardware enable
+        bits for crucial peripherals to zero so that they do not consume power
+        when the system resets, for example due to a watchdog event. In this
+        case, it may be reasonable to enable
+        <option>CONFIG_GENSOC_RESET_DEFAULTS</option>.</para>
+      </section>
+    </section>
+  </section>
+
+  <section>
+    <title>Register naming and namespaces</title>
+
+    <para>The gensoc translator utility generates source code from the device
+    description XML following roughly this scheme:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>In C, Registers are prefixed by 'Reg_' and the register name.
+        For example, the <property>Magic</property> register in the SysCtrl
+        register map becomes <varname>Reg_Magic</varname> when the map prefix
+        is not enabled (default).</para>
+      </listitem>
+
+      <listitem>
+        <para>Likewise in VHDL, however, registers are prefixed by 'R_' and
+        bit field definitions by 'B_'. Bit fields are always spelled in
+        capitals.</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>Automatic conversion of XML to source is not covered in this
+    documentation.</para>
+  </section>
+
+  <section>
+    <title>Firmware</title>
+
+    <para>The bare metal software running embedded on the SoC is considered to
+    be the 'firmware', although this term might be used for the HDL as well.
+    The firmware is basically the main program, converted into ROM such that
+    it is starting immediately after the FPGA is powered up.</para>
+
+    <para>The firmware is built during the general synthesis 'make' procedure.
+    Prior to building, the target must be configured. This is elaborated in
+    <xref linkend="sec_configure"/>.</para>
+
+    <section>
+      <title>ROM generation</title>
+
+      <para>The Makefile in the firmware directory creates a VHDL ROM
+      instanciation for synthesis such that the program code is run at power
+      up time just like when started from GDB (see <xref
+      linkend="sec_download"/>). The Makefile evaluates a
+      <option>SIMULATION=yes</option> option from the command line to
+      optionally build for simulation. If the SIMULATION flag is set for the
+      firmware that is built into the synthesized ROM, the system will not
+      start up correctly and likely hang.</para>
+
+      <important>
+        <para>Make sure to fully rebuild the firmware (<command>make clean
+        all</command>) before running synthesis to be sure everything is in
+        sync.</para>
+      </important>
+
+      <para>More details about the ROM generation in <xref
+      linkend="sec_romgen"/>.</para>
+    </section>
+  </section>
+</chapter>

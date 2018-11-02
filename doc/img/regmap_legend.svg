@@ -1,0 +1,383 @@
+<?xml version="1.0"?>
+<svg:svg xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" xmlns:my="http://www.section5.ch/dclib/schema/devdesc">
+  <!--Graph for register WriteOnlyRegister-->
+  <!-- offset: 0-->
+  <svg:g transform="translate(0, 12)">
+    <svg:g transform="translate(0,8)">
+      <svg:text text-anchor="start" font-family="Courier" font-size="8">WriteOnlyRegister</svg:text>
+    </svg:g>
+    <svg:g transform="translate(228,0)">
+      <svg:rect x="0.0" y="0.0" width="128" height="16.0" style="&#10;&#9;&#9;&#9;&#9;fill:none;stroke:black;stroke-width:1&#10;&#9;&#9;&#9;"/>
+      <svg:g transform="translate(0,18)">
+        <svg:polyline points="128,2 128,6 64,6 64,2" style="fill:yellow;stroke:black;stroke-width:0.5&#10;&#9;"/>
+        <svg:polyline points="96,6 96,18 168,18" style="fill:none;stroke:black;stroke-width:0.5&#10;&#9;"/>
+        <svg:g transform="translate(172, 18)">
+          <svg:text text-anchor="start" font-weight="bold" font-family="Courier" font-size="8">MODE[3:0]
+			</svg:text>
+        </svg:g>
+      </svg:g>
+      <svg:g transform="translate(0,18)">
+        <svg:polyline points="16,2 16,6 0,6 0,2" style="fill:yellow;stroke:black;stroke-width:0.5&#10;&#9;"/>
+        <svg:polyline points="8,6 8,30 168,30" style="fill:none;stroke:black;stroke-width:0.5&#10;&#9;"/>
+        <svg:g transform="translate(172, 30)">
+          <svg:text text-anchor="start" font-weight="bold" font-family="Courier" font-size="8">RESET[7]
+			</svg:text>
+        </svg:g>
+      </svg:g>
+      <svg:polyline points="16,0 16,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:polyline points="32,0 32,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:polyline points="48,0 48,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:polyline points="64,0 64,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:polyline points="80,0 80,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:polyline points="96,0 96,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:polyline points="112,0 112,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:g transform="translate(120, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">0</svg:text>
+      </svg:g>
+      <svg:g transform="translate(104, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">1</svg:text>
+      </svg:g>
+      <svg:g transform="translate(88, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">2</svg:text>
+      </svg:g>
+      <svg:g transform="translate(72, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">3</svg:text>
+      </svg:g>
+      <svg:g transform="translate(56, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">4</svg:text>
+      </svg:g>
+      <svg:g transform="translate(40, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">5</svg:text>
+      </svg:g>
+      <svg:g transform="translate(24, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">6</svg:text>
+      </svg:g>
+      <svg:g transform="translate(8, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">7</svg:text>
+      </svg:g>
+    </svg:g>
+    <svg:g transform="translate(380, 8)">
+      <svg:text text-anchor="start" font-family="Courier" font-size="8">0x00</svg:text>
+    </svg:g>
+  </svg:g>
+  <!--Graph for register WriteOnlyRegister_WithDefault-->
+  <!-- offset: 2-->
+  <svg:g transform="translate(0, 84)">
+    <svg:g transform="translate(0,8)">
+      <svg:text text-anchor="start" font-family="Courier" font-size="8">WriteOnlyRegister_WithDefault</svg:text>
+    </svg:g>
+    <svg:g transform="translate(228,0)">
+      <svg:rect x="0.0" y="0.0" width="128" height="16.0" style="&#10;&#9;&#9;&#9;&#9;fill:none;stroke:black;stroke-width:1&#10;&#9;&#9;&#9;"/>
+      <svg:g transform="translate(0,18)">
+        <svg:polyline points="128,2 128,6 64,6 64,2" style="fill:yellow;stroke:black;stroke-width:0.5&#10;&#9;"/>
+        <svg:polyline points="96,6 96,18 168,18" style="fill:none;stroke:black;stroke-width:0.5&#10;&#9;"/>
+        <svg:g transform="translate(172, 18)">
+          <svg:text text-anchor="start" font-weight="bold" font-family="Courier" font-size="8">MODE[3:0]
+			</svg:text>
+        </svg:g>
+      </svg:g>
+      <svg:g transform="translate(0,18)">
+        <svg:polyline points="16,2 16,6 0,6 0,2" style="fill:yellow;stroke:black;stroke-width:0.5&#10;&#9;"/>
+        <svg:polyline points="8,6 8,30 168,30" style="fill:none;stroke:black;stroke-width:0.5&#10;&#9;"/>
+        <svg:g transform="translate(172, 30)">
+          <svg:text text-anchor="start" font-weight="bold" font-family="Courier" font-size="8">RESET[7]
+			</svg:text>
+        </svg:g>
+      </svg:g>
+      <svg:g transform="translate(120, 9)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="7">0</svg:text>
+      </svg:g>
+      <svg:g transform="translate(104, 9)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="7">0</svg:text>
+      </svg:g>
+      <svg:g transform="translate(88, 9)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="7">1</svg:text>
+      </svg:g>
+      <svg:g transform="translate(72, 9)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="7">0</svg:text>
+      </svg:g>
+      <svg:g transform="translate(56, 9)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="7">X</svg:text>
+      </svg:g>
+      <svg:g transform="translate(40, 9)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="7">X</svg:text>
+      </svg:g>
+      <svg:g transform="translate(24, 9)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="7">X</svg:text>
+      </svg:g>
+      <svg:g transform="translate(8, 9)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="7">0</svg:text>
+      </svg:g>
+      <svg:polyline points="16,0 16,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:polyline points="32,0 32,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:polyline points="48,0 48,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:polyline points="64,0 64,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:polyline points="80,0 80,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:polyline points="96,0 96,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:polyline points="112,0 112,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:g transform="translate(120, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">0</svg:text>
+      </svg:g>
+      <svg:g transform="translate(104, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">1</svg:text>
+      </svg:g>
+      <svg:g transform="translate(88, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">2</svg:text>
+      </svg:g>
+      <svg:g transform="translate(72, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">3</svg:text>
+      </svg:g>
+      <svg:g transform="translate(56, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">4</svg:text>
+      </svg:g>
+      <svg:g transform="translate(40, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">5</svg:text>
+      </svg:g>
+      <svg:g transform="translate(24, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">6</svg:text>
+      </svg:g>
+      <svg:g transform="translate(8, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">7</svg:text>
+      </svg:g>
+    </svg:g>
+    <svg:g transform="translate(380, 8)">
+      <svg:text text-anchor="start" font-family="Courier" font-size="8">0x10</svg:text>
+    </svg:g>
+  </svg:g>
+  <!--Graph for register ReadWriteRegister-->
+  <!-- offset: 4-->
+  <svg:g transform="translate(0, 156)">
+    <svg:g transform="translate(0,8)">
+      <svg:text text-anchor="start" font-family="Courier" font-size="8">ReadWriteRegister</svg:text>
+    </svg:g>
+    <svg:g transform="translate(228,0)">
+      <svg:rect x="0.0" y="0.0" width="128" height="16.0" style="&#10;&#9;&#9;&#9;&#9;fill:none;stroke:black;stroke-width:1&#10;&#9;&#9;&#9;"/>
+      <svg:g transform="translate(0,18)">
+        <svg:polyline points="128,2 128,6 64,6 64,2" style="fill:none;stroke:black;stroke-width:0.5&#10;&#9;"/>
+        <svg:polyline points="96,6 96,18 168,18" style="fill:none;stroke:black;stroke-width:0.5&#10;&#9;"/>
+        <svg:g transform="translate(172, 18)">
+          <svg:text text-anchor="start" font-weight="bold" font-family="Courier" font-size="8">MODE[3:0]
+			</svg:text>
+        </svg:g>
+      </svg:g>
+      <svg:g transform="translate(0,18)">
+        <svg:polyline points="16,2 16,6 0,6 0,2" style="fill:none;stroke:black;stroke-width:0.5&#10;&#9;"/>
+        <svg:polyline points="8,6 8,30 168,30" style="fill:none;stroke:black;stroke-width:0.5&#10;&#9;"/>
+        <svg:g transform="translate(172, 30)">
+          <svg:text text-anchor="start" font-weight="bold" font-family="Courier" font-size="8">RESET[7]
+			</svg:text>
+        </svg:g>
+      </svg:g>
+      <svg:g transform="translate(120, 9)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="7">0</svg:text>
+      </svg:g>
+      <svg:g transform="translate(104, 9)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="7">1</svg:text>
+      </svg:g>
+      <svg:g transform="translate(88, 9)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="7">0</svg:text>
+      </svg:g>
+      <svg:g transform="translate(72, 9)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="7">0</svg:text>
+      </svg:g>
+      <svg:g transform="translate(56, 9)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="7">x</svg:text>
+      </svg:g>
+      <svg:g transform="translate(40, 9)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="7">x</svg:text>
+      </svg:g>
+      <svg:g transform="translate(24, 9)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="7">x</svg:text>
+      </svg:g>
+      <svg:g transform="translate(8, 9)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="7">0</svg:text>
+      </svg:g>
+      <svg:polyline points="16,0 16,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:polyline points="32,0 32,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:polyline points="48,0 48,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:polyline points="64,0 64,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:polyline points="80,0 80,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:polyline points="96,0 96,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:polyline points="112,0 112,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:g transform="translate(120, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">0</svg:text>
+      </svg:g>
+      <svg:g transform="translate(104, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">1</svg:text>
+      </svg:g>
+      <svg:g transform="translate(88, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">2</svg:text>
+      </svg:g>
+      <svg:g transform="translate(72, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">3</svg:text>
+      </svg:g>
+      <svg:g transform="translate(56, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">4</svg:text>
+      </svg:g>
+      <svg:g transform="translate(40, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">5</svg:text>
+      </svg:g>
+      <svg:g transform="translate(24, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">6</svg:text>
+      </svg:g>
+      <svg:g transform="translate(8, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">7</svg:text>
+      </svg:g>
+    </svg:g>
+    <svg:g transform="translate(380, 8)">
+      <svg:text text-anchor="start" font-family="Courier" font-size="8">0x01</svg:text>
+    </svg:g>
+  </svg:g>
+  <!--Graph for register ReadOnlyRegister-->
+  <!-- offset: 6-->
+  <svg:g transform="translate(0, 228)">
+    <svg:g transform="translate(0,8)">
+      <svg:text text-anchor="start" font-family="Courier" font-size="8">ReadOnlyRegister</svg:text>
+    </svg:g>
+    <svg:g transform="translate(228,0)">
+      <svg:rect x="0.0" y="0.0" width="128" height="16.0" style="&#10;&#9;&#9;&#9;&#9;fill:#e5e5e5;stroke:black;stroke-width:1&#10;&#9;&#9;&#9;"/>
+      <svg:g transform="translate(0,18)">
+        <svg:polyline points="128,2 128,6 112,6 112,2" style="fill:none;stroke:black;stroke-width:0.5&#10;&#9;"/>
+        <svg:polyline points="120,6 120,18 168,18" style="fill:none;stroke:black;stroke-width:0.5&#10;&#9;"/>
+        <svg:g transform="translate(172, 18)">
+          <svg:text text-anchor="start" font-weight="bold" font-family="Courier" font-size="8">SERROR[0]
+			</svg:text>
+        </svg:g>
+      </svg:g>
+      <svg:g transform="translate(0,18)">
+        <svg:polyline points="96,2 96,6 80,6 80,2" style="fill:none;stroke:black;stroke-width:0.5&#10;&#9;"/>
+        <svg:polyline points="88,6 88,30 168,30" style="fill:none;stroke:black;stroke-width:0.5&#10;&#9;"/>
+        <svg:g transform="translate(172, 30)">
+          <svg:text text-anchor="start" font-weight="bold" font-family="Courier" font-size="8">ERROR[2]
+			</svg:text>
+        </svg:g>
+      </svg:g>
+      <svg:g transform="translate(0,18)">
+        <svg:polyline points="80,2 80,6 48,6 48,2" style="fill:none;stroke:black;stroke-width:0.5&#10;&#9;"/>
+        <svg:polyline points="64,6 64,42 168,42" style="fill:none;stroke:black;stroke-width:0.5&#10;&#9;"/>
+        <svg:g transform="translate(172, 42)">
+          <svg:text text-anchor="start" font-weight="bold" font-family="Courier" font-size="8">CUR_STATUS[4:3]
+			</svg:text>
+        </svg:g>
+      </svg:g>
+      <svg:g transform="translate(120, 9)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="7">S</svg:text>
+      </svg:g>
+      <svg:g transform="translate(104, 9)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="7">0</svg:text>
+      </svg:g>
+      <svg:g transform="translate(88, 9)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="7">0</svg:text>
+      </svg:g>
+      <svg:g transform="translate(72, 9)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="7">0</svg:text>
+      </svg:g>
+      <svg:g transform="translate(56, 9)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="7">0</svg:text>
+      </svg:g>
+      <svg:g transform="translate(40, 9)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="7">-</svg:text>
+      </svg:g>
+      <svg:g transform="translate(24, 9)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="7">-</svg:text>
+      </svg:g>
+      <svg:g transform="translate(8, 9)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="7">-</svg:text>
+      </svg:g>
+      <svg:polyline points="16,0 16,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:polyline points="32,0 32,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:polyline points="48,0 48,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:polyline points="64,0 64,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:polyline points="80,0 80,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:polyline points="96,0 96,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:polyline points="112,0 112,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:g transform="translate(120, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">0</svg:text>
+      </svg:g>
+      <svg:g transform="translate(104, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">1</svg:text>
+      </svg:g>
+      <svg:g transform="translate(88, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">2</svg:text>
+      </svg:g>
+      <svg:g transform="translate(72, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">3</svg:text>
+      </svg:g>
+      <svg:g transform="translate(56, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">4</svg:text>
+      </svg:g>
+      <svg:g transform="translate(40, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">5</svg:text>
+      </svg:g>
+      <svg:g transform="translate(24, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">6</svg:text>
+      </svg:g>
+      <svg:g transform="translate(8, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">7</svg:text>
+      </svg:g>
+    </svg:g>
+    <svg:g transform="translate(380, 8)">
+      <svg:text text-anchor="start" font-family="Courier" font-size="8">0x02</svg:text>
+    </svg:g>
+  </svg:g>
+  <!--Graph for register MixedAccessRegister-->
+  <!-- offset: 9-->
+  <svg:g transform="translate(0, 312)">
+    <svg:g transform="translate(0,8)">
+      <svg:text text-anchor="start" font-family="Courier" font-size="8">MixedAccessRegister</svg:text>
+    </svg:g>
+    <svg:g transform="translate(228,0)">
+      <svg:rect x="0.0" y="0.0" width="128" height="16.0" style="&#10;&#9;&#9;&#9;&#9;fill:none;stroke:black;stroke-width:1&#10;&#9;&#9;&#9;"/>
+      <svg:g transform="translate(0,18)">
+        <svg:polyline points="128,2 128,6 112,6 112,2" style="fill:gray;stroke:black;stroke-width:0.5&#10;&#9;"/>
+        <svg:polyline points="120,6 120,18 168,18" style="fill:none;stroke:black;stroke-width:0.5&#10;&#9;"/>
+        <svg:g transform="translate(172, 18)">
+          <svg:text text-anchor="start" font-weight="bold" font-family="Courier" font-size="8">CORE_ERR[0]
+			</svg:text>
+        </svg:g>
+      </svg:g>
+      <svg:g transform="translate(0,18)">
+        <svg:polyline points="32,2 32,6 16,6 16,2" style="fill:yellow;stroke:black;stroke-width:0.5&#10;&#9;"/>
+        <svg:polyline points="24,6 24,30 168,30" style="fill:none;stroke:black;stroke-width:0.5&#10;&#9;"/>
+        <svg:g transform="translate(172, 30)">
+          <svg:text text-anchor="start" font-weight="bold" font-family="Courier" font-size="8">IORESET[6]
+			</svg:text>
+        </svg:g>
+      </svg:g>
+      <svg:polyline points="16,0 16,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:polyline points="32,0 32,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:polyline points="48,0 48,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:polyline points="64,0 64,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:polyline points="80,0 80,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:polyline points="96,0 96,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:polyline points="112,0 112,16" style="fill:yellow;stroke:gray;stroke-width:1"/>
+      <svg:g transform="translate(120, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">0</svg:text>
+      </svg:g>
+      <svg:g transform="translate(104, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">1</svg:text>
+      </svg:g>
+      <svg:g transform="translate(88, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">2</svg:text>
+      </svg:g>
+      <svg:g transform="translate(72, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">3</svg:text>
+      </svg:g>
+      <svg:g transform="translate(56, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">4</svg:text>
+      </svg:g>
+      <svg:g transform="translate(40, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">5</svg:text>
+      </svg:g>
+      <svg:g transform="translate(24, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">6</svg:text>
+      </svg:g>
+      <svg:g transform="translate(8, -2)">
+        <svg:text text-anchor="middle" font-family="Courier" font-size="6">7</svg:text>
+      </svg:g>
+    </svg:g>
+    <svg:g transform="translate(380, 8)">
+      <svg:text text-anchor="start" font-family="Courier" font-size="8">0x03</svg:text>
+    </svg:g>
+  </svg:g>
+</svg:svg>

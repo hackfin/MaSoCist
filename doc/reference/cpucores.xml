@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<section>
+  <title>CPU cores</title>
+
+  <para>Several CPU cores have been adapted to the MaSoCist build
+  environment.</para>
+
+  <section>
+    <title>ZPU small core 'Zealot'</title>
+
+    <para>The Zealot core is a non-pipelined CPU, designed by Salvador E.
+    Tropea, based on the 'ZPU small' design by Øyvind Harboe. It is enhanced
+    by a In Circuit Emulation module (proprietary in house standard "StdTAP")
+    for native JTAG debugging on FPGA hardware. The HDL for this CPU is
+    OpenSource.</para>
+
+    <para>This CPU variant is a full 32 bit CPU, not allowing unaligned
+    access, therefore uses 32 bit addressing on a 4 byte for I/O access only.
+    It is also enhanced by a small WishBone wrapper to access externally
+    supplied IP cores (I2C, UART). The Zealot core has limited possibilities
+    for customization.</para>
+
+    <para>The ZPU interrupts are non-reentrant, i.e. only one interrupt
+    service at a time is processed.</para>
+  </section>
+
+  <section>
+    <title>ZPUng core</title>
+
+    <para>The ZPUng ('ng' standing for 'next generation') core is a pipelined
+    proprietary redesign of the original ZPU architecture in the Python HDL
+    extension <application>MyHDL</application>. A short overview:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>Instruction compatible to the ZPU small, big endian</para>
+      </listitem>
+
+      <listitem>
+        <para>Three stage pipeline with shortcut mechanisms for some
+        instruction sequences</para>
+      </listitem>
+
+      <listitem>
+        <para>Separate Stack and Data/Program memory</para>
+      </listitem>
+
+      <listitem>
+        <para>Typical native instruction duration: 1 cycle (up to 3 cycles on
+        I/O and ALU operations)</para>
+      </listitem>
+
+      <listitem>
+        <para>Enhanced interrupt, exception and event vector capabilities
+        (ZPUng v1)</para>
+      </listitem>
+
+      <listitem>
+        <para>Extended StdTAP debugging features</para>
+      </listitem>
+
+      <listitem>
+        <para>Slightly higher logic usage than ZPU small</para>
+      </listitem>
+
+      <listitem>
+        <para>Easily configureable and extendable using custom microcode
+        extensions (ZPUng v2)</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>The ZPUng code is primarely available in VHDL under a custom source
+    license. Verilog output can be supported on request.</para>
+
+    <para>The ZPUng v1 minimum configuration typically synthesizes in less
+    than 800 LUTs (including debug logic), depending on architecture.</para>
+
+    <para>The ZPUng v2 is still under development and offers higher speed,
+    however it breaks compatibility to ZPUng v1 with respect to microcode
+    emulation features. Also it can be configured to use a different opcode
+    set. Custom operations can be implemented such that some processing is
+    occuring in parallel, but still within a calleable function, accessible to
+    an application programmer. The main ZPU machine code is still compatible
+    to the classic ZPU variants. Interrupt and debugging functionality on the
+    ZPUng v2 are yet limited.</para>
+  </section>
+
+  <section>
+    <title>PyPS core</title>
+
+    <para>The PyPS core is based on a classic MIPS architecture design with a
+    few specific optimizations with regards to Block RAM. It runs up to 70 MHz
+    on Spartan3 platforms ('cordula' configuration) with a BRAM register bank.
+    Higher speeds can be achieved with distributed register RAM.</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>MIPS-I instruction set with microcode enhancements
+        (DIV/MUL)</para>
+      </listitem>
+
+      <listitem>
+        <para>Five-Stage pipeline with hazard resolving unit</para>
+      </listitem>
+
+      <listitem>
+        <para>StdTAP debugging interface</para>
+      </listitem>
+
+      <listitem>
+        <para>Limited MIPS16 ASE option (no exception support)</para>
+      </listitem>
+
+      <listitem>
+        <para>Configureable to be either fully compatible to MIPS-I or
+        fast</para>
+      </listitem>
+
+      <listitem>
+        <para>Limited interrupt support (use DMA where possible)</para>
+      </listitem>
+
+      <listitem>
+        <para>DMA coprocessor option (two simultaneous memory channels)</para>
+      </listitem>
+    </itemizedlist>
+
+    <note>
+      <para>The PyPS core is no longer maintained for new designs due to its
+      complexity and resource usage. It is recommended to use the ZPUng v1.1
+      instead.</para>
+    </note>
+  </section>
+</section>

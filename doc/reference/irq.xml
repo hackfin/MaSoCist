@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<section>
+  <title>Interrupt handling</title>
+
+  <para>Generally, specific events during the program flow can cause an
+  interrupt and jump into a service handler, if enabled. The control over this
+  behaviour is up to the System Interrupt Controller (SIC).</para>
+
+  <xi:include href="sic.xml" xpointer="element(/1)"
+              xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <section>
+    <title>Core specific interrupt handling</title>
+
+    <para><note>
+        <para>This section applies to the 'ZPUng' CPU architecture only</para>
+      </note>Typically, an IRQ routine is a just a normal C void subroutine
+    with an 'interrupt attribute'. However, this only is valid when no memreg
+    instanciations are used inside the IRQ handler. If this is the case,
+    restore() and save() macros need to be called inside the interrupt
+    routine.</para>
+
+    <para>Whenever an interrupt is serviced from the handler, it must signal
+    to the SIC by clearing the IPEND bit to the corresponding IRQ channel that
+    the interrupt logic can rearm for the next event to happen on this
+    channel.</para>
+
+    <para>The ZPU legacy architecture does not have a protection against
+    reentrancy of an interrupt handler on recurring events, so too frequent
+    interrupt events could trash the stack. The ZPUng logic prevents this by
+    internal usage of an IRQ flag. While this flag is set, no other IRQ source
+    can interrupt a current handler. The flag is always cleared at the end of
+    the interrupt handler, more details below.</para>
+
+    <section>
+      <title>Priorities</title>
+
+      <para>Simultaneous interrupt events are always won by the higher
+      priority channel (lower channel index). If an interrupt is pending, any
+      other interrupt event will set the flag in the IPEND register (if not
+      masked), however <emphasis>only</emphasis> a higher priority event will
+      signal the CPU that another interrupt is to be serviced via the
+      <property>override</property> pin. Once the corresponding IPEND flag is
+      cleared, the next set flag with the highest priority will cause the irq
+      line to the CPU held high and assert its corresponding interrupt vector
+      to the event vector port to the CPU.</para>
+
+      <para>For the interrupt handling, the priority logic acts upon the
+      following scenarios:</para>
+
+      <variablelist>
+        <varlistentry>
+          <term>High prio interrupt first, then low prio</term>
+
+          <listitem>
+            <para>The high prio handler is executed until a IRQR (IRQ release)
+            instruction is issued, then the lower priority interrupt is
+            latched to the CPU</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>Low prio interrupt first, then high prio</term>
+
+          <listitem>
+            <para>The low prio handler is interrupted by the high prio
+            routine. Upon completion (IRQR), the low prio handler is
+            resumed.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>Repeated low prio IRQ during high prio service</term>
+
+          <listitem>
+            <para>The low prio interrupt is scheduled once, and the following
+            IRQ requests are ignored. Upon completion of the high prio
+            routine, the low prio handler is executed.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </section>
+
+    <section>
+      <title>Exceptions</title>
+
+      <para>Exceptions are also handled like an interrupt in the ZPUng,
+      however, they only occur on special occasions like memory accesses. The
+      [bc]* type SoCs cover memory access exceptions via the SCache system
+      peripheral. An exception can be assigned to any property, however a
+      higher priority IRQ can interrupt the exception handler <emphasis>only
+      after</emphasis> the cause for the exception has been cleared and
+      exception handler has returned. If the exception cause clearing is
+      forgotten inside the exception handler, the system will hang on the next
+      memory access.</para>
+    </section>
+
+    <section>
+      <title>Writing handlers</title>
+
+      <para>A typical IRQ handler looks as follows:</para>
+
+      <programlisting>void __attribute__((interrupt)) irq_generic_handler(void)
+{
+    MMR(Reg_SIC_IPEND_W1C) =  PINMAP_IRQ_GPIO_A; // clear IRQ and rearm
+    g_counter++;
+}
+</programlisting>
+
+      <para>The program code has to acknowledge the interrupt source at the
+      beginning of the routine by writing to the SIC_IPEND register. If
+      another IRQ is latched during the routine, the corresponding bit in the
+      SIC_IPEND register becomes high, however is not causing another
+      interrupt until the service handler has finished. The difference from a
+      normal C function is, that the service routine rearms the CPU logic
+      before returning. This is achieved by decorating the routine with the
+      'interrupt' attribute statement.</para>
+
+      <para>The v0.1 toolchain release does not support the 'interrupt'
+      attribute, but a IRQ_REARM() macro would have to be used at the very end
+      of the assembly interrupt routine. In a C implementation, there is no
+      guarantee of the proper placement of the rearming sequence. Therefore,
+      the stack could be trashed by unwanted reentrancy under certain
+      scenarios.</para>
+
+      <important>
+        <para>For proper operation, it is mandatory that you upgrade to
+        toolchain v0.2 and no longer use the IRQ_REARM macro in your
+        code.</para>
+      </important>
+
+      <important>
+        <para>Make sure you have no memreg access in your IRQ handler. This
+        could be the case when you call functions with a return value.</para>
+      </important>
+    </section>
+
+    <section>
+      <title>Atomic operations</title>
+
+      <para>In the ZPUng v1, there is no such thing as interrupt locking, like
+      cli() or sti() macros on other architectures. Therefore design of
+      interrupt handlers that include access to variables concurring with
+      non-interrupt code needs to be done carefully. It is therefore important
+      to know, that, depending on the ZPUng configuration, not all access
+      widths are atomic.</para>
+
+      <table>
+        <title>Atomic access</title>
+
+        <tgroup cols="2">
+          <thead>
+            <row>
+              <entry align="center">Storage width</entry>
+
+              <entry align="center">Configuration</entry>
+            </row>
+          </thead>
+
+          <tbody>
+            <row>
+              <entry>uint32_t</entry>
+
+              <entry>-</entry>
+            </row>
+
+            <row>
+              <entry>uint16_t, uint8_t</entry>
+
+              <entry>CONFIG_HARDSZ=y</entry>
+            </row>
+
+            <row>
+              <entry>uint16_t, uint8_t</entry>
+
+              <entry>CONFIG_EMU_NOIRQ=y</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+
+      <para>When the EMU_NOIRQ is configured, code in the EMU program area can
+      never be interrupted, however, the interrupt latency is then
+      undetermined. To prohibit code being interrupted by IRQ handlers, code
+      segments can be carefully placed into the EMULATION segment.</para>
+
+      <para>IRQ safe flags or counters in the code of type uint32_t are still
+      not fully atomic with respect to the entire operation, like:</para>
+
+      <para><programlisting>g_count++;</programlisting>This effectively splits
+      up into the following phases:</para>
+
+      <variablelist>
+        <varlistentry>
+          <term>LOAD</term>
+
+          <listitem>
+            <para>Get g_count from memory</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>INCREMENT</term>
+
+          <listitem>
+            <para>Increment TOS value</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>STORE</term>
+
+          <listitem>
+            <para>Save value atomically to memory</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+
+      <para>So it may happen that an IRQ request gets in between the INCREMENT
+      and STORE phases and an event is missed. This is no longer an issue when
+      code is designed carefully with queues and corresponding main loop
+      handlers. If special event counting is required, it can be custom
+      designed as peripheral hardware extension.</para>
+
+      <para>The ZPUngv2 implements a special locking pipeline for special
+      purposes, using microcode extensions. This comes into play on inter
+      process communication between multiple ZPUng instances. This is
+      undocumented and application specific.</para>
+    </section>
+  </section>
+</section>

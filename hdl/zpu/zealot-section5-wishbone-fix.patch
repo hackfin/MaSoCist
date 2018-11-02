@@ -1,0 +1,28 @@
+diff --git a/zpu/hdl/zealot/zpu_small.vhdl b/zpu/hdl/zealot/zpu_small.vhdl
+index cf4e189..baa90aa 100644
+--- a/zpu/hdl/zealot/zpu_small.vhdl
++++ b/zpu/hdl/zealot/zpu_small.vhdl
+@@ -263,12 +263,17 @@ trigger_exec:
+             -- This saves LUTs, by explicitly declaring that the
+             -- a_o can be left at whatever value if a_we_r is
+             -- not set.
+-            a_r <= (others => D_CARE_VAL);
+-            b_r <= (others => D_CARE_VAL);
+-            sp_offset:=(others => D_CARE_VAL);
+-            a_addr_r   <= (others => D_CARE_VAL);
+-            b_addr_r   <= (others => D_CARE_VAL);
+-            addr_r     <= a_i(ADDR_W-1 downto 0);
++			-- <strubi> Not a good idea to re-assign these to anything.
++			-- It will break the wishbone timing. Therefore commented out.
++			-- Also, it could cause spurious overwrites at the bootup
++			-- sequence when issuing a RESET through JTAG.
++
++            -- a_r <= (others => D_CARE_VAL);
++            -- b_r <= (others => D_CARE_VAL);
++            -- sp_offset:=(others => D_CARE_VAL);
++            -- a_addr_r   <= (others => D_CARE_VAL);
++            -- b_addr_r   <= (others => D_CARE_VAL);
++            -- addr_r     <= a_i(ADDR_W-1 downto 0);
+             d_opcode_r <= d_opcode;
+             opcode_r   <= opcode;
+             if interrupt_i='0' then

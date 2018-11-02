@@ -1,0 +1,618 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<devdesc version="0.1"
+         xsi:schemaLocation="http://www.section5.ch/dclib/schema/devdesc devdesc.xsd"
+         xmlns="http://www.section5.ch/dclib/schema/devdesc"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:xi="http://www.w3.org/2001/XInclude"
+         xmlns:ns22="http://www.w3.org/1999/xhtml"
+         xmlns:ns2="http://www.xmlmind.com/xmleditor/schema/bugreport"
+         xmlns:ns="http://www.section5.ch/dclib/schema/devdesc"
+         xmlns:memmap="http://www.section5.ch/dclib/schema/memmap"
+         xmlns:interfaces="http://www.section5.ch/dclib/schema/interfaces"
+         xmlns:html="http://www.xmlmind.com/xmleditor/schema/xhtml"
+         xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+  <vendor>section5</vendor>
+
+  <!--// (c) <year> <your name>
+// $Id: $
+-->
+
+  <revision>
+    <major>0</major>
+
+    <minor>0</minor>
+
+    <extension>develop</extension>
+  </revision>
+
+  <!--This is a header file specification. Statements in this field will be included
+in handler skeleton code and in the generated property list.
+Including a header is necessary when implementing access to global variables.-->
+
+  <header language="VHDL">library work;
+use work.busdef.all;
+use work.global_config.all;
+use work.periotypes.all;</header>
+
+  <!--This is the list of possible codes the device may return:-->
+
+  <returncodes>
+    <errorspec code="-1024" name="GENERIC_ERROR">
+      <info>Generic, unspecified error code</info>
+    </errorspec>
+
+    <warnspec code="1" name="GENERIC_WARNING">
+      <info>Something is not ok, but we don't fail.</info>
+    </warnspec>
+  </returncodes>
+
+  <device id="system_map" name="Neo430 processor description"
+          protocol="REGISTER">
+    <revision>
+      <major>0</major>
+
+      <minor>0</minor>
+    </revision>
+
+    <!-- A very sparse register map -->
+
+    <registermap endian="LITTLE" hidden="true" id="dmem_ports" name="dmem"
+                 nodecode="true" size="16">
+      <info>DMEM internal signal definition</info>
+
+      <register addr="0x00" id="memio" size="2">
+        <bitfield access="WO" lsb="0" msb="0" name="io_busy_s"/>
+
+        <bitfield access="WO" lsb="0" msb="0" name="io_busy_d"/>
+
+        <bitfield access="RO" lsb="0" msb="0" name="io_we"/>
+      </register>
+    </registermap>
+
+    <registermap endian="LITTLE" hidden="true" name="port_pseudo_registers"
+                 nodecode="true">
+      <!-- This register map is abused for pin definitions. It is not decoded, see flags 'hidden' and 'nodecode'-->
+
+      <info>This pseudo register map contains port pin definitions for peripherals</info>
+
+      <register addr="0x02" id="uartio">
+        <info>Pseudo register for UART I/Os</info>
+
+        <bitfield access="WO" lsb="2" msb="2" name="tx">
+          <info>UART TX line</info>
+        </bitfield>
+
+        <bitfield access="RO" lsb="3" msb="3" name="rx">
+          <info>UART RX line</info>
+        </bitfield>
+
+        <bitfield access="WO" lsb="0" msb="0" name="rxirq"/>
+      </register>
+
+      <register addr="0x02" id="spio">
+        <info>Pseudo register for SPI I/Os</info>
+
+        <bitfield access="WO" lsb="0" msb="0" name="cs">
+          <info>Low active Chip Select</info>
+        </bitfield>
+
+        <bitfield access="WO" lsb="1" msb="1" name="sclk">
+          <info>SPI clock</info>
+        </bitfield>
+
+        <bitfield access="WO" lsb="2" msb="2" name="mosi">
+          <info>Master data out</info>
+        </bitfield>
+
+        <bitfield access="RO" lsb="3" msb="3" name="miso">
+          <info>Master data in</info>
+        </bitfield>
+      </register>
+
+      <register addr="0x00" id="byte_we">
+        <info>Byte write enable port</info>
+
+        <bitfield access="RO" lsb="0" msb="0" name="high">
+          <info>HIGH byte write enable</info>
+        </bitfield>
+
+        <bitfield access="RO" lsb="1" msb="1" name="low">
+          <info>LOW byte write enable</info>
+        </bitfield>
+      </register>
+    </registermap>
+
+    <registermap endian="LITTLE" hidden="false" id="soc_mmr" name="MMR"
+                 nodecode="true" offset="0x78000" size="32">
+      <info>This address map contains definitions for the address bit decoding only</info>
+
+      <register addr="0x00" id="adec_common" size="2">
+        <!--Very important dummy register, specifying the address slicing-->
+
+        <info>Generic address decode pseudo register</info>
+
+        <bitfield lsb="0" msb="4" name="MMR_CFG_spi">
+          <info>Address space reserved for the SPI module</info>
+        </bitfield>
+
+        <bitfield lsb="0" msb="3" name="MMR_CFG_uart">
+          <info>PWM address decoder portion</info>
+        </bitfield>
+
+        <bitfield lsb="0" msb="5" name="MMR_CFG_sys">
+          <info>Address space reserved for the System Config module</info>
+        </bitfield>
+
+        <!--Reserved bitfield names: Those are the fields specifying the unit number and bus number-->
+
+        <bitfield lsb="12" msb="14" name="MMR_SELECT_perio">
+          <info>The select bit for the perio unit (max. 16 units)</info>
+        </bitfield>
+
+        <bitfield lsb="10" msb="11" name="MMR_SELECT_DEVINDEX_SPAD">
+          <info>The bit field to select the Scratchpad bank index</info>
+        </bitfield>
+      </register>
+    </registermap>
+
+    <registermap addrsize="16" endian="LITTLE" id="imem" name="RAM_IMEM"
+                 nodecode="true">
+      <info>Instruction memory, non-volatile (ROM option)</info>
+
+      <register addr="0x0000" id="IMEM_BASE_ADDR"/>
+    </registermap>
+
+    <registermap endian="LITTLE" id="sys" name="SysCtrl" size="16">
+      <register access="RW" addr="0x00" id="SysCtrl" size="1">
+        <info>System control register</info>
+
+        <bitfield lsb="0" msb="0" name="PERIO_RESET">
+          <info>1: Reset peripheral I/O section</info>
+        </bitfield>
+
+        <bitfield lsb="2" msb="2" name="SYS_RESET">
+          <info>System reset. Resets entire CPU (1 active)</info>
+        </bitfield>
+
+        <default>xxxxx0x0</default>
+      </register>
+
+      <register access="WO" addr="0x0c" id="SysConsole_W" size="1"
+                volatile="true">
+        <info>System Console output register. Normally for simulation/JTAG debugging only.</info>
+      </register>
+
+      <register access="RO" addr="0x0c" id="SysConsole_R" size="2"
+                volatile="true">
+        <info>System Console Input register. Normally for simulation/JTAG debugging only.</info>
+
+        <bitfield lsb="0" msb="7" name="CONSOLE_DATA">
+          <info>System console input character data</info>
+        </bitfield>
+
+        <bitfield lsb="8" msb="8" name="DATA_VALID">
+          <info>When this bit is set, CONSOLE_DATA is valid</info>
+        </bitfield>
+      </register>
+
+      <!--If you need to extend this map, MAKE SURE to move the following registers always to the end of the map (according to the width
+of the CFG_sys bitfield) to preserve downwards compatibility such that newer embedded software is able to detect older hardware.
+DO NOT move them to the bottom without checking CFG_sys!-->
+
+      <register access="RO" addr="0x34" id="Magic" size="2">
+        <info>Magic number (typically CPU ID). Used for detection.</info>
+      </register>
+
+      <register access="RO" addr="0x38" id="SocInfo" size="2">
+        <info>System type identification field</info>
+
+        <bitfield lsb="0" msb="3" name="SOCTYPE">
+          <info>SoC type (0: local bus, 1: Wishbone, 2: AHB lite)</info>
+        </bitfield>
+
+        <bitfield lsb="4" msb="7" name="CPUARCH">
+          <info>CPU architecture field (undocumented)</info>
+        </bitfield>
+
+        <bitfield lsb="8" msb="15" name="CPUFLAGS">
+          <info>Core specific CPU flags (undocumented)</info>
+        </bitfield>
+      </register>
+
+      <register access="RO" addr="0x3c" id="HWVersion" size="2">
+        <info>Hardware revision word. Reserved for Simulation: 0xff01</info>
+
+        <bitfield lsb="0" msb="7" name="REV_MINOR">
+          <info>Minor hardware revision number</info>
+        </bitfield>
+
+        <bitfield lsb="8" msb="15" name="REV_MAJOR">
+          <info>Major hardware revision number</info>
+        </bitfield>
+      </register>
+
+      <!--Note MMR address range, no register higher than HW_VERSION.-->
+    </registermap>
+
+    <registermap endian="LITTLE" id="spi" name="SPI8" size="16">
+      <info>SPI master core registers</info>
+
+      <register access="RW" addr="0x00" id="SPI_CONTROL" size="2">
+        <info>SPI control register</info>
+
+        <bitfield lsb="15" msb="15" name="SPIRESET">
+          <info>Set 1 to reset SPI, 0 to resume</info>
+        </bitfield>
+
+        <bitfield lsb="14" msb="14" name="SPICS">
+          <info>Set '0' to select SPI</info>
+        </bitfield>
+
+        <bitfield lsb="4" msb="6" name="NBITS">
+          <info>Number of bits to transfer</info>
+        </bitfield>
+
+        <bitfield lsb="3" msb="3" name="LSBFIRST">
+          <info>1; Send LSB first, 0: MSB first</info>
+        </bitfield>
+
+        <bitfield lsb="2" msb="2" name="CPHA">
+          <info>Capture phase bit</info>
+        </bitfield>
+
+        <bitfield lsb="1" msb="1" name="CPOL">
+          <info>Invert clock polarity</info>
+        </bitfield>
+
+        <bitfield lsb="0" msb="0" name="PUMP">
+          <info>When set, access (R or W) to the SPIData register pumps a new transfer</info>
+        </bitfield>
+      </register>
+
+      <register access="RO" addr="0x02" id="SPI_STATUS" size="1">
+        <info>SPI status register</info>
+
+        <bitfield lsb="0" msb="0" name="SPIBUSY">
+          <info>When 1, SPI is busy transferring data</info>
+        </bitfield>
+
+        <bitfield lsb="6" msb="7" name="SPIWIDTH">
+          <info>SPI data width: 0: 8 bit, 1: 16 bit: 2: 32 bit</info>
+        </bitfield>
+      </register>
+
+      <register access="WO" addr="0x04" id="SPI_TX" size="1" volatile="true">
+        <info>SPI transmit register</info>
+      </register>
+
+      <register access="RO" addr="0x04" id="SPI_RX" size="1" volatile="true">
+        <info>SPI receive register</info>
+      </register>
+
+      <register access="RW" addr="0x06" id="SPI_CLKDIV" size="2">
+        <info>SPI clock divider register</info>
+
+        <bitfield lsb="15" msb="15" name="CLKDIV_BYPASS">
+          <info>When set, bypass clock divider</info>
+        </bitfield>
+
+        <bitfield lsb="0" msb="7" name="CLKDIV">
+          <info>Clock divider value</info>
+        </bitfield>
+
+        <default>0XXXXXXX00000011</default>
+      </register>
+    </registermap>
+
+    <registermap endian="LITTLE" id="uart" name="UART" size="16">
+      <register access="RW" addr="0x00" id="UART_CONTROL" size="2">
+        <info>UART Control register</info>
+
+        <bitfield lsb="0" msb="9" name="UART_CLKDIV">
+          <info>(16x) Clock divider</info>
+        </bitfield>
+
+        <bitfield lsb="14" msb="14" name="RX_IRQ_ENABLE">
+          <info>Enable receive IRQ</info>
+        </bitfield>
+
+        <bitfield lsb="15" msb="15" name="UART_RESET">
+          <info>'1': Reset UART. Clear to run.</info>
+        </bitfield>
+
+        <default>0000000000011101</default>
+      </register>
+
+      <register access="RO" addr="0x02" id="UART_STATUS" size="2">
+        <info>UART status register</info>
+
+        <bitfield lsb="0" msb="0" name="RXREADY">
+          <info>Set when data ready in RX FIFO</info>
+        </bitfield>
+
+        <bitfield lsb="1" msb="1" name="TXREADY">
+          <info>Set when TX FIFO ready for data</info>
+        </bitfield>
+
+        <bitfield lsb="2" msb="2" name="TXBUSY">
+          <info>'1' when TX in progress</info>
+        </bitfield>
+
+        <bitfield lsb="5" msb="5" name="FRERR">
+          <info>Sticky framing error. Set when stop bit not null. Reset by UART_RESET.</info>
+        </bitfield>
+
+        <bitfield lsb="6" msb="6" name="TXOVR">
+          <info>Transmitter FIFO overrun. Cleared by UART_RESET.</info>
+        </bitfield>
+
+        <bitfield lsb="7" msb="7" name="RXOVR">
+          <info>Receiver FIFO overrun. Cleared by UART_RESET.</info>
+        </bitfield>
+
+        <bitfield lsb="8" msb="10" name="BITCOUNT">
+          <info>RX bit counter</info>
+        </bitfield>
+
+        <default>xxxxx000000xx000</default>
+      </register>
+
+      <register access="RO" addr="0x04" id="UART_RXR" size="2" volatile="true">
+        <info>UART receiver register</info>
+
+        <bitfield lsb="0" msb="7" name="RXDATA">
+          <info>UART receive data</info>
+        </bitfield>
+
+        <bitfield lsb="8" msb="8" name="DVALID">
+          <info>1 when data valid (mirror of RXREADY bit)</info>
+        </bitfield>
+      </register>
+
+      <register access="WO" addr="0x04" id="UART_TXR" size="1" volatile="true">
+        <info>UART transmitter register</info>
+      </register>
+    </registermap>
+
+    <registermap addrsize="16" endian="LITTLE" id="dmem" name="RAM_DMEM"
+                 nodecode="true" size="16">
+      <info>Data memory, volatile</info>
+
+      <register addr="0xc000" id="DMEM_BASE_ADDR"/>
+    </registermap>
+
+    <group hidden="true" name="UNIT_MAP">
+      <info>This group contains the device unit mapping for the I/O address decoder of the gensoc SoC. It must contain the reserved properties SelectPerio, SelectDevice, SelectCfg.</info>
+
+      <!--This special property defines the global bit field used for the peripheral unit selection:-->
+
+      <property name="SelectPerio" type="MODE">
+        <info>Peripheral unit selection values</info>
+
+        <regref bits="MMR_SELECT_perio" ref="adec_common"/>
+
+        <choice>
+          <item name="dmem">
+            <info>Scratch pad memory</info>
+
+            <value>4</value>
+          </item>
+
+          <item name="spi">
+            <info>Selection value for the SPI controller
+</info>
+
+            <value>5</value>
+          </item>
+
+          <item name="uart">
+            <info>Selection value for the UART controller
+</info>
+
+            <value>6</value>
+          </item>
+
+          <item name="sys">
+            <info>Instruction/internal readonly memory</info>
+
+            <value>7</value>
+          </item>
+        </choice>
+      </property>
+
+      <!--This special struct defines the bit field used per device for multi device decoder generation:-->
+
+      <!--This Field selects the configuration address space per IP module:-->
+
+      <struct name="SelectCfg">
+        <info>Configuration address space</info>
+
+        <property name="sys" type="REGISTER">
+          <regref bits="MMR_CFG_sys" ref="adec_common"/>
+        </property>
+
+        <property name="uart" type="REGISTER">
+          <regref bits="MMR_CFG_uart" ref="adec_common"/>
+        </property>
+
+        <property name="spi" type="REGISTER">
+          <regref bits="MMR_CFG_spi" ref="adec_common"/>
+        </property>
+      </struct>
+
+      <struct name="SelectDevice">
+        <property name="dmem" type="REGISTER">
+          <regref bits="MMR_SELECT_DEVINDEX_SPAD" ref="adec_common"/>
+        </property>
+      </struct>
+    </group>
+
+    <group hidden="true" name="INSTANCES">
+      <info>This group contains the auto generated perio unit instances</info>
+
+      <array hidden="true" name="dmem">
+        <info>RAM bank, with global byte_we</info>
+
+        <regref ref="byte_we"/>
+
+        <size>
+          <value>4</value>
+        </size>
+
+        <struct name="dmem">
+          <property name="generics" type="INT">
+            <variable/>
+
+            <choice>
+              <item name="MEM_HIGH_ADDR_BIT">
+                <info>Address width (corresponding to memory size), make sure not to overlap
+MMR addresses
+</info>
+
+                <value>10</value>
+              </item>
+            </choice>
+          </property>
+        </struct>
+      </array>
+
+      <property name="spi" type="REGISTER">
+        <info>Simple SPI controller</info>
+
+        <?config CONFIG_SPI?>
+
+        <regref ref="spio"/>
+
+        <choice>
+          <item name="NBITS_POWER">
+            <info>Must correspond to width of SPI_CONTROL::NBITS</info>
+
+            <value>CONFIG_SPI_BITS_POWER</value>
+          </item>
+        </choice>
+      </property>
+
+      <property name="uart" type="REGISTER">
+        <info>Simple UART controller</info>
+
+        <?config CONFIG_UART?>
+
+        <regref ref="uartio"/>
+      </property>
+
+      <property name="sys" type="REGISTER">
+        <info>System controller.</info>
+
+        <value>None</value>
+      </property>
+    </group>
+
+    <group hidden="true" name="CUSTOM_VHDL">
+      <property name="imem_mapping" type="STRING">
+        <value>-- select_imem &lt;= '1';</value>
+      </property>
+    </group>
+  </device>
+
+  <device id="neo430_legacy" name="NEO430 legacy" protocol="REGISTER">
+    <revision>
+      <major>0</major>
+
+      <minor>0</minor>
+    </revision>
+
+    <registermap endian="LITTLE" name="memmap" nodecode="true">
+      <register addr="0x0000" id="IMEM_BASE"/>
+
+      <register addr="0xc000" id="DMEM_BASE"/>
+
+      <register addr="0xf000" id="BOOT_BASE"/>
+    </registermap>
+
+    <registermap addrsize="16" endian="LITTLE" id="wb32" name="WB32"
+                 offset="0xff90">
+      <register addr="0x0000" id="WBCTRL"/>
+
+      <register addr="0x0002" id="RD_ADR_LO"/>
+
+      <register addr="0x0004" id="RD_ADR_HI"/>
+
+      <register addr="0x0006" id="WR_ADR_LO"/>
+
+      <register addr="0x0008" id="WR_ADR_HI"/>
+
+      <register addr="0x000a" id="DATA_LO"/>
+
+      <register addr="0x000c" id="DATA_HI"/>
+    </registermap>
+
+    <registermap addrsize="16" endian="LITTLE" name="MULDIV" nodecode="true"
+                 offset="0xff80">
+      <register addr="0x0000" id="OPA"/>
+
+      <register addr="0x0002" id="OPB_DIV"/>
+
+      <register addr="0x0004" id="OPB_MUL"/>
+
+      <register addr="0x000c" id="RESX"/>
+
+      <register addr="0x000e" id="RESY"/>
+    </registermap>
+
+    <registermap endian="LITTLE" name="USART" offset="0xffa0">
+      <register addr="0x0000" id="CTRL"/>
+
+      <register addr="0x0002" id="SPI_RTX"/>
+
+      <register addr="0x0004" id="UART_RTX"/>
+
+      <register addr="0x0006" id="UART_BAUD"/>
+    </registermap>
+
+    <registermap addrsize="16" endian="LITTLE" name="GPIO" offset="0xffa8">
+      <register addr="0x0000" id="IRQMASK"/>
+
+      <register addr="0x0002" id="IN"/>
+
+      <register addr="0x0004" id="OUT"/>
+    </registermap>
+
+    <registermap addrsize="16" endian="LITTLE" id="crc" name="CRC">
+      <register addr="0x0000" id="POLY_LO"/>
+
+      <register addr="0x0002" id="POLY_HI"/>
+
+      <register addr="0x0004" id="CRC16_IN"/>
+
+      <register addr="0x0006" id="CRC32_IN"/>
+
+      <register addr="0x000c" id="CRCRESX"/>
+
+      <register addr="0x000e" id="CRCRESY"/>
+    </registermap>
+
+    <registermap addrsize="16" endian="LITTLE" id="cfu" name="CFU">
+      <register addr="0x0000" id="REG0"/>
+
+      <register addr="0x0002" id="REG1"/>
+
+      <register addr="0x0004" id="REG2"/>
+    </registermap>
+
+    <registermap endian="LITTLE" id="pwm" name="PWM" offset="0xffe0">
+      <register addr="0x0000" id="PWMCTRL"/>
+
+      <register addr="0x0002" id="CH0"/>
+
+      <register addr="0x0004" id="CH1"/>
+
+      <register addr="0x0006" id="CH2"/>
+    </registermap>
+
+    <registermap addrsize="16" endian="LITTLE" id="trng" name="TRNG"
+                 offset="0xffeb">
+      <register addr="0x0000" id="TRNG"/>
+    </registermap>
+  </device>
+</devdesc>

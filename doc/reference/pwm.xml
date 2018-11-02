@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<section id="sec_timermodule">
+  <title>The TIMER and PWM module</title>
+
+  <para>The Timer module implements a global timer control plus several
+  instances of PWM units (up to 16 per Timer unit). There are different
+  variants:</para>
+
+  <variablelist>
+    <varlistentry>
+      <term>PWMSimple</term>
+
+      <listitem>
+        <para>Simple PWM implementation with only one counter mode</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>PWMPlus</term>
+
+      <listitem>
+        <para>More complex PWM with extended counter modes and clock sourcing
+        options</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+
+  <section id="sec_tmr">
+    <title>Timer configuration</title>
+
+    <para>The timer module contains the configuration that apply to all PWMs
+    at the same time. It derives the PWM clock from the incoming system clock
+    which is divided by the the PWMCLKDIV register. This contains a divisor
+    value minus one. The typical setup procedure follows this scheme:</para>
+
+    <orderedlist>
+      <listitem>
+        <para>Configure PWMCLKDIV</para>
+      </listitem>
+
+      <listitem>
+        <para>Configure PWM units needed</para>
+      </listitem>
+
+      <listitem>
+        <para>Start PWMs using the TIMER_START register</para>
+      </listitem>
+    </orderedlist>
+
+    <para>A write to the TIMER_START register starts the PWM unit whose
+    corresponding bit is set. Likewise, a write to TIMER_STOP stops the
+    corresponding PWMs.</para>
+
+    <xi:include href="../device_properties.xml" xpointer="tbl_regmap_tmr"
+                xmlns:xi="http://www.w3.org/2001/XInclude"/>
+  </section>
+
+  <section id="sec_pwm">
+    <title>PWM configuration</title>
+
+    <para>Each PWM unit has a register map as shown below. The PWM_WIDTH
+    register defines the width of the full PWM interval. The PWM_PERIOD value
+    determines when the timer event occurs and the PWM output level is
+    toggled.</para>
+
+    <figure floatstyle="H" id="fig_pwmconfig">
+      <title>PWM_CONFIG register</title>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="img/reg_PWM_CONFIG.pdf"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <figure id="fig_pwmstatus">
+      <title>PWM_STATUS register</title>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="img/reg_PWM_STATUS.pdf"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <para>The TMODE field is ignored by the PWMSimple module and reserved for
+    other PWM implementations. By default, initialize TMODE with 0. When the
+    TMR_IRQEN bit is set, the PWM will trigger an internal timer interrupt
+    event when the PWM counter has reached the PWM_PERIOD value. The
+    PWM_PERIOD register is shadowed and updated when a period was
+    completed.</para>
+
+    <para>Upon start, the output pin is initialized with the value from the
+    DEFAULT bit</para>
+
+    <para>When the <link
+    linkend="tbl_reg_TIMER_CONFIG">TIMER_CONFIG::CRESET</link> bit is set, a
+    write to the TIMER_STATUS register will cause the internal clock divider
+    counter to be reset to zero. This ensures that changes to
+    TIMER_CONFIG::PWMCLKDIV are in immediate effect once the timers are
+    started, plus the latency from the start event to the next rising PWM edge
+    is deterministic.</para>
+
+    <para>The DEFAULT bit is latched into the PWM logic upon start of the next
+    period. If it is toggled during operation, you will see one full blank
+    (Low) period in the output, i.e. the output pin inversion is effective at
+    phase counter zero.</para>
+
+    <xi:include href="../device_properties.xml" xpointer="tbl_regmap_pwm"
+                xmlns:xi="http://www.w3.org/2001/XInclude"/>
+  </section>
+
+  <section>
+    <title>Example</title>
+
+    <para><xref linkend="fig_pwmtiming"/> shows an example configuration of
+    four simultaneously started PWMs. Channel 2 and 3 have the DEFAULT bit
+    set, causing an inverted signal with respect to channel 0 and 1. The
+    configuration values for the channels are listed in <xref
+    linkend="tbl_pwmexampleconfig"/>.</para>
+
+    <para>When the corresponding TIMER_START bit is set (pwm_enable[]
+    signals), a PWM channel starts operating on the next falling edge of the
+    internally generated clock enable signal (which is global for all PWM
+    units in the agathe configuration). Changing the PWMCLKDIV value while the
+    timers are running produces nondeterministic results.</para>
+
+    <table id="tbl_pwmexampleconfig">
+      <title>Example configuration</title>
+
+      <tgroup cols="2">
+        <thead>
+          <row>
+            <entry align="center">Channel</entry>
+
+            <entry align="center">Values</entry>
+          </row>
+        </thead>
+
+        <tbody>
+          <row>
+            <entry>0</entry>
+
+            <entry>PWM_PERIOD=10-1, PWM_WIDTH=2-1, DEFAULT=0</entry>
+          </row>
+
+          <row>
+            <entry>1</entry>
+
+            <entry>PWM_PERIOD=10-1, PWM_WIDTH=5-1, DEFAULT=0</entry>
+          </row>
+
+          <row>
+            <entry>2</entry>
+
+            <entry>PWM_PERIOD=10-1, PWM_WIDTH=2-1, DEFAULT=1</entry>
+          </row>
+
+          <row>
+            <entry>3</entry>
+
+            <entry>PWM_PERIOD=10-1, PWM_WIDTH=5-1, DEFAULT=1</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+
+    <figure id="fig_pwmtiming">
+      <title>PWM example</title>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="img/pwm_timing.pdf"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+  </section>
+</section>

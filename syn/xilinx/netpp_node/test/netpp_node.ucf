@@ -1,0 +1,133 @@
+# Timing
+
+NET "phy_mii_txd[3]" TNM = "mii_out";
+NET "phy_mii_txd[2]" TNM = "mii_out";
+NET "phy_mii_txd[1]" TNM = "mii_out";
+NET "phy_mii_txd[0]" TNM = "mii_out";
+NET "phy_mii_rxdv" TNM = "mii_in";
+NET "phy_mii_rxer" TNM = "mii_in";
+NET "phy_mii_rxd[3]" TNM = "mii_in";
+NET "phy_mii_rxd[2]" TNM = "mii_in";
+NET "phy_mii_rxd[1]" TNM = "mii_in";
+NET "phy_mii_rxd[0]" TNM = "mii_in";
+#
+NET "phy_mii_rxc" TNM_NET = "mii_in";
+NET "phy_mii_txc" TNM_NET = "mii_out";
+#
+# 25 ns constraint is for MII only
+# REFERENCE_PIN constraint is for GMII bus skew analysis
+
+NET "clk_in" TNM_NET = "clk_in";
+
+TIMESPEC TS_mclk = PERIOD "clk_in" 27 MHz;
+
+TIMESPEC TS_mii_rx_clk_i = PERIOD "mii_in" 25 MHz HIGH 50 %;
+TIMESPEC TS_mii_tx_clk_i = PERIOD "mii_out" 25 MHz HIGH 50 %;
+
+NET "clk_in" LOC = P85;
+
+NET "reset_n" LOC = P1;
+
+
+
+# Immutable, do not change:
+NET "spi_miso" LOC = P65;
+NET "spi_miso" IOSTANDARD = LVCMOS33;
+NET "spi_mosi" LOC = P64;
+NET "spi_mosi" IOSTANDARD = LVCMOS33;
+NET "spi_sclk" LOC = P70;
+NET "spi_sclk" IOSTANDARD = LVCMOS33;
+NET "spi_sclk" DRIVE = 8;
+NET "spi_sclk" SLEW = FAST;
+NET "spi_cs" LOC = P38;
+NET "spi_cs" IOSTANDARD = LVCMOS33;
+NET "spi_cs" DRIVE = 8;
+NET "spi_cs" SLEW = SLOW;
+
+PIN "soc/perio/inst_dev_spi/clkdiv/BUFGMUX_inst.O"
+	CLOCK_DEDICATED_ROUTE = FALSE;
+PIN "soc/perio/inst_dev_spi/clkdrv_inst/gated_clock_inst.O"
+	CLOCK_DEDICATED_ROUTE = FALSE;
+
+NET "led[3]" LOC = P111;
+NET "led[2]" LOC = P112;
+NET "led[1]" LOC = P114;
+NET "led[0]" LOC = P115;
+
+NET "uart_rx_i" LOC = P105;
+NET "uart_tx_o" LOC = P104;
+
+
+NET "gpio[0]" LOC = P2;
+NET "gpio[1]" LOC = P6;
+NET "gpio[2]" LOC = P7;
+NET "gpio[3]" LOC = P8;
+NET "gpio[4]" LOC = P9;
+NET "gpio[5]" LOC = P10;
+NET "gpio[6]" LOC = P11;
+NET "gpio[7]" LOC = P12;
+NET "gpio[8]" LOC = P14;
+NET "gpio[9]" LOC = P15;
+NET "gpio[10]" LOC = P16;
+NET "gpio[11]" LOC = P17;
+NET "gpio[12]" LOC = P21;
+NET "gpio[13]" LOC = P22;
+NET "gpio[14]" LOC = P23;
+NET "gpio[15]" LOC = P24;
+
+
+
+NET "gpio[16]" LOC = P26;
+NET "gpio[17]" LOC = P27;
+NET "gpio[18]" LOC = P29;
+NET "gpio[19]" LOC = P30;
+NET "gpio[20]" LOC = P32;
+NET "gpio[21]" LOC = P33;
+NET "gpio[22]" LOC = P34;
+NET "gpio[23]" LOC = P35;
+
+# NET "twi_scl" LOC = P83;
+# NET "twi_sda" LOC = P84;
+
+NET "gpio[24]" LOC = P83;
+NET "gpio[25]" LOC = P84;
+NET "gpio[26]" LOC = P81;
+NET "gpio[27]" LOC = P82;
+NET "gpio[28]" LOC = P79;
+NET "gpio[29]" LOC = P80;
+NET "gpio[30]" LOC = P75;
+NET "gpio[31]" LOC = P78;
+
+
+NET "phy_mii_rxd[3]" LOC = P141;
+NET "phy_mii_rxd[2]" LOC = P140;
+NET "phy_mii_rxd[1]" LOC = P139;
+NET "phy_mii_rxd[0]" LOC = P138;
+NET "phy_mii_txd[3]" LOC = P119;
+NET "phy_mii_txd[2]" LOC = P121;
+NET "phy_mii_txd[1]" LOC = P123;
+NET "phy_mii_txd[0]" LOC = P124;
+NET "phy_mdc" LOC = P142;
+NET "phy_mdio" LOC = P143;
+NET "phy_mii_col" LOC = P118;
+NET "phy_mii_crs" LOC = P117;
+NET "phy_mii_rxc" LOC = P134;
+NET "phy_mii_rxdv" LOC = P137;
+NET "phy_mii_rxer" LOC = P133;
+NET "phy_mii_txc" LOC = P127;
+NET "phy_mii_txen" LOC = P126;
+NET "phy_rst_n" LOC = P116;
+NET "phy_irq" LOC = P132;
+
+# PlanAhead Generated physical constraints 
+
+# MSP430 on board:
+NET "twi_scl" LOC = P66;
+NET "twi_sda" LOC = P67;
+
+# PlanAhead Generated IO constraints 
+
+NET "twi_scl" IOSTANDARD = I2C;
+NET "twi_sda" IOSTANDARD = I2C;
+NET "twi_scl" PULLUP;
+NET "twi_sda" PULLUP;

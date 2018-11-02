@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<section id="sec_lcd">
+  <title>LCDIO: asynchronous 8 bit parallel interface</title>
+
+  <para>The LCDIO module implements a simple, dedicated 8 bit asynchronous
+  interface for the agathe/beatrix architecture of the SoC. It is used by a
+  number of embedded TFT/STN displays from Sitronix, Ilitek, etc. These use a
+  specific command / data mode, represented by an address line a0. This
+  implementation of the interface handles the address bit through LCDCMD bit
+  of the IODATA register. <xref linkend="tbl_regmap_lcd"/> shows the register
+  map of the LCDIO driver.</para>
+
+  <section>
+    <title>Register configuration</title>
+
+    <xi:include href="../device_properties.xml" xpointer="tbl_regmap_lcd"
+                xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+    <para>The PORTCTRL register contains bits mapped to specific LCD pins.
+    Prior to access of the LCD, a reset should be triggered by toggling the
+    RST bit for the time specified by the LCD controller (see corresponding
+    data sheet). RST is low active. To enable the LCD display, LCDCS must be
+    set to 0.<figure>
+        <title>PORTCTRL register</title>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="img/reg_PORTCTRL.pdf"/>
+          </imageobject>
+        </mediaobject>
+      </figure></para>
+
+    <para>Since the asynchronous bus to the LCD needs to follow the timings
+    specified by the on-LCD controller hardware, the PORTCTRL register must be
+    configured with the BUS_SETUP and BUS_HOLD timings.</para>
+
+    <para> When writing to the IODATA register, the lcdio driver will follow
+    the timing as outlined in figure <xref linkend="fig_lcdtimings"/> below.
+    The beatrix variant of the SoC does not stall the CPU when
+    <emphasis>writing</emphasis> the as+ynchronous interface, i.e. no wait
+    cycles are introduced to the CPU per se upon I/O access. Therefore, the
+    CPU needs to check the IOBUSY bit of PORTSTAT before issueing another
+    transaction to the lcdio bus. For code optimization, there are calibrated
+    routines available for a specific SoC setup that respect the bus timings
+    without having to check the IOBUSY bit.</para>
+
+    <note>
+      <para>On the ZPU small architecture (Zealot), checking the IOBUSY bit
+      takes more cycles than actually inserting the needed nummer of NOPs
+      manually</para>
+    </note>
+
+    <figure>
+      <title>PORTSTAT register</title>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="img/reg_PORTSTAT.pdf"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <para>The setup phase begins with a slight delay upon addressing of the
+    IODATA register (see more details below). The data byte is asserted and
+    the <property>lcdio_wr</property> signal pulled low. During the setup
+    phase of SETUP+2 cycles, the relevant signals will not change. The LCD
+    controller latches the data byte on the rising edge of the
+    <property>lcdio_wr</property> signal. With the current v0.1 release of
+    this core, the CPU no longer stalls on I/O reads, see <xref
+    linkend="sec_lcd_dataio"/>.</para>
+
+    <para>After the rising edge of <property>lcdio_wr</property>, the data
+    word needs to be hold until the end of the transaction. Likewise, the
+    signals don't change for (HOLD+1) cycles.</para>
+
+    <figure id="fig_lcdtimings">
+      <title>SETUP and HOLD timings</title>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="img/lcdio_timing.pdf" scale="150"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <remark>The lcdio_cs signal is displayed inverted to the actual pin
+    signal. FIXME.</remark>
+
+    <para>Some configurations may allow DMA transfers to the IODATA register.
+    See SoC specific implementation section in <xref linkend="app_custom"/>
+    for details.</para>
+
+    <section id="sec_lcd_dataio">
+      <title>LCD port data I/O</title>
+
+      <para>The <link linkend="tbl_reg_IODATA">IODATA</link> register, when
+      accessed, triggers a READ or WRITE transaction with the configured setup
+      and hold times. On write, the <property>lcd_cs</property> output pin is
+      pulled low and remains low for the following writes until the TERM_SEQ
+      bit is set. The LCDDATA field is ignored and not written to the LCD
+      peripheral, the <property>lcd_cs</property> pin will immediately assert
+      high.</para>
+
+      <para>If a register read is desired, a write is done with the command
+      data in LCDDATA with the IOREAD (and LCDCMD) bit set. Once the IOBUSY
+      bit is 0, valid data can be read from IODATA_R.</para>
+
+      <para>When a 16 bit wide read cycle is desired, the W16 bit must be set.
+      The state machine will then take care of reading a 16 bit word through
+      the 8 bit I/O interface.</para>
+
+      <para>For 16 bit data write cycles, the PORTCTRL::WORDSIZE bit can be
+      set once before a IODATA write sequence without requiring to set W16
+      every time.</para>
+
+      <para>See also <function>lcd_readreg16()</function> and
+      <function>lcd_writereg16()</function> in
+      <filename>lcd.c</filename>.</para>
+    </section>
+
+    <section>
+      <title>Special 8 bit RGB332 decompression</title>
+
+      <para>When the <property>EXPAND_RGB8</property> bit is set while writing
+      to IODATA, the written 8 bit value will be expanded to a two byte RGB565
+      value that is understood by the display controller and two writes will
+      in fact be executed by the lcdio core. <xref linkend="fig_rgb332"/>
+      shows the RGB component layout of the data byte to be written with the
+      EXPAND_RGB8 bit set</para>
+
+      <figure id="fig_rgb332">
+        <title>RGB 332 layout</title>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="img/reg_RGB322.pdf"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
+    </section>
+  </section>
+
+  <section>
+    <title>Software support</title>
+
+    <section>
+      <title>TFT driver library</title>
+
+      <para>Depending on the board supply package, your configuration may come
+      with driver routines for a specific TFT screen. Supported TFT screens
+      are listed in <xref linkend="tbl_lcdmodels"/>. The LCD library is
+      documented separately and not part of the default board supply
+      package.</para>
+
+      <table id="tbl_lcdmodels">
+        <title>Supported TFT controllers</title>
+
+        <tgroup cols="2">
+          <thead>
+            <row>
+              <entry align="center">Controller description</entry>
+
+              <entry align="center">Format</entry>
+            </row>
+          </thead>
+
+          <tbody>
+            <row>
+              <entry>ILI9163</entry>
+
+              <entry>128x128 RGB</entry>
+            </row>
+
+            <row>
+              <entry>Sitronix ST77xx models and compatible</entry>
+
+              <entry>128x128 RGB</entry>
+            </row>
+
+            <row>
+              <entry>ILI9320, ILI9325 and compatible</entry>
+
+              <entry>320x240 landscape RGB</entry>
+            </row>
+
+            <row>
+              <entry>OTM3225</entry>
+
+              <entry>320x240 landscape RGB</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+  </section>
+</section>

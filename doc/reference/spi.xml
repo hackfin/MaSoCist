@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<section id="sec_spi">
+  <title>SPI Master</title>
+
+  <para>This module implements a simple SPI master controller with the
+  register map shown in <xref linkend="tbl_regmap_spi"/>.</para>
+
+  <para>The SPI master can be configured to use a RX/TX register width up to
+  32 bits. This upper limit is defined by
+  <varname>CONFIG_SPI_BITS_POWER</varname>. See below on bit width
+  configuration.</para>
+
+  <xi:include href="../device_properties.xml" xpointer="tbl_regmap_spi"
+              xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <para>First, the SPI_CLKDIV register should be set with the desired clock
+  divider. Again, the resulting SPI clock is the system clock divided by 4
+  divided by (SPI_CLKDIV-1). When the PUMP bit is set, a write to SPI_TX or
+  read from SPI_RX will trigger a SPI send/receive cycle.</para>
+
+  <figure floatstyle="H">
+    <title>SPI_CONTROL register</title>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="img/reg_SPI_CONTROL.pdf"/>
+      </imageobject>
+    </mediaobject>
+  </figure>
+
+  <figure floatstyle="H">
+    <title>SPI_STATUS register</title>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="img/reg_SPI_STATUS.pdf"/>
+      </imageobject>
+    </mediaobject>
+  </figure>
+
+  <para>During a RX/TX cycle, the SPIBUSY bit is set. A driver routine has to
+  poll this bit before issuing the next command.</para>
+
+  <para>When doing simultaneous transfers, the user will have to turn off the
+  PUMP bit for either of the SPI_TX or SPI_RX access. More advanced
+  peripherals as the <application>UniSI</application> core offer a few more
+  configuration options and DMA support for improved throughput.</para>
+
+  <para>Other configuration bits:</para>
+
+  <variablelist>
+    <varlistentry>
+      <term>CPOL</term>
+
+      <listitem>
+        <para>Invert clock polarity</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>CPHA</term>
+
+      <listitem>
+        <para>When set, assert first bit on first clock cycle</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>LSBFIRST</term>
+
+      <listitem>
+        <para>When set, transmit LSB first</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>NBITS</term>
+
+      <listitem>
+        <para>Number of bits to transmit minus one</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>SPIRESET</term>
+
+      <listitem>
+        <para>Toggle to reset the SPI controller</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+
+  <section>
+    <title>Bit width configurations</title>
+
+    <para>The SPI peripheral can be hard-configured for a maximum transfer
+    width of 8, 16 and 32 bits using the CONFIG_SPI_BITS_POWER variable. When
+    the PUMP bit is set and a value to the SPI_TX register is written, the
+    controller will start transferring the number of bits specified by the
+    NBITS field, starting with the MSB by default (LSBFIRST = 0). Even if the
+    number of transferred bits is lower than the maximum register width, the
+    data has to be MSB-aligned. For example, assuming you have configured the
+    maximum width to 32 bits (CONFIG_SPI_BITS_POWER = 5) and you need to write
+    a byte value of 0xaa, you have to set NBITS to 7 and SPI_TX to 0xaa000000.
+    It is recommended to drive the SPI controller in full 32 bit mode on the
+    ZPU small architecture for greater speed.</para>
+
+    <para>If you have LSBFIRST set, the data is LSB-aligned, i.e. if you are
+    writing a burst sequence 0xaa, 0xbb, 0xcc of 8 bits each, you have to
+    write 0x00ccbbaa to the SPI_TX register and set NBITS to 23.</para>
+
+    <para>Typically, the software should be configured to match the hardware
+    configuration. If unsure or if you need to have a generic driver routine
+    that determines the SPI bit width at runtime, you need to evaluate the
+    <link linkend="tbl_reg_SPI_STATUS">SPI_STATUS::SPIWIDTH</link> bit
+    field.</para>
+  </section>
+</section>

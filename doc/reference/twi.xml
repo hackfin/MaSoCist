@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<section id="sec_twi">
+  <title>Two Wire Interface</title>
+
+  <para>The i2c master controller is a simple polled i2c controller which is
+  typically triggered by a write to the <property>TWI_WDATA</property> or
+  <property>read from TWI_RDATA</property> register. It must first be
+  configured using the <property>TWI_CONTROL</property> and
+  <property>TWI_DIV</property> register. The formula for the value written to
+  the divider register is:</para>
+
+  <para><?latex \begin{equation}
+{Divider} = f_{SYSCLK} / f_{I2CCLK} / 4
+\end{equation}?>where <markup>f_{SYSCLK}</markup> is the system clock
+  frequency for the peripheral, <markup>f_{I2CCLK}</markup> the desired i2c
+  clock frequency (typ. 50 kHz)</para>
+
+  <?latex \medskip?>
+
+  <xi:include href="../device_properties.xml" xpointer="tbl_regmap_twi"
+              xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <para>The typical sequence to use the i2c controller in C code:</para>
+
+  <programlisting>MMR(Reg_TWI_DIV)       = 540 / 4; // 27 MHz system clock to 50 kHz i2c clock
+MMR(Reg_TWI_SLADDR)    = 0x55 &lt;&lt; SLAVEADDR_SHFT; // 8 bit addr. incl RW bit
+MMR(Reg_TWI_CONTROL)   = I2C_RESET;
+delay(50);
+MMR(Reg_TWI_CONTROL)   = HOLD;  // Transfer and hold
+// Write two bytes
+MMR(Reg_TWI_WDATA)     = 0x12;
+while (MMR(Reg_TWI_STATUS) &amp; BUSY);  // Wait until ready
+MMR(Reg_TWI_CONTROL)   = 0;     // Schedule STOP
+MMR(Reg_TWI_WDATA)     = 0x01;       // Write last data and send STOP
+while (MMR(Reg_TWI_STATUS) &amp; BUSY);  // Wait until ready
+if (MMR(Reg_TWI_STATUS) &amp; NAK) return ERR_NACK;  // Check for NAK
+</programlisting>
+
+  <para>The engine works as follows:</para>
+
+  <para>First, the LSB of the <property>TWI_SLADDR::READ</property> bit
+  determines whether the device is in READ(1) or WRITE(0) mode.</para>
+
+  <para>When the engine is ready (check <property>TWI_STATUS:BUSY</property>),
+  a write to the TWI_WDATA register triggers the transaction.</para>
+
+  <variablelist>
+    <varlistentry>
+      <term>TWI_WDATA</term>
+
+      <listitem>
+        <para>The value written is clocked out on the i2c sda pin</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>TWI_RDATA</term>
+
+      <listitem>
+        <para>When engine is in READ mode, a write causes a read transaction
+        to start. After the engine is ready, the value can be read out from
+        this register. When <link
+        linkend="tbl_reg_TWI_CONTROL">TWI_CONTRL::AUTOARM</link> is set, a
+        read from this register causes another read transfer.</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+
+  <para>The first transaction of the engine in IDLE state always sends the
+  slave address plus the first data byte.</para>
+
+  <para>The engine will then enter the STOP condition after a transaction when
+  the HOLD bit is clear. When set, subsequent write or read commands do not
+  send the slave address but keep the engine on hold for more bytes to
+  transfer.</para>
+
+  <section>
+    <title>Detailed register description</title>
+
+    <para><figure>
+        <title>TWI_CONTROL register</title>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="img/reg_TWI_CONTROL.pdf" scale="100"/>
+          </imageobject>
+        </mediaobject>
+      </figure> <variablelist>
+        <varlistentry>
+          <term>HOLD</term>
+
+          <listitem>
+            <para>When you wish to receive or send several bytes without a
+            STOP condition, set this bit. When set, the next data transaction
+            is followed by a STOP condition.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>AUTOARM</term>
+
+          <listitem>
+            <para>This bit is only effective when accessing the TWI_RDATA
+            register. It then triggers another read transfer. Before reading
+            the last byte, this bit should be cleared to avoid an additional
+            void read transaction.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>I2C_RESET</term>
+
+          <listitem>
+            <para>Resets the entire i2c engine and aborts the current i2c
+            transfer. This can result in broken data when not waiting for the
+            transaction to complete (TWI_STATUS::BUSY)</para>
+          </listitem>
+        </varlistentry>
+      </variablelist></para>
+
+    <figure>
+      <title>TWI_STATUS register</title>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="img/reg_TWI_STATUS.pdf" scale="100"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <variablelist>
+      <varlistentry>
+        <term>BUSY</term>
+
+        <listitem>
+          <para>i2c engine is busy sending or receiving data. While set, the
+          transfer is in progress. Write or read data register when
+          clear.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>NAK</term>
+
+        <listitem>
+          <para>When set, the slave has not acknowledged the
+          transaction.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>INHOLD</term>
+
+        <listitem>
+          <para>When set, the engine waits for more data to be sent or
+          received, depending on the transmission mode</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>STRETCH</term>
+
+        <listitem>
+          <para>When a slave is stretching the clock, this bit is set.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>INACK</term>
+
+        <listitem>
+          <para>When set, the engine is waiting for an ACK. Poll this for
+          clear state if you need to explicitely issue another START condition
+          before a transaction.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>ARBL</term>
+
+        <listitem>
+          <para>This bit is set when the arbitration is lost in a multi master
+          system. It is cleared when starting the next transaction.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+</section>

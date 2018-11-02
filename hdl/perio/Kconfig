@@ -1,0 +1,360 @@
+config GENSOC_READ_DELAY
+	bool "Perio bus read delay"
+	default "n"
+	help
+	  Introduces wait cycle for bus reads in the perio module generator.
+	  This adds a delay but allows for higher bus speeds and prevents
+	  logic congestion. Make sure your CPU supports busy wait cycles on the
+	  I/O memory access.
+
+config GENSOC_RESET_DEFAULTS
+	bool "Perio register reset"
+	default "0"
+	help
+	  Implements a reset for generated register sets.
+	  If this configuration is enabled, a system reset will reset the
+	  registers supplied with default specifications to the specified
+	  value. When disabled, the default value will only be initialized
+	  at a FPGA cold boot.
+
+config PLAYGROUND
+	bool "Core playground (TESTING)"
+	depends on VIRTUAL_SILICON
+	help
+	  For testing/prototyping, if you want to play around
+
+config HDMI
+	bool "HDMI support"
+	depends on ECP3
+	help
+	  Support for HDMI
+
+config CRC16
+	bool "CRC16 extension"
+	help
+	  Simple register based hardware CRC16 calculator
+
+config GPIO
+	bool "GPIO controller support"
+	help
+	  GPIO controller support
+
+config NUM_GPIO
+	depends on GPIO
+	int "Number of GPIO banks"
+	default "2"
+
+config DMA
+	bool "Generic DMA support"
+	help
+	  DMA support
+
+choice
+	prompt "DMA controller type"
+	depends on DMA
+	default DMA_SIMPLE
+
+config DMA_SIMPLE
+	bool "Simple DMA controller support"
+	depends on DMA
+	help
+	  Simple DMA controller support
+
+config DMA_ADVANCED
+	bool "Advanced DMA controller support"
+	depends on DMA && SECTION5_PROPRIETARY_MODULES
+	help
+	  Advanced DMA controller support
+	  Not supported on ZPU
+
+endchoice 
+
+config UNISI
+	bool "UniSI serial controller"
+	default n
+	depends on DMA && SECTION5_PROPRIETARY_MODULES && CCAP_MICROCODE_ASE
+	help
+	  Universal serial interface engine for various interfaces such as
+	  SPI, I2C, SPORT (I2S), UART
+
+config UNISI_CAN
+	bool "UniSI CAN extension"
+	depends on UNISI
+	help
+	  CAN extension for UniSI controller
+
+config SPI
+	bool "SPI support"
+	default y
+	help
+	  Generic SPI controller support
+
+config SPI_BITS_POWER
+	depends on SPI
+	range 3 5
+	int "Bit width power [3, 4, 5] -> 8, 16, 32 bits"
+	default "3"
+	help
+	  Note: The bit width used must match the bitfield size of the
+	  SPI_CONTROL::NBITS field in the SPI core register map.
+	  Changing this option requires changes in the XML description as well.
+
+config TIMER
+	bool "Generic Timer support"
+	default y
+	help
+	  Generic Timer and PWM controller support
+
+config NUM_TMR
+	depends on TIMER
+	int "Number of TIMER/PWMs"
+	default "3"
+
+choice
+	prompt "PWM type"
+	depends on TIMER
+	default PWM_SIMPLE
+
+config PWM_NONE
+	bool "No PWM, standalone timer"
+	help
+	  No PWM  
+
+config PWM_SIMPLE
+	bool "Simple PWM controller support"
+	help
+	  Simple PWM controller support
+	  OpenSource variant of a simple PWM controller.
+
+config PWM_ADVANCED
+	bool "Advanced PWM controller support"
+	depends on SECTION5_PROPRIETARY_MODULES
+	help
+	  Adcanved PWM (three phase) controller support
+	  Non-OS advanced PWM controller for BLDC.
+
+endchoice
+
+config SIC
+	bool "Simple system interrupt controller"
+	help
+	  System interrupt controller support
+
+config NUM_IRQSRC
+	depends on SIC
+	int "Number of IRQ sources"
+	default "4"
+	help
+	  Number of IRQ sources the SoC can have.
+
+config LCDIO
+	bool "LCD parallel driver"
+	help
+	  A asynchronous parallel interface to LCD I/O (like ili9125, ...)
+
+config MAC
+	bool "Ethernet TriMAC core"
+	help
+	  A 10/100/1000 MBit Ethernet MAC with DMA functionality
+
+choice
+	prompt "Phy Interface"
+	default MAC_GMII
+
+config MAC_MII
+	depends on MAC
+	bool "MII interface"
+	help
+	  Use MII interface (10M/100M)
+
+config MAC_RGMII
+	depends on MAC
+	bool "RGMII interface"
+	help
+	  Use RGMII interface
+
+config MAC_GMII
+	depends on MAC
+	bool "GMII interface"
+	help
+	  Use GMII interface
+
+config MAC_RMII
+	depends on MAC
+	bool "RMII interface"
+	help
+	  Use RMII interface (100MBit only)
+endchoice
+
+config MAC_RXFIFO_BITS
+	depends on MAC
+	int "Number of RX FIFO memory address bits"
+	default "8"
+	help
+	  Defines the memory size (2**MAC_RXFIFO_BITS)
+
+config MAC_TXFIFO_BITS
+	depends on MAC
+	int "Number of TX FIFO memory address bits"
+	default "11"
+	help
+	  Defines the memory size (2**MAC_TXFIFO_BITS) of the TX buffer
+
+config MACHXO_EFB
+	bool "MACHXO[2,3] hardened function block"
+	depends on MACHXO2 || MACHXO3
+	help
+	  Support for MACHXO hardened IP function core (SPI, I2C, PLL, Flash)
+	  Hardware only, this HDL is not available for simulation.
+
+config MACHXO_EFB_SPI
+	bool "Enable EFB SPI"
+	depends on MACHXO_EFB
+	default "n"
+	help
+	  Enable SPI in EFB (Note: generated IP core must match this setting)
+
+menu "UART support"
+
+config UART
+	bool "Generic UART support"
+	help
+	  Generic support for UART interfaces
+
+config UART_SIMPLE
+	bool "Simple UART"
+	depends on UART
+	help
+	  Support for Simple UART implementation
+
+config NUM_UART
+	depends on UART_SIMPLE
+	int "Number of UARTs"
+	default "1"
+
+config OC_UART16550
+	bool "OpenCores UART 16550"
+	depends on WISHBONE && UART
+	help
+	  Support for Wishbone 16550 UART
+
+config DEFAULT_UART_BAUDRATE
+	int "Default UART baud rate"
+	depends on UART
+	default "115200"
+
+config UART_DEBUGCONSOLE
+	bool "UART debug console"
+	depends on UART
+	default "y"
+	help
+	  Debug console on UART0
+
+endmenu
+
+menu "Generic FIFO support"
+
+config FIFO
+	bool "FIFO support"
+	default "n"
+	help
+	  When 'y', enable FIFO support
+
+choice
+	prompt "FIFO Interface"
+	default FIFO_GENERIC
+
+config FIFO_GENERIC
+	depends on FIFO
+	bool "Generic FIFO interface"
+	help
+	  Use generic FIFO interface
+
+config FIFO_VIRTUAL
+	bool "Virtual GHDLEX FIFO"
+	depends on FIFO  && VIRTUAL_SILICON
+	help
+	  Use GHDLEX virtual FIFO
+
+endchoice
+
+config FIFO_WORDWIDTH
+	int "Fifo word width"
+	default "1"
+	depends on FIFO
+	help
+	  FIFO word width in bytes
+
+config FIFO_NUM
+	int "Numbers of FIFO instances"
+	default "2"
+	depends on FIFO
+	help
+	  FIFO instances
+
+endmenu
+
+menu "I2C support"
+
+config TWI
+	bool "Simple TWI"
+	default y
+	help
+	  Simple, standalone Two Wire Interface
+
+config I2C
+	bool "I2C support"
+
+config OC_I2C_RD1046
+	bool "OpenCores I2C controller Lattice Refdesign 1046"
+	depends on WISHBONE && I2C
+	help
+	  Support for OpenCores I2C controller (Lattice RD1046 variant)
+
+config I2CBRIDGE
+	bool "I2Cbridge support"
+	help
+	  Support for I2C bridge (i2c slave emulation)
+
+endmenu
+
+menu "Virtual devices support"
+
+config VIRTUAL_CONSOLE
+	bool "Virtual Console"
+	default "false"
+	depends on VIRTUAL_SILICON
+	help
+	  Support for Virtual Console through /var/run/iopipe
+
+config VIRTUAL_RAM
+	bool "Use VirtualRAM"
+	help
+	  This option uses GHDLEX virtual RAM (if supported)
+
+config VIRTUAL_I2CSLAVE
+	bool "Virtual I2C slave"
+	help
+	  Enables the virtual i2c slave defined by i2cslave.xml
+
+config VIRTUAL_I2CSLAVE_ADDR
+	depends on VIRTUAL_I2CSLAVE
+	int "Virtual I2C slave address"
+	range 1 126
+	help
+	  Virtual I2C slave address (7 bit)
+
+config VIRTUAL_SENSOR
+	depends on SECTION5_PROPRIETARY_MODULES
+	bool "Virtual Sensor"
+	help
+	  This option enables a virtual sensor interface for imaging co-simulation
+
+config VIRTUAL_UART
+	depends on UART
+	bool "Use Virtual UART"
+	help
+	  This option uses a virtual UART using unix pipes
+
+
+endmenu

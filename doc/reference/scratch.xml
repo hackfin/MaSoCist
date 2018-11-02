@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<section>
+  <title>Scratch</title>
+
+  <para></para>
+
+  <section id="sec_spad">
+    <title>Scratch Pad RAM</title>
+
+    <para>Some configurations, when listed in the peripheral map, have a
+    scratch pad RAM area mapped to the MMR address specified by the
+    corresponding register map. In the beatrix configuration, this memory is
+    just used as an extra data storage area. It can be used by peripheral
+    hardware to exchange data with the CPU, like the TRACE module. The data
+    width and size (in bytes) of the mapped memory is specified by the
+    ScratchPad_Base pseudo register, see below.</para>
+
+    <para>In this configuration, the memory is mapped to the CPU with 32 bit
+    width, so it is most effectively accessed using 32 bit accesses
+    (uint32_t).</para>
+
+    <xi:include href="../device_properties.xml" xpointer="tbl_regmap_spad"
+                xmlns:xi="http://www.w3.org/2001/XInclude" />
+  </section>
+</section>

@@ -1,0 +1,343 @@
+------------------------------------------------------------------------------
+--
+-- WARNING: Only modify this file if it has a .chdl extension.
+-- Otherwise, changes will be overwritten.
+
+-- - Martin Strubel hackfin section5.ch (cpp template)
+
+-- True dual port/clock variant of the SoC memory
+
+------------------------------------------------------------------------------
+
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+
+library work;
+use work.memory_initialization.all;
+use work.memory.all;
+use work.ram.all;
+use work.busdef.all;
+
+entity soc_memory_dma is
+	generic(
+		memory_type : string := "DEFAULT";
+		SLAVE_DRAM : unsigned(BV_AHBL_hsel) := "10000";
+		SLAVE_IRAM : unsigned(BV_AHBL_hsel) := "00000";
+		IRAM_INIT  : iram_bank_t;
+		DRAM_INIT  : dram_bank_t
+	);
+	port(
+		HCLK		  : in std_logic;
+		hbus_in		  : in ahb_WritePort;
+		hbus_out	  : out ahb_ReadPort;
+
+		imem_address  : in unsigned(31 downto 0);
+		imem_data	  : out std_logic_vector(31 downto 0);
+		imem_valid	  : out std_logic;
+
+	
+		-- 16 bit DMA only for now:
+		dma_clk       : in  std_logic;
+		dma_mode      : in  std_logic_vector(1 downto 0);
+		dma_addr      : in  unsigned(31 downto 0); -- 8 bit addr
+		dma_datain    : in  std_logic_vector(15 downto 0);
+		dma_dataout   : out std_logic_vector(15 downto 0);
+		dma_we        : in  std_logic
+	);
+end entity soc_memory_dma;
+
+
+architecture behaviour of soc_memory_dma is
+
+	signal iaddr	  : unsigned(ADDR_W_16-1 downto 0);
+	signal idaddr	  : unsigned(ADDR_W_16-1 downto 0);
+	signal daddr	  : unsigned(ADDR_W_8-1 downto 0);
+	signal dram_wren  : std_logic;
+	signal dram_we    : std_logic_vector(0 to 3);
+	signal iram_wren  : std_logic;
+	signal sel_iram   : std_logic;
+	signal sel_iram_d : std_logic;
+	signal sel_dram   : std_logic;
+	signal sel_dram_d : std_logic;
+
+	subtype byte_t is unsigned(7 downto 0);
+	type bus_bytes_t is array(natural range 0 to 3) of unsigned(7 downto 0);
+
+	signal iram_data_rd  : unsigned(31 downto 0);
+	signal iram_insn_rd  : unsigned(31 downto 0);
+	signal dram_data8_wr : bus_bytes_t;
+	signal dram_data8_rd : bus_bytes_t;
+	signal dram_data_rd  : unsigned(31 downto 0);
+	signal ram_data_out  : unsigned(31 downto 0);
+
+	-- MDMA channel:
+	signal dma_data8_wr  : bus_bytes_t;
+	signal dma_data8_rd  : bus_bytes_t;
+	signal dma_addr32    : unsigned(ADDR_W_8-1 downto 0);
+	signal dma_data8_we  : std_logic_vector(0 to 3);
+	signal dma_dataout_w : unsigned(15 downto 0);
+	signal dma_dataout_b : unsigned(7 downto 0);
+
+	-- Byte/Word selection: 0: lower, 1: higher word
+	signal dma_bytesel     : unsigned(1 downto 0);
+	signal dma_bytesel_d1  : unsigned(1 downto 0);
+
+
+begin
+
+----------------------------------------------------------------------------
+-- Generic RAM processes
+
+	imem_valid <='1';
+	hbus_out.HREADY <= '1';
+
+	-- linear to 32 bit addr
+	iaddr  <= imem_address(ADDR_W_16+1 downto 2);
+	idaddr <= unsigned(hbus_in.HADDR(ADDR_W_16+1 downto 2));
+	daddr  <= unsigned(hbus_in.HADDR(ADDR_W_8+1 downto 2));
+
+	sel_iram <= '1' when hbus_in.HSEL = SLAVE_IRAM else '0';
+	sel_dram <= '1' when hbus_in.HSEL = SLAVE_DRAM else '0';
+
+	dram_wren <= '1' when
+		HBus_in.HWRITE = '1' and hbus_in.HTRANS(1) = '1' and
+		sel_dram = '1' else '0';
+
+	iram_wren <= '1' when
+		HBus_in.HWRITE = '1' and hbus_in.HTRANS(1) = '1' and
+		sel_iram = '1' else '0';
+
+	-- We do not shuffle the bits according to the address.
+	-- This is done in the CPU.
+	dram_data_rd <= dram_data8_rd(0) &
+					dram_data8_rd(1) &
+					dram_data8_rd(2) &
+					dram_data8_rd(3);
+
+	-- Cheap switch, will need more decoding later..
+	hbus_out.HRDATA <= iram_data_rd when sel_iram_d = '1'
+					   else dram_data_rd;
+
+	imem_data		<= std_logic_vector(iram_insn_rd);
+	ram_data_out	<= hbus_in.HWDATA;
+	
+
+----------------------------------------------------------------------------
+-- Instruction RAM
+
+-- We allow writing from Port A via the Hbus and reading 
+-- from Port B via the instruction bus.
+
+iram_hi: entity work.DPRAM_init
+	generic map (
+		ADDR_W => ADDR_W_16,
+		DATA_W => 16,
+		INIT_DATA => ram16_init_t(IRAM_INIT(0))
+	)
+	port map (
+		clk		=> HCLK,
+		a_we	=> iram_wren,
+		a_addr	=> idaddr,
+		a_write => ram_data_out(UPPER_WORD),
+		a_read	=> iram_data_rd(UPPER_WORD),
+		b_we	=> '0',
+		b_addr	=> iaddr,
+		b_write => (others => '0'),
+		b_read	=> iram_insn_rd(UPPER_WORD)
+	);
+
+iram_lo: entity work.DPRAM_init
+	generic map (
+		ADDR_W => ADDR_W_16,
+		DATA_W => 16,
+		INIT_DATA => ram16_init_t(IRAM_INIT(1))
+	)
+	port map (
+		clk		=> HCLK,
+		a_we	=> iram_wren,
+		a_addr	=> idaddr,
+		a_write => ram_data_out(LOWER_WORD),
+		a_read	=> iram_data_rd(LOWER_WORD),
+		b_we	=> '0',
+		b_addr	=> iaddr,
+		b_write => (others => '0'),
+		b_read	=> iram_insn_rd(LOWER_WORD)
+	);
+
+
+----------------------------------------------------------------------------
+-- DMA RAM access:
+-- Currently 16 bit wide only.
+
+
+	dma_data8_wr(0) <= unsigned(dma_datain(BYTE1));
+	dma_data8_wr(1) <= unsigned(dma_datain(BYTE0));
+
+	dma_data8_wr(2) <= unsigned(dma_datain(BYTE1));
+	dma_data8_wr(3) <= unsigned(dma_datain(BYTE0));
+
+	dma_bytesel <= dma_addr(1 downto 0);
+
+	with dma_bytesel_d1(1) select
+		dma_dataout_w <= (dma_data8_rd(0) & dma_data8_rd(1)) when '0',
+						 (dma_data8_rd(2) & dma_data8_rd(3)) when others;
+
+	with dma_bytesel_d1(0) select
+		dma_dataout_b <= dma_dataout_w(15 downto 8) when '0',
+		                 dma_dataout_w(7 downto 0) when others;
+		                 
+	-- Select 8 or 16 bit data out port, depending on dma_mode
+	dma_dataout <= std_logic_vector(dma_dataout_w) when dma_mode(0) = '1'
+	               else "XXXXXXXX" & std_logic_vector(dma_dataout_b);
+
+	dma_data8_we(0) <= dma_we when dma_bytesel = "00" else '0';
+	dma_data8_we(1) <= dma_we when dma_bytesel = "01" else '0';
+	dma_data8_we(2) <= dma_we when dma_bytesel = "10" else '0';
+	dma_data8_we(3) <= dma_we when dma_bytesel = "11" else '0';
+	
+----------------------------------------------------------------------------
+-- Data RAM
+
+-- Note: This RAM uses little endian order. However, it is connected
+-- "big endian" to the data bus, see dram_data_rd assignment.
+
+	-- DMA 8 bit address to 32 bit address:
+	dma_addr32 <= dma_addr(ADDR_W_8+1 downto 2);
+
+loop_bram:
+	for i in 0 to 3 generate
+		bram: entity work.DPRAMc2_init
+		generic map (
+			ADDR_W => ADDR_W_8,
+			DATA_W => 8,
+			INIT_DATA => ram16_init_t(DRAM_INIT(i))
+		)
+		port map (
+			-- Port A used by CPU:
+			a_clk	=> HCLK,
+			a_we	=> dram_we(i),
+			a_addr	=> daddr,
+			a_write => dram_data8_wr(i),
+			a_read	=> dram_data8_rd(i),
+			-- Port B used by DMA:
+			b_clk   => dma_clk,
+			b_we	=> dma_data8_we(i),
+			b_addr	=> dma_addr32,
+			b_write => dma_data8_wr(i),
+			b_read	=> dma_data8_rd(i)
+		);
+	end generate;
+
+----------------------------------------------------------------------------
+-- Read select delay:
+
+dma_select_delay:
+	process(dma_clk)
+	begin
+		if rising_edge(dma_clk) then
+			dma_bytesel_d1 <= dma_bytesel;
+		end if;
+	end process;
+
+mem_select_delay:
+	process(HCLK)
+	begin
+		if rising_edge(HCLK) then
+			sel_iram_d     <= sel_iram;
+			sel_dram_d     <= sel_dram;
+		end if;
+	end process;
+
+----------------------------------------------------------------------------
+-- DRAM access width control
+
+#ifdef XILINX_HACK
+	process(HCLK)
+		variable data : unsigned(31 downto 0);
+		variable size : unsigned(2 downto 0);
+	begin
+		-- Attention: 'falling edge' is a temp hack to satisfy the Xilinx
+		-- Tools. XXX BAD PRACTICE XXX
+		if falling_edge(HCLK) then -- {
+#else
+	process(dram_wren, ram_data_out, hbus_in)
+		variable data : unsigned(31 downto 0);
+		variable size : unsigned(2 downto 0);
+	begin
+#endif
+			data := ram_data_out;
+			size := hbus_in.HSIZE(2 downto 0);
+			if dram_wren = '1' then
+				case hbus_in.HADDR(1 downto 0) is
+				when "00" =>
+					case size is
+					when "000" => -- 8bit
+						dram_data8_wr(3) <= (others => 'X');
+						dram_data8_wr(2) <= (others => 'X');
+						dram_data8_wr(1) <= (others => 'X');
+						dram_data8_wr(0) <= data(BYTE0);
+						dram_we <= "1000";
+					when "001" => -- 16bit
+						dram_data8_wr(3) <= (others => 'X');
+						dram_data8_wr(2) <= (others => 'X');
+						dram_data8_wr(1) <= data(BYTE0);
+						dram_data8_wr(0) <= data(BYTE1);
+						dram_we <= "1100";
+					when "010" => -- 32bit
+						dram_data8_wr(3) <= data(BYTE0);
+						dram_data8_wr(2) <= data(BYTE1);
+						dram_data8_wr(1) <= data(BYTE2);
+						dram_data8_wr(0) <= data(BYTE3);
+						dram_we <= "1111";
+					when others =>
+						dram_data8_wr <= (others => (others => 'X'));
+						dram_we <= "0000";
+					end case;
+				when "01" =>
+					--only 8 bit allowed
+					dram_data8_wr(3) <= (others => 'X');
+					dram_data8_wr(2) <= (others => 'X');
+					dram_data8_wr(1) <= data(BYTE0);
+					dram_data8_wr(0) <= (others => 'X');
+					dram_we <= "0100";
+				when "10" =>
+					-- 32 bit not allowed
+					case size is
+					when "000" => --8 bit
+						dram_data8_wr(3) <= (others => 'X');
+						dram_data8_wr(2) <= data(BYTE0);
+						dram_data8_wr(1) <= (others => 'X');
+						dram_data8_wr(0) <= (others => 'X');
+						dram_we <= "0010";
+					when "001" => --16 bit
+						dram_data8_wr(3) <= data(BYTE0);
+						dram_data8_wr(2) <= data(BYTE1);
+							dram_data8_wr(1) <= (others => 'X');
+						dram_data8_wr(0) <= (others => 'X');
+						dram_we <= "0011";
+					when others =>
+						dram_data8_wr <= (others => (others => 'X'));
+						dram_we <= "0000";
+					end case;
+				when "11" =>
+					--only 8 bit allowed
+					dram_data8_wr(3) <= data(BYTE0);
+					dram_data8_wr(2) <= (others => 'X');
+					dram_data8_wr(1) <= (others => 'X');
+					dram_data8_wr(0) <= (others => 'X');
+					dram_we <= "0001";
+				when others =>
+					dram_data8_wr <= (others => (others => 'X'));
+					dram_we <= "0000";
+				end case;
+			else
+				dram_data8_wr <= (others => (others => 'X'));
+				dram_we <= "0000";
+			end if;
+#ifdef XILINX_HACK
+		end if; -- }
+#endif
+	end process; 
+
+end behaviour;

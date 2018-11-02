@@ -1,0 +1,21 @@
+
+
+Hint: You can specify the top level entity for building various
+simulation options, like:
+
+> make SIM_TOP=virtualjtag
+
+See ../hdl/tap/configuration_tap_<PLATFORM>.vhdl for configuration options.
+
+This ONLY works when you have the virtual JTAG library (non-free) installed
+and CONFIG_VTAP_JTAG is enabled.
+
+----------------------------------------------------------------------------
+
+Building simulator Windows executables:
+
+- Make sure ghdlex is built properly:
+
+> make PLATFORM=mingw32 clean all
+
+Then set CONFIG_MINGW32 and recompile (clean all)

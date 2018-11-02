@@ -1,0 +1,85 @@
+comment "Opensource distribution config"
+
+config OPENSOURCE
+	bool "Opensource distribution"
+	default y
+	# Do no longer force to use these modules:
+	# select GPIO
+	# Do not force to use SPI:
+	# select SPI
+	# select TIMER
+	# select UART
+	# select UART_SIMPLE
+	help
+	  When defined, this is an open source distribution
+
+choice
+	prompt "CPU core"
+	default ZEALOT
+
+config ZEALOT
+	bool "Zealot"
+	help
+	  Zealot ZPU architecture with debugger enhancement
+
+config NEO430
+	bool "Neo430"
+	depends on OPENSOURCE
+	help
+	  NEO430 architecture designed by Stephan Nolting
+	  Support for this configuration is still experimental
+
+config ZPUNG
+	bool "ZPUng (ZPU next gen)"
+	depends on !OPENSOURCE
+	select ZPUNG_VHDL_ONLY
+	select GENSOC_READ_DELAY
+	help
+	  section5 proprietary pipelined ZPU architecture with hardware debugger
+
+endchoice
+
+config ZPUNG_VHDL_ONLY
+	bool "VHDL only release"
+	depends on ZPUNG
+
+choice
+	prompt "Platform"
+	default virtual
+
+config virtual
+	bool "Virtual ZPUng board"
+	depends on ZEALOT || ZPUNG
+	help
+	  Virtual board, no hardware implementation
+
+config virtual_neo430
+	bool "Virtual NEO430 board"
+	select VIRTUAL_SILICON
+	help
+	  Virtual board, no hardware implementation
+
+config papilio
+	bool "Papilio board"
+	select SPARTAN3
+	help
+	  Xilinx Spartan3E-250 based Papilio board
+
+config xo2starter
+	bool "MACHXO2-7000 starter breakout board"
+	select MACHXO2
+	help
+	  MachXO2-7000 starter kit breakout board
+
+
+endchoice
+
+config PLAT_EXTENSION
+	string "Platform extension"
+	default "main"
+	help
+	  Platform HDL variant extension
+
+if NEO430 = 'y'
+source "hdl/neo430/Kconfig"
+endif

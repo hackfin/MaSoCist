@@ -1,0 +1,22 @@
+The ZPUng is a pipelined stackmachine design, fully opcode-compatible to
+the ZPU architecture conceived by Oyvind Harboe.
+
+It is the core engine in commercial solutions offered by section5.ch:
+
+- netpp node / IoT for FPGA: A network property protocol featured SoM
+  (System on Module) for remote controlled safety relevant logic
+- JPEG_L2 MJPEG streaming engine: RFC2435 compliant high performance
+  (low power) motion JPEG movie streaming IP core
+
+
+Note: The ZPUng implementation in this directory is solely delivered
+as VHDL in a *fixed* configuration for evaluation of virtual hardware.
+It can run in the simulation and is verified for synthesis on various
+FPGA platforms.
+
+It is not considered 'open source' as it is generated code.
+
+You may use the ZPUng in personal projects, if you integrate it into
+a commercial product, you are required to sign up for a license agreement.
+
+

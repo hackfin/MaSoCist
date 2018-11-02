@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<section id="sec_i2c">
+  <title>i2c master</title>
+
+  <para>The i2c master controller is a simple polled i2c controller which is
+  typically triggered by a write to the <property>RData</property> or
+  <property>WData</property> register. It must first be configured using the
+  <property>TWICtrl</property> and <property>Divider</property> register. The
+  formula for the value written to the Divider is:</para>
+
+  <para><?latex \begin{equation}
+{Divider} = f_{SYSCLK} / f_{I2CCLK} / 4
+\end{equation}?>where <markup>f_{SYSCLK}</markup> is the system clock
+  frequency for the peripheral, <markup>f_{I2CCLK}</markup> the desired i2c
+  clock frequency (typ. 50 kHz)</para>
+
+  <?latex \medskip?>
+
+  <para>The typical sequence to initialize the i2c controller in C
+  code:</para>
+
+  <programlisting>MMR(I2C_Divider)   = 540 / 4; // 27 MHz system clock to 50 kHz i2c clock
+MMR(I2C_SlaveAddr) = 0x55 &lt;&lt; SLAVEADDR_SHFT;
+MMR(I2C_TWICtrl)      = I2C_RESET;
+delay(50);
+MMR(I2C_TWICtrl)      = 2-1;  // Transfer two bytes
+
+MMR(I2C_WData)     = 0x12;
+while (MMR(I2C_TWIStat) &amp; BUSY);  // Wait until ready
+MMR(I2C_WData)     = 0x01;     // Write last data
+while (MMR(I2C_TWIStat) &amp; BUSY);  // Wait until ready
+while (MMR(I2C_TWIStat) &amp; INACK); // Wait until ACK phase finished
+</programlisting>
+
+  <para>The engine works as follows:</para>
+
+  <para>First, the LSB of the I2C_SlaveAddr (READ bit) determines whether the
+  device is in READ(1) or WRITE(0) mode.</para>
+
+  <para>When the engine is ready, a write to the WData register triggers the
+  transaction.</para>
+
+  <variablelist>
+    <varlistentry>
+      <term>WData</term>
+
+      <listitem>
+        <para>The value written is clocked out on the i2c sda pin</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>RData</term>
+
+      <listitem>
+        <para>When engine is in READ mode, a write causes a read transaction
+        to start. After the engine is ready, the value can be read out from
+        this register. When <link
+        linkend="tbl_TWICtrl">TWICtrl::AUTOARM</link> is set, a read from this
+        register causes another read transfer.</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+
+  <para>After a transaction, another transaction can immediately be queued
+  when the controller is no longer busy. In this case, the engine will cause a
+  i2c RESTART condition to be emitted on the i2c interface. If a STOP
+  condition is explicitely desired or required by the slave, the <link
+  linkend="tbl_TWIStat">TWIStat::INACK</link> bit should be polled. When it is
+  clear, the engine has reached the STOP phase and another transaction can be
+  triggered.</para>
+
+  <para>Normally, the NBYTES field can be set to zero. The engine will then
+  enter the STOP condition when no more data is available. However in some
+  cases, a burst transaction might be required. Then the NBYTES is set to the
+  number of transferred bytes minus one. In this case, the i2c engine waits
+  for the specified number of bytes to be transferred before a STOP is
+  issued.<xi:include href="../device_properties.xml" xpointer="tbl_regmap_i2c"
+  xmlns:xi="http://www.w3.org/2001/XInclude" /></para>
+
+  <section>
+    <title>Detailed register description</title>
+
+    <para><figure>
+        <title>TWICtrl register</title>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="img/reg_TWICtrl.pdf" scale="100" />
+          </imageobject>
+        </mediaobject>
+      </figure><variablelist>
+        <varlistentry>
+          <term>NBYTES</term>
+
+          <listitem>
+            <para>When not zero, the engine keeps waiting for NBYTES more
+            bytes (total NBYTES +1) to be transferred before issueing a stop
+            condition. While waiting, the TWIStat::HOLD bit is set until all
+            bytes are written or read.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>AUTOARM</term>
+
+          <listitem>
+            <para>This bit is only effective when accessing the RData
+            register. It then triggers another Read transfer. Before reading
+            the last byte, this bit should be cleared before issuing a STOP
+            condition.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>I2C_RESET</term>
+
+          <listitem>
+            <para>Resets the entire i2c engine and aborts the current i2c
+            transfer. This can result in broken data when not waiting for the
+            transaction to complete (TWIStat::BUSY)</para>
+          </listitem>
+        </varlistentry>
+      </variablelist></para>
+
+    <figure>
+      <title>TWIStat register</title>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="img/reg_TWIStat.pdf" scale="100" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <variablelist>
+      <varlistentry>
+        <term>BUSY</term>
+
+        <listitem>
+          <para>i2c engine is busy sending or receiving data. While set, the
+          transfer is in progress.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>NAK</term>
+
+        <listitem>
+          <para>When set, the slave has not acknowledged the
+          transaction.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>HOLD</term>
+
+        <listitem>
+          <para>When set, the engine waits for more data to be sent or
+          received, depending on the transmission mode</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>RXTX_READY</term>
+
+        <listitem>
+          <para>When set, data is ready to be read or written.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>STRETCH</term>
+
+        <listitem>
+          <para>When a slave is stretching the clock, this bit is set.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>INACK</term>
+
+        <listitem>
+          <para>When set, the engine is waiting for an ACK. Poll this for
+          clear state if you need to explicitely issue another START condition
+          before a transaction.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>ARB_LOST</term>
+
+        <listitem>
+          <para>Only implemented on more advanced cores. This bit is set when
+          the arbitration is lost in a multi master system. It is cleared when
+          starting the next transaction.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+
+    <para></para>
+  </section>
+</section>

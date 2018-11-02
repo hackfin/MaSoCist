@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<devdesc version="0.1"
+         xsi:schemaLocation="http://www.section5.ch/dclib/schema/devdesc devdesc.xsd"
+         xmlns="http://www.section5.ch/dclib/schema/devdesc"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:xi="http://www.w3.org/2001/XInclude"
+         xmlns:ns22="http://www.w3.org/1999/xhtml"
+         xmlns:ns2="http://www.xmlmind.com/xmleditor/schema/bugreport"
+         xmlns:ns="http://www.section5.ch/dclib/schema/devdesc"
+         xmlns:memmap="http://www.section5.ch/dclib/schema/memmap"
+         xmlns:interfaces="http://www.section5.ch/dclib/schema/interfaces"
+         xmlns:html="http://www.xmlmind.com/xmleditor/schema/xhtml"
+         xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+  <vendor>section5.ch</vendor>
+
+  <!--// (c) 2014 Martin Strubel <hackfin@section5.ch>
+// $Id: $
+-->
+
+  <revision>
+    <major>0</major>
+
+    <minor>0</minor>
+
+    <extension>develop</extension>
+  </revision>
+
+  <!--This is a header file specification. Statements in this field will be included
+in handler skeleton code and in the generated property list.
+Including a header is necessary when implementing access to global variables.-->
+
+  <header>// #include &lt;stdlib.h&gt;</header>
+
+  <device id="i2c_map" name="I2C device registers" protocol="REGISTER">
+    <revision>
+      <major>26</major>
+
+      <minor>8</minor>
+
+      <extension>section5-develop</extension>
+    </revision>
+
+    <registermap endian="LITTLE" hidden="false" id="i2c_mmr" name="MMR_i2c"
+                 nodecode="true">
+      <register addr="0x00" id="i2c_dummy">
+        <bitfield lsb="0" msb="7" name="MMR_CFG_i2c_slave_emu">
+          <info>Dummy address space for i2c slave</info>
+        </bitfield>
+      </register>
+    </registermap>
+
+    <registermap endian="LITTLE" id="i2c_slave_emu" name="i2cSlaveEmu">
+      <info>i2C slave emulator</info>
+
+      <register addr="0x00" id="ModeControl" size="1">
+        <bitfield lsb="0" msb="4" name="OPCMODE"/>
+
+        <default>xxx11000</default>
+      </register>
+
+      <register access="RO" addr="0x0f" id="FwRevision" size="1">
+        <info>Firmware major revision field</info>
+
+        <!--<default> nodes have no effect on access="RO"!-->
+      </register>
+
+      <register access="RO" addr="0x0e" id="FwMinorRevision" size="1">
+        <info>Firmware major revision field</info>
+      </register>
+
+      <register access="RW" addr="0x02" id="EmuControl" size="1">
+        <bitfield lsb="0" msb="0" name="SLAVE_RESET">
+          <info>Reset the slave logic</info>
+        </bitfield>
+
+        <default>xxxxxxx1</default>
+      </register>
+
+      <register access="RO" addr="0x03" id="EmuStat" size="1"/>
+
+      <register addr="0x14" id="Test1" size="1">
+        <bitfield lsb="0" msb="4" name="MODE"/>
+
+        <bitfield lsb="5" msb="6" name="FMODE"/>
+
+        <default>xXX10000</default>
+      </register>
+
+      <register addr="0x34" id="Filler" size="1">
+        <default>24</default>
+      </register>
+
+      <register addr="0x35" id="Filler2" size="1"/>
+
+      <register access="RO" addr="0x82" id="IDCODE" size="1">
+        <info>IDCODE register for SL-38160-17AH probe response emulation</info>
+      </register>
+    </registermap>
+
+    <registermap endian="LITTLE" id="i2c_bridge" name="I2C_BRIDGE"
+                 offset="0x0400">
+      <info>I2C slave bridge</info>
+
+      <register access="RO" addr="0x00" id="IBStat" size="1">
+        <info>I2c bridge status register</info>
+
+        <bitfield lsb="0" msb="0" name="DREADY">
+          <info>Data ready from i2c slave</info>
+        </bitfield>
+
+        <bitfield lsb="1" msb="1" name="BUSY">
+          <info>busy transferring data</info>
+        </bitfield>
+
+        <bitfield lsb="4" msb="4" name="OVERRUN">
+          <info>Data was overrun in input register</info>
+        </bitfield>
+
+        <bitfield lsb="5" msb="7" name="I2CEMU_STATE">
+          <info>0: idle, 1: addr, 2: transfer, 3: dready, 4: wait</info>
+        </bitfield>
+      </register>
+
+      <register access="RW" addr="0x04" id="IBCtrl">
+        <info>I2c bridge control register</info>
+
+        <bitfield lsb="0" msb="6" name="SLAVE_ADDRESS">
+          <info>Slave address to listen to (unless PROMISCUOUS == 1)</info>
+        </bitfield>
+
+        <bitfield lsb="7" msb="7" name="PROMISCUOUS">
+          <info>When set, listen and react to all addresses</info>
+        </bitfield>
+
+        <default>00000000</default>
+      </register>
+
+      <register access="RO" addr="0x08" id="IBAddr" size="1">
+        <info>I2C bridge register address</info>
+      </register>
+
+      <register access="RO" addr="0x0c" id="IBData" size="1" volatile="true">
+        <info>I2C bridge data</info>
+      </register>
+
+      <register access="WO" addr="0x0c" id="IBDataAck" size="1"
+                volatile="true">
+        <info>I2C bridge data</info>
+      </register>
+
+      <register access="RO" addr="0x10" id="SLStat" size="1">
+        <info>Slave status Debug register</info>
+
+        <bitfield lsb="0" msb="3" name="I2C_SL_ERR">
+          <info>Error code from Slave</info>
+        </bitfield>
+
+        <bitfield lsb="4" msb="7" name="I2C_SL_STAT">
+          <info>Status code from Slave</info>
+        </bitfield>
+      </register>
+
+      <register access="RO" addr="0x14" id="SLCount" size="2">
+        <info>Debug transaction counter</info>
+      </register>
+
+      <register addr="0x18" id="SL_IDCODE" size="1">
+        <info>IDcode for silabs chip emulation</info>
+      </register>
+    </registermap>
+  </device>
+</devdesc>

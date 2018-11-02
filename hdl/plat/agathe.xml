@@ -1,0 +1,1001 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<devdesc version="0.1"
+         xsi:schemaLocation="http://www.section5.ch/dclib/schema/devdesc devdesc.xsd"
+         xmlns="http://www.section5.ch/dclib/schema/devdesc"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:xi="http://www.w3.org/2001/XInclude"
+         xmlns:ns22="http://www.w3.org/1999/xhtml"
+         xmlns:ns2="http://www.xmlmind.com/xmleditor/schema/bugreport"
+         xmlns:ns="http://www.section5.ch/dclib/schema/devdesc"
+         xmlns:memmap="http://www.section5.ch/dclib/schema/memmap"
+         xmlns:interfaces="http://www.section5.ch/dclib/schema/interfaces"
+         xmlns:html="http://www.xmlmind.com/xmleditor/schema/xhtml"
+         xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+  <vendor>section5</vendor>
+
+  <!--// (c) 2013-2015 Martin Strubel <strubel@section5.ch>
+// $Id: 
+-->
+
+  <revision>
+    <major>0</major>
+
+    <minor>0</minor>
+
+    <extension>develop</extension>
+  </revision>
+
+  <!--This is a header file specification. Statements in this field will be included
+in handler skeleton code and in the generated property list.
+Including a header is necessary when implementing access to global variables.-->
+
+  <header language="C">// #include &lt;stdlib.h&gt;
+</header>
+
+  <header language="VHDL">library work;
+use work.busdef.all;
+use work.global_config.all;</header>
+
+  <device id="system_map" name="MaSoCist_agathe" protocol="REGISTER">
+    <revision>
+      <major>0</major>
+
+      <minor>4</minor>
+
+      <extension>[develop]</extension>
+    </revision>
+
+    <registermap endian="LITTLE" hidden="true" name="port_pseudo_registers"
+                 nodecode="true">
+      <!-- This register map is abused for pin definitions. It is not decoded, see flags 'hidden' and 'nodecode'-->
+
+      <info>This pseudo register map contains port pin definitions for peripherals</info>
+
+      <register addr="0x00" id="sysio">
+        <bitfield access="RO" lsb="0" msb="3" name="dip_sw">
+          <info>MachXO[2,3] starter kit dip switches</info>
+        </bitfield>
+      </register>
+
+      <register addr="0x00" id="perio_i2c">
+        <info>i2c peripheral pins</info>
+
+        <bitfield access="RW" lsb="0" msb="0" name="sda">
+          <info>i2c data</info>
+        </bitfield>
+
+        <bitfield access="RW" lsb="1" msb="1" name="scl">
+          <info>i2c clock</info>
+        </bitfield>
+      </register>
+
+      <register addr="0x02" id="uartio">
+        <info>Pseudo register for UART I/Os</info>
+
+        <bitfield access="WO" lsb="2" msb="2" name="tx">
+          <info>UART TX line</info>
+        </bitfield>
+
+        <bitfield access="RO" lsb="3" msb="3" name="rx">
+          <info>UART RX line</info>
+        </bitfield>
+
+        <bitfield access="WO" lsb="0" msb="0" name="rxirq"/>
+      </register>
+
+      <register addr="0x02" id="spio">
+        <info>Pseudo register for SPI I/Os</info>
+
+        <bitfield access="WO" lsb="0" msb="0" name="cs">
+          <info>Low active Chip Select</info>
+        </bitfield>
+
+        <bitfield access="WO" lsb="1" msb="1" name="sclk">
+          <info>SPI clock</info>
+        </bitfield>
+
+        <bitfield access="WO" lsb="2" msb="2" name="mosi">
+          <info>Master data out</info>
+        </bitfield>
+
+        <bitfield access="RO" lsb="3" msb="3" name="miso">
+          <info>Master data in</info>
+        </bitfield>
+      </register>
+
+      <register addr="0x00" id="tmrio">
+        <bitfield access="WO" lsb="0" msb="CONFIG_NUM_TMR-1" name="pwm_enable"/>
+
+        <bitfield access="WO" lsb="0" msb="0" name="pwm_clken"/>
+      </register>
+
+      <register addr="0x00" id="pwmio">
+        <bitfield access="RO" lsb="0" msb="0" name="enable"/>
+
+        <bitfield access="WO" lsb="0" msb="0" name="irq">
+          <info>IRQ request pin. When the timer unit requests an interrupt, this pin is high.</info>
+        </bitfield>
+
+        <bitfield access="WO" lsb="0" msb="0" name="output">
+          <info>Timer output pin</info>
+        </bitfield>
+
+        <bitfield access="RO" lsb="0" msb="0" name="pwmclk">
+          <info>PWM clock, when separate</info>
+        </bitfield>
+
+        <bitfield access="RO" lsb="0" msb="0" name="pwm_clken">
+          <info>PWM clock, when separate</info>
+        </bitfield>
+      </register>
+
+      <register addr="0x02" id="mio" size="2">
+        <info>GPIO I/O out</info>
+
+        <bitfield access="RO" lsb="0" msb="15" name="gpio_in"/>
+
+        <bitfield access="WO" lsb="0" msb="15" name="gpio_out"/>
+
+        <bitfield access="WO" lsb="0" msb="15" name="gpio_dir"/>
+      </register>
+
+      <register access="RO" addr="0x02" id="sicio">
+        <info>System Interrupt Controller</info>
+
+        <bitfield access="RO" lsb="0" msb="0" name="reset">
+          <info>Reset pin</info>
+        </bitfield>
+
+        <bitfield access="RO" lsb="0" msb="0" name="nmi">
+          <info>Non maskable interrupt (exceptions)</info>
+        </bitfield>
+
+        <bitfield access="RO" lsb="0" msb="3" name="irq_in">
+          <info>IRQ input pins</info>
+        </bitfield>
+
+        <bitfield access="WO" lsb="0" msb="0" name="irq_out">
+          <info>IRQ output (masked) pins</info>
+        </bitfield>
+
+        <bitfield access="WO" lsb="0" msb="0" name="irq_ovr">
+          <info>IRQ override signal (priority)</info>
+        </bitfield>
+
+        <bitfield access="WO" lsb="0" msb="CONFIG_BRAM_ADDR_WIDTH-1"
+                  name="ivaddr">
+          <info>Interrupt vector address, 16 bit only</info>
+        </bitfield>
+      </register>
+
+      <register addr="0x00" id="lcdio">
+        <bitfield access="WO" lsb="0" msb="0" name="a0"/>
+
+        <bitfield access="WO" lsb="0" msb="0" name="cs"/>
+
+        <bitfield access="WO" lsb="0" msb="0" name="bgled"/>
+
+        <bitfield access="WO" lsb="0" msb="0" name="rst"/>
+
+        <bitfield access="WO" lsb="0" msb="0" name="wr"/>
+
+        <bitfield access="WO" lsb="0" msb="0" name="rd"/>
+
+        <bitfield access="RW" lsb="0" msb="7" name="data"/>
+      </register>
+    </registermap>
+
+    <registermap endian="LITTLE" id="pinmap_default" name="default_pin_map"
+                 nodecode="true" offset="0x0000">
+      <info>Pseudo register map for internal pin mapping definitions only</info>
+
+      <register addr="0x00" id="IRQ_DEFAULT_MAP">
+        <info>IRQ default pin map</info>
+
+        <bitfield lsb="0" msb="0" name="PINMAP_IRQ_UART0">
+          <info>UART0 IRQ</info>
+        </bitfield>
+
+        <bitfield lsb="1" msb="3" name="PINMAP_IRQ_TIMER">
+          <info>TIMER IRQ</info>
+        </bitfield>
+      </register>
+
+      <register addr="0x00" id="IRQ_PAPILIO">
+        <info>IRQ pin map for Papilio style boards</info>
+
+        <bitfield lsb="0" msb="0" name="PINMAP_IRQ_TIMER0">
+          <info>Timer interrupt</info>
+        </bitfield>
+
+        <bitfield lsb="1" msb="1" name="PINMAP_IRQ_TIMER1">
+          <info>Timer interrupt</info>
+        </bitfield>
+      </register>
+
+      <register addr="0x00" id="IRQ_SCACHE">
+        <info>IRQ pin map for Board with SCache option</info>
+
+        <bitfield lsb="0" msb="0" name="PINMAP_IRQ_SCACHE">
+          <info>SCache interrupt</info>
+        </bitfield>
+
+        <bitfield lsb="1" msb="1" name="PINMAP_IRQ_TIMERA">
+          <info>TIMER interrupt</info>
+        </bitfield>
+
+        <bitfield lsb="2" msb="2" name="PINMAP_IRQ_GPIO_A">
+          <info>GPIO Bank A interrupt</info>
+        </bitfield>
+
+        <bitfield lsb="3" msb="3" name="PINMAP_IRQ_GPIO_B">
+          <info>GPIO Bank B interrupt</info>
+        </bitfield>
+      </register>
+    </registermap>
+
+    <registermap endian="LITTLE" hidden="true" id="ccaps"
+                 name="core_capabilities" nodecode="true">
+      <register addr="0x00" id="Zealot">
+        <bitfield lsb="0" msb="2" name="TAP_INTERFACE"/>
+
+        <bitfield lsb="3" msb="3" name="HAVE_EMULATION"/>
+
+        <bitfield lsb="4" msb="4" name="HAVE_FLIX"/>
+
+        <bitfield lsb="5" msb="5" name="HAVE_COTTONPICKEN"/>
+
+        <bitfield lsb="6" msb="7" name="CODE_CUSTOM_CODEWINDOW"/>
+
+        <bitfield lsb="8" msb="15" name="CODE_PLATFORM"/>
+      </register>
+    </registermap>
+
+    <registermap endian="LITTLE" id="soc_mmr" name="MMR" nodecode="true"
+                 offset="0xf8000">
+      <info>This address map contains definitions for the address bit decoding only</info>
+
+      <register addr="0x00" id="addrdecode_dummy" size="4">
+        <!--Very important dummy register, specifying the address slicing-->
+
+        <info>Generic address decode pseudo register</info>
+
+        <bitfield lsb="0" msb="4" name="MMR_CFG_sys">
+          <info>Address space reserved for the System Config module</info>
+        </bitfield>
+
+        <bitfield lsb="0" msb="4" name="MMR_CFG_spi">
+          <info>Address space reserved for the SPI module</info>
+        </bitfield>
+
+        <bitfield lsb="0" msb="4" name="MMR_CFG_gpio">
+          <info>OpenCores UART16550 register address space, maps 8 bit to 32
+          boundaries</info>
+        </bitfield>
+
+        <bitfield lsb="0" msb="4" name="MMR_CFG_tmr">
+          <info>Timer module address decoder portion</info>
+        </bitfield>
+
+        <bitfield lsb="0" msb="4" name="MMR_CFG_pwm">
+          <info>PWM address decoder portion</info>
+        </bitfield>
+
+        <bitfield lsb="0" msb="4" name="MMR_CFG_uart">
+          <info>PWM address decoder portion</info>
+        </bitfield>
+
+        <bitfield lsb="0" msb="6" name="MMR_CFG_sic">
+          <info>System interrupt controller address space</info>
+        </bitfield>
+
+        <!--Reserved bitfield names: Those are the fields specifying the unit number and bus number-->
+
+        <bitfield lsb="8" msb="10" name="MMR_SELECT_perio">
+          <info>The select bit for the perio unit</info>
+        </bitfield>
+
+        <bitfield lsb="13" msb="14" name="MMR_SELECT_bus">
+          <info>The bit vector for the wb bus selection</info>
+        </bitfield>
+
+        <bitfield lsb="4" msb="5" name="MMR_SELECT_DEVINDEX_I2C"/>
+
+        <bitfield lsb="5" msb="5" name="MMR_SELECT_DEVINDEX_GPIO">
+          <info>The bit field to select the GPIO controller index</info>
+        </bitfield>
+
+        <bitfield lsb="5" msb="7" name="MMR_SELECT_DEVINDEX_PWM">
+          <info>The bit field to select the PWM controller index</info>
+        </bitfield>
+      </register>
+    </registermap>
+
+    <registermap endian="LITTLE" id="sys" name="SysCtrl">
+      <register access="RW" addr="0x00" id="SysCtrl" size="2">
+        <info>System control register</info>
+
+        <bitfield lsb="0" msb="0" name="PERIO_RESET">
+          <info>1: Reset peripheral I/O section</info>
+        </bitfield>
+
+        <bitfield lsb="2" msb="2" name="SYS_RESET">
+          <info>System reset. Resets entire CPU (1 active)</info>
+        </bitfield>
+
+        <default>0xxxx000</default>
+      </register>
+
+      <register access="RO" addr="0x04" id="SysConfig" size="4">
+        <info>System config register [dip switches]</info>
+
+        <bitfield lsb="0" msb="3" name="CONFIG_SW">
+          <info>Configuration DIP switches</info>
+        </bitfield>
+      </register>
+
+      <register access="WO" addr="0x0c" id="SysConsole_W" size="1"
+                volatile="true">
+        <info>System Console output register. Normally for simulation/JTAG debugging only.</info>
+      </register>
+
+      <register access="RO" addr="0x0c" id="SysConsole_R" size="2"
+                volatile="true">
+        <info>System Console Input register. Normally for simulation/JTAG debugging only.</info>
+
+        <bitfield lsb="0" msb="7" name="CONSOLE_DATA">
+          <info>System console input character data</info>
+        </bitfield>
+
+        <bitfield lsb="8" msb="8" name="DATA_VALID">
+          <info>When this bit is set, CONSOLE_DATA is valid</info>
+        </bitfield>
+      </register>
+
+      <!--If you need to extend this map, MAKE SURE to move the following registers always to the end of the map (according to the width
+of the CFG_sys bitfield) to preserve downwards compatibility such that newer embedded software is able to detect older hardware.
+DO NOT move them to the bottom without checking CFG_sys!-->
+
+      <register access="RO" addr="0x14" id="Magic" size="4">
+        <info>Magic number (typically CPU ID). Used for detection.</info>
+      </register>
+
+      <register access="RO" addr="0x18" id="SocInfo" size="2">
+        <info>System type identification field</info>
+
+        <bitfield lsb="0" msb="3" name="SOCREV">
+          <info>SoC revision field</info>
+        </bitfield>
+
+        <bitfield lsb="4" msb="7" name="CPUARCH">
+          <info>CPU architecture field (undocumented)</info>
+        </bitfield>
+
+        <bitfield lsb="8" msb="15" name="CPUFLAGS">
+          <info>Core specific CPU flags (undocumented)</info>
+        </bitfield>
+      </register>
+
+      <register access="RO" addr="0x1c" id="HWVersion" size="4">
+        <info>Hardware revision word. Reserved for Simulation: 0xff01</info>
+
+        <bitfield lsb="0" msb="7" name="REV_MINOR">
+          <info>Minor hardware revision number</info>
+        </bitfield>
+
+        <bitfield lsb="8" msb="15" name="REV_MAJOR">
+          <info>Major hardware revision number</info>
+        </bitfield>
+
+        <bitfield lsb="16" msb="31" name="CONFIG_ID">
+          <info>Reserved for further revision tags</info>
+        </bitfield>
+      </register>
+
+      <!--Note MMR address range, no register higher than HW_VERSION.-->
+    </registermap>
+
+    <registermap endian="BIG" id="sic" name="IRQ" size="16">
+      <info>System interrupt controller register map</info>
+
+      <register access="RW" addr="0x00" id="SIC_IMASK" size="1">
+        <info>System interrupt mask. When '1', interrupt is enabled</info>
+
+        <default>00</default>
+      </register>
+
+      <register access="RO" addr="0x04" id="SIC_ILAT" size="1">
+        <info>IRQ latch register. When IRQ was just received, the corresponding bit is set</info>
+      </register>
+
+      <register access="RO" addr="0x08" id="SIC_IPEND" size="1">
+        <info>IRQ pending register. When enabled in SIC_IMASK, a latched IRQ is marked '1' in this register when pending.</info>
+      </register>
+
+      <register access="WO" addr="0x08" id="SIC_IPEND_W1C" size="1"
+                volatile="true">
+        <info>When IRQ is pending, clear the corresponding IPEND flag by writing a '1' to this register</info>
+      </register>
+
+      <register access="WO" addr="0x04" id="SIC_ILAT_W1C" size="1"
+                volatile="true">
+        <info>When IRQ is latched, clear the corresponding ILAT flag by writing a '1' to this register</info>
+      </register>
+
+      <register access="RW" addr="0x0c" id="SIC_IAR" size="2">
+        <info>Interrupt assignment register</info>
+
+        <bitfield lsb="0" msb="12" name="IAR">
+          <info>IRQ channel mapping</info>
+        </bitfield>
+
+        <default>XXXX101011100100</default>
+      </register>
+
+      <register access="RW" addr="0x10" id="SIC_IV0" size="2">
+        <info>Interrupt vector 0</info>
+      </register>
+
+      <register access="RW" addr="0x14" id="SIC_IV1" size="2">
+        <info>Interrupt vector 1</info>
+      </register>
+
+      <register access="RW" addr="0x18" id="SIC_IV2" size="2">
+        <info>Interrupt vector 2</info>
+      </register>
+
+      <register access="RW" addr="0x1c" id="SIC_IV3" size="2">
+        <info>Interrupt vector 3</info>
+      </register>
+
+      <register access="RW" addr="0x20" id="SIC_EV0" size="2">
+        <info>Exception Vector 0</info>
+      </register>
+
+      <register access="RO" addr="0x24" id="SIC_MISS" size="2">
+        <info>Interrupt MISS register</info>
+      </register>
+
+      <register access="WO" addr="0x24" id="SIC_MISS_W1C" size="2"
+                volatile="true">
+        <info>Interrupt MISS register writeonly write-one-to-clear</info>
+      </register>
+    </registermap>
+
+    <registermap endian="LITTLE" id="gpio" name="GPIO" size="16">
+      <info>A simple GPIO controller</info>
+
+      <register access="RW" addr="0x00" id="GPIO_DIR" size="2">
+        <info>IO direction register. '1': Output, '0': input</info>
+
+        <default>0000</default>
+      </register>
+
+      <register access="RO" addr="0x04" id="GPIO_IN" size="2">
+        <info>GPIO input (read) value</info>
+      </register>
+
+      <register access="RW" addr="0x08" id="GPIO_OUT" size="2" volatile="true">
+        <!--This is volatile, because this out value is applied externally, when written-->
+
+        <info>GPIO output value</info>
+      </register>
+
+      <register access="WO" addr="0x0c" id="GPIO_SET" size="2" volatile="true">
+        <info>Write 1 to set</info>
+      </register>
+
+      <register access="WO" addr="0x10" id="GPIO_CLR" size="2" volatile="true">
+        <info>Write 1 to clear</info>
+      </register>
+    </registermap>
+
+    <registermap endian="LITTLE" id="spi" name="SPI">
+      <info>SPI master core registers</info>
+
+      <register access="RW" addr="0x00" id="SPI_CONTROL" size="2">
+        <info>SPI control register</info>
+
+        <bitfield lsb="15" msb="15" name="SPIRESET">
+          <info>Set 1 to reset SPI, 0 to resume</info>
+        </bitfield>
+
+        <bitfield lsb="14" msb="14" name="SPICS">
+          <info>Set '0' to select SPI</info>
+        </bitfield>
+
+        <bitfield lsb="4" msb="6" name="NBITS">
+          <info>Number of bits to transfer</info>
+        </bitfield>
+
+        <bitfield lsb="3" msb="3" name="LSBFIRST">
+          <info>1; Send LSB first, 0: MSB first</info>
+        </bitfield>
+
+        <bitfield lsb="2" msb="2" name="CPHA">
+          <info>Capture phase bit</info>
+        </bitfield>
+
+        <bitfield lsb="1" msb="1" name="CPOL">
+          <info>Invert clock polarity</info>
+        </bitfield>
+
+        <bitfield lsb="0" msb="0" name="PUMP">
+          <info>When set, access (R or W) to the SPIData register pumps a new transfer</info>
+        </bitfield>
+      </register>
+
+      <register access="RO" addr="0x04" id="SPI_STATUS" size="1">
+        <info>SPI status register</info>
+
+        <bitfield lsb="0" msb="0" name="SPIBUSY">
+          <info>When 1, SPI is busy transferring data</info>
+        </bitfield>
+
+        <bitfield lsb="6" msb="7" name="SPIWIDTH">
+          <info>SPI data width: 0: 8 bit, 1: 16 bit: 2: 32 bit</info>
+        </bitfield>
+      </register>
+
+      <register access="RW" addr="0x0c" id="SPI_CLKDIV" size="2">
+        <info>SPI clock divider register</info>
+
+        <bitfield lsb="15" msb="15" name="CLKDIV_BYPASS">
+          <info>When set, bypass clock divider</info>
+        </bitfield>
+
+        <bitfield lsb="0" msb="7" name="CLKDIV">
+          <info>Clock divider value</info>
+        </bitfield>
+
+        <default>0XXXXXXX00000011</default>
+      </register>
+
+      <register access="WO" addr="0x08" id="SPI_TX" size="1" volatile="true">
+        <info>SPI transmit register</info>
+      </register>
+
+      <register access="RO" addr="0x08" id="SPI_RX" size="1" volatile="true">
+        <info>SPI receive register</info>
+      </register>
+    </registermap>
+
+    <registermap endian="LITTLE" id="tmr" name="TIMER" size="16">
+      <register access="WO" addr="0x00" id="TIMER_START" size="2"
+                volatile="true">
+        <info>Write a '1' for each timer unit to be started.</info>
+      </register>
+
+      <register access="WO" addr="0x04" id="TIMER_STOP" size="2"
+                volatile="true">
+        <info>Write a '1' for each timer unit to be stopped.</info>
+      </register>
+
+      <register access="RO" addr="0x08" id="TIMER_STATUS" size="2">
+        <info>Timer status register (reserved)</info>
+      </register>
+
+      <register access="RW" addr="0x0c" id="TIMER_CONFIG" size="2">
+        <info>Timer config register</info>
+
+        <bitfield lsb="0" msb="14" name="PWMCLKDIV">
+          <info>Clock divider for PWM</info>
+        </bitfield>
+
+        <bitfield lsb="15" msb="15" name="CRESET">
+          <info>When set, a write to TIMER_START resets clock div counter</info>
+        </bitfield>
+
+        <default>0000000000000000</default>
+      </register>
+    </registermap>
+
+    <registermap endian="LITTLE" id="pwm" name="PWM" size="16">
+      <register access="RW" addr="0x00" id="PWM_CONFIG" size="1">
+        <info>PWM configuration register</info>
+
+        <bitfield lsb="0" msb="0" name="TMR_IRQEN">
+          <info>Enable system IRQ for timer unit if '1'</info>
+        </bitfield>
+
+        <bitfield lsb="1" msb="1" name="DEFAULT">
+          <info>Default pin value at PWM output</info>
+        </bitfield>
+
+        <bitfield lsb="6" msb="7" name="TMODE">
+          <info>Timer mode. Not used in simple PWM implementation.</info>
+        </bitfield>
+
+        <default>00xxxx00</default>
+      </register>
+
+      <register access="RO" addr="0x04" id="PWM_STATUS" size="1">
+        <info>PWM status</info>
+
+        <bitfield lsb="1" msb="1" name="TMR_RUN">
+          <info>'1' when timer running</info>
+        </bitfield>
+
+        <default>xxxxxx0x</default>
+      </register>
+
+      <register access="RW" addr="0x08" id="PWM_WIDTH" size="2">
+        <info>The PWM interval length minus one. When the counter reaches this value, it resets to zero.</info>
+
+        <default>0000</default>
+      </register>
+
+      <register access="RW" addr="0x0c" id="PWM_PERIOD" size="2">
+        <info>The PWM period value (&lt;= PWM_WIDTH) minus one</info>
+
+        <default>0000</default>
+      </register>
+
+      <register access="RO" addr="0x10" id="PWM_COUNTER" size="2">
+        <info>Current PWM counter value. Volatile.</info>
+      </register>
+    </registermap>
+
+    <registermap endian="LITTLE" id="uart" name="UART" size="16">
+      <register access="RW" addr="0x00" id="UART_CONTROL" size="2">
+        <info>UART Control register</info>
+
+        <bitfield lsb="0" msb="9" name="UART_CLKDIV">
+          <info>(16x) Clock divider</info>
+        </bitfield>
+
+        <bitfield lsb="14" msb="14" name="RX_IRQ_ENABLE">
+          <info>Enable receive IRQ</info>
+        </bitfield>
+
+        <bitfield lsb="15" msb="15" name="UART_RESET">
+          <info>'1': Reset UART. Clear to run.</info>
+        </bitfield>
+
+        <default>0000000000011101</default>
+      </register>
+
+      <register access="RO" addr="0x04" id="UART_STATUS" size="2">
+        <info>UART status register</info>
+
+        <bitfield lsb="0" msb="0" name="RXREADY">
+          <info>Set when data ready in RX FIFO</info>
+        </bitfield>
+
+        <bitfield lsb="1" msb="1" name="TXREADY">
+          <info>Set when TX FIFO ready for data</info>
+        </bitfield>
+
+        <bitfield lsb="2" msb="2" name="TXBUSY">
+          <info>'1' when TX in progress</info>
+        </bitfield>
+
+        <bitfield lsb="5" msb="5" name="FRERR">
+          <info>Sticky framing error. Set when stop bit not null. Reset by UART_RESET.</info>
+        </bitfield>
+
+        <bitfield lsb="6" msb="6" name="TXOVR">
+          <info>Transmitter FIFO overrun. Cleared by UART_RESET.</info>
+        </bitfield>
+
+        <bitfield lsb="7" msb="7" name="RXOVR">
+          <info>Receiver FIFO overrun. Cleared by UART_RESET.</info>
+        </bitfield>
+
+        <bitfield lsb="8" msb="10" name="BITCOUNT">
+          <info>RX bit counter</info>
+        </bitfield>
+
+        <default>xxxxx000000xx000</default>
+      </register>
+
+      <register access="RO" addr="0x08" id="UART_RXR" size="2" volatile="true">
+        <info>UART receiver register</info>
+
+        <bitfield lsb="0" msb="7" name="RXDATA">
+          <info>UART receive data</info>
+        </bitfield>
+
+        <bitfield lsb="8" msb="8" name="DVALID">
+          <info>1 when data valid (mirror of RXREADY bit)</info>
+        </bitfield>
+      </register>
+
+      <register access="WO" addr="0x08" id="UART_TXR" size="1" volatile="true">
+        <info>UART transmitter register</info>
+      </register>
+    </registermap>
+
+    <!-- FIXME: This should go to the memory map definitions file -->
+
+    <registermap endian="LITTLE" id="mmap" name="MemMap" nodecode="true"
+                 offset="0x10000">
+      <info>Memory map definitions</info>
+
+      <register addr="0x00" id="CacheBase" size="2"/>
+    </registermap>
+
+    <group hidden="true" name="UNIT_MAP">
+      <info>This group contains the device unit mapping for the I/O address decoder of the gensoc SoC. It must contain the reserved properties SelectPerio, SelectDevice, SelectCfg.</info>
+
+      <!--This special property defines the global bit field used for the peripheral unit selection:-->
+
+      <property name="SelectPerio" type="MODE">
+        <info>Peripheral unit selection values</info>
+
+        <regref bits="MMR_SELECT_perio" ref="addrdecode_dummy"/>
+
+        <choice>
+          <item name="sys">
+            <value>0</value>
+          </item>
+
+          <item name="sic">
+            <value>1</value>
+          </item>
+
+          <item name="gpio">
+            <info>Selection value for the GPIO bank</info>
+
+            <value>2</value>
+          </item>
+
+          <item name="spi">
+            <info>Selection value for the SPI controller
+</info>
+
+            <value>3</value>
+          </item>
+
+          <item name="pwm">
+            <info>Selection value for the PWM bank</info>
+
+            <value>4</value>
+          </item>
+
+          <item name="tmr">
+            <info>Selection value for the TIMER module</info>
+
+            <value>5</value>
+          </item>
+
+          <item name="uart">
+            <info>Selection value for the UART module</info>
+
+            <value>6</value>
+          </item>
+
+          <item name="lcd">
+            <info>Selection value for the LCD driver module</info>
+
+            <value>7</value>
+          </item>
+        </choice>
+      </property>
+
+      <!--This special struct defines the bit field used per device for multi device decoder generation:-->
+
+      <struct name="SelectDevice">
+        <property name="gpio" type="REGISTER">
+          <regref bits="MMR_SELECT_DEVINDEX_GPIO" ref="addrdecode_dummy"/>
+        </property>
+
+        <property name="pwm" type="REGISTER">
+          <regref bits="MMR_SELECT_DEVINDEX_PWM" ref="addrdecode_dummy"/>
+        </property>
+      </struct>
+
+      <!--This Field selects the configuration address space per IP module:-->
+
+      <struct name="SelectCfg">
+        <property name="gpio" type="REGISTER">
+          <regref bits="MMR_CFG_gpio" ref="addrdecode_dummy"/>
+        </property>
+
+        <property name="pwm" type="REGISTER">
+          <regref bits="MMR_CFG_pwm" ref="addrdecode_dummy"/>
+        </property>
+
+        <property name="tmr" type="REGISTER">
+          <regref bits="MMR_CFG_tmr" ref="addrdecode_dummy"/>
+        </property>
+
+        <property name="sys" type="REGISTER">
+          <regref bits="MMR_CFG_sys" ref="addrdecode_dummy"/>
+        </property>
+
+        <property name="sic" type="REGISTER">
+          <regref bits="MMR_CFG_sic" ref="addrdecode_dummy"/>
+        </property>
+
+        <property name="spi" type="REGISTER">
+          <regref bits="MMR_CFG_spi" ref="addrdecode_dummy"/>
+        </property>
+
+        <property name="uart" type="REGISTER">
+          <regref bits="MMR_CFG_uart" ref="addrdecode_dummy"/>
+        </property>
+      </struct>
+    </group>
+
+    <group hidden="true" name="INSTANCES">
+      <info>This group contains the auto generated perio unit instances</info>
+
+      <!--All optional instances that can be configured using menuconfig must contain a processing instruction (<?config CONFIG_*?>) for conditional
+generation of the target XML file.-->
+
+      <property name="sys" type="REGISTER">
+        <info>System controller</info>
+
+        <regref ref="sysio"/>
+      </property>
+
+      <array name="gpio">
+        <?config CONFIG_GPIO?>
+
+        <!--Multiple instances of a GPIO controller (each 16 I/O):
+
+Does not work with gensoc < v0.13
+-->
+
+        <info>GPIO bank controller</info>
+
+        <size>
+          <value>CONFIG_NUM_GPIO</value>
+        </size>
+
+        <property access="RW" name="export" type="REGISTER">
+          <regref ref="mio"/>
+        </property>
+      </array>
+
+      <property name="sic" type="REGISTER">
+        <?config CONFIG_SIC?>
+
+        <info>System interrupt controller</info>
+
+        <regref ref="sicio"/>
+      </property>
+
+      <property name="spi" type="REGISTER">
+        <info>Simple SPI controller</info>
+
+        <?config CONFIG_SPI?>
+
+        <regref ref="spio"/>
+
+        <choice>
+          <item name="NBITS_POWER">
+            <info>Must correspond to width of SPI_CONTROL::NBITS</info>
+
+            <value>CONFIG_SPI_BITS_POWER</value>
+          </item>
+        </choice>
+      </property>
+
+      <array name="pwm">
+        <?config CONFIG_TIMER?>
+
+        <info>PWM controller (Simple)</info>
+
+        <size>
+          <value>CONFIG_NUM_TMR</value>
+        </size>
+
+        <property name="pwmunit" type="REGISTER">
+          <regref ref="pwmio"/>
+        </property>
+      </array>
+
+      <property name="tmr" type="REGISTER">
+        <?config CONFIG_TIMER?>
+
+        <info>Global timer unit</info>
+
+        <regref ref="tmrio"/>
+
+        <choice>
+          <item name="NUM_PWM">
+            <info>Number of instanced PWMs</info>
+
+            <value>CONFIG_NUM_TMR</value>
+          </item>
+        </choice>
+      </property>
+
+      <property name="uart" type="REGISTER">
+        <info>Simple UART controller</info>
+
+        <?config CONFIG_UART?>
+
+        <regref ref="uartio"/>
+      </property>
+    </group>
+  </device>
+
+  <device id="platform_breakout" name="Breakout Platform" protocol="REGISTER">
+    <revision>
+      <major>0</major>
+
+      <minor>0</minor>
+    </revision>
+
+    <info>Platform specific data for Breakout board</info>
+
+    <!-- Secondary register map for I/O definition:-->
+
+    <registermap endian="LITTLE" hidden="false" id="user" name="Userdefined"
+                 nodecode="true">
+      <info>GPIO map for quick dynamic I/O control. DEVELOPMENT ONLY.</info>
+
+      <register addr="0x00" id="dummy_gpio_map" size="2">
+        <bitfield lsb="0" msb="6" name="BREAKOUT_LEDS"/>
+      </register>
+    </registermap>
+  </device>
+
+  <device id="platform_papilio" name="Papilio Platform" protocol="REGISTER">
+    <revision>
+      <major>0</major>
+
+      <minor>0</minor>
+    </revision>
+
+    <info>Platform specific data for Papilio board</info>
+
+    <registermap endian="BIG" name="pixelformats">
+      <register addr="0x00" id="RGB322" size="1">
+        <bitfield lsb="5" msb="7" name="RED"/>
+
+        <bitfield lsb="2" msb="4" name="GREEN"/>
+
+        <bitfield lsb="0" msb="1" name="BLUE"/>
+      </register>
+    </registermap>
+
+    <registermap endian="LITTLE" id="spiflash" name="SPIUSER"
+                 offset="0x120000">
+      <info>The SPI flash user map. User code can be placed, starting from this offset.</info>
+
+      <register addr="0x00" id="UserBase"/>
+    </registermap>
+
+    <registermap endian="LITTLE" id="cachemap" name="CACHEMAP">
+      <info>Platform specific cache pseudo registers. Only needed when SCACHE_HARDCODE=n</info>
+
+      <register addr="0x60000" id="MASK_DCache"/>
+
+      <register addr="0x78000" id="MASK_ICache"/>
+    </registermap>
+  </device>
+
+  <device id="platform_zpung" name="ZPUNG_VirtualBoard" protocol="REGISTER">
+    <revision>
+      <major>0</major>
+
+      <minor>0</minor>
+    </revision>
+
+    <info>Platform specific data for Papilio board</info>
+
+    <!-- Secondary register map for I/O definition:-->
+
+    <registermap endian="LITTLE" id="pinmap_zpung" name="default_pin_map"
+                 nodecode="true" offset="0x0000">
+      <info>Pseudo register map for internal pin mapping definitions only</info>
+
+      <register addr="0x00" id="IRQ_DEFAULT_MAP_ZPUNG">
+        <info>IRQ default pin map</info>
+
+        <bitfield lsb="0" msb="0" name="PINMAP_IRQ_UART">
+          <info>UART0 IRQ</info>
+        </bitfield>
+
+        <bitfield lsb="1" msb="3" name="PINMAP_IRQ_TIMER">
+          <info>TIMER IRQ</info>
+        </bitfield>
+      </register>
+    </registermap>
+  </device>
+</devdesc>

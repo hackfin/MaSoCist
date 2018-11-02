@@ -1,0 +1,49 @@
+# Auto tapconfig, backport
+# DO NOT USE IN PRODUCTION
+#
+
+# Fallback if not defined:
+CONFIG_ZPUNG_VERSION ?= 1
+
+ifdef CONFIG_ZEALOT
+	ARCH_CODE = cafe10
+	CPU_CODE = 0
+	REV_CODE = 0
+	RELEASED = y
+endif
+
+ifdef CONFIG_ZPUNG
+	ARCH_CODE = cafe10
+	CPU_CODE = 1
+	REV_CODE = $(CONFIG_ZPUNG_VERSION)
+	RELEASED = y
+endif
+
+ifdef CONFIG_ZPUNGV2
+	# ARCH_CODE = cafe20
+	# REV_CODE = $(CONFIG_ZPUNG_VERSION)
+	# CPU_CODE = 2
+	CONFIG_TAP_ID = c0010ace
+endif
+
+ifdef CONFIG_NETPP_CPU
+	ARCH_CODE = dead33
+	CPU_CODE = 0
+	REV_CODE = 0
+	RELEASED = y
+endif
+
+ifdef CONFIG_PYPS
+ifdef CONFIG_DUALCORE_CPIK
+	CONFIG_TAP_ID = cafe104$(CONFIG_CPIK_VERSION)
+else
+	# Dropped legacy PyPS
+	CONFIG_TAP_ID = dead3195
+endif
+endif
+
+ARCH_CODE ?= 00000f
+CPU_CODE = 0
+REV_CODE = 0
+
+CONFIG_TAP_ID ?= $(ARCH_CODE)$(CPU_CODE)$(REV_CODE)

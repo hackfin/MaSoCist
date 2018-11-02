@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<chapter>
+  <title>Synthesis [Developer]</title>
+
+  <section>
+    <title>Xilinx ISE</title>
+
+    <para>Current version: 13.4</para>
+
+    <para/>
+
+    <section>
+      <title>Creating a new project</title>
+
+      <para>Steps:</para>
+
+      <orderedlist>
+        <listitem>
+          <para>Run TCL script to import files (<guimenu>View</guimenu> &gt;
+          <guimenuitem>Panels</guimenuitem> &gt; <guimenuitem>TCL
+          console</guimenuitem>)</para>
+        </listitem>
+
+        <listitem>
+          <para>Import UCF file</para>
+        </listitem>
+
+        <listitem>
+          <para>Import BMM file</para>
+        </listitem>
+
+        <listitem>
+          <para>Edit Process Properties in Design &gt; <guimenu>Implement
+          Design</guimenu> (Right-Click, choose Process Properties) to set
+          'Allow Unmatched LOC constraints'</para>
+        </listitem>
+
+        <listitem>
+          <para>Set USERCODE for JTAG operation: Edit Process properties in
+          <guimenu>Generate Programming File</guimenu> &gt;
+          <guimenu>Configuration Options</guimenu> &gt; <guimenuitem>-g
+          UserID</guimenuitem>, set to something like 0xcafe1020</para>
+        </listitem>
+      </orderedlist>
+    </section>
+  </section>
+
+  <section>
+    <title>Lattice Diamond</title>
+
+    <para>Current Version</para>
+
+    <section>
+      <title>Creating a new project</title>
+
+      <para>Steps: TODO</para>
+    </section>
+  </section>
+</chapter>

@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<section id="sec_gensoc">
+  <title>gensoc - the SoC Generator</title>
+
+  <para>The gensoc application is the master tool to generate source code from
+  a XML device description. It can generate:</para>
+
+  <itemizedlist>
+    <listitem>
+      <para>VHDL code:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>A register, bit field and data type definition package</para>
+        </listitem>
+
+        <listitem>
+          <para>Address decoder entities for specified device units</para>
+        </listitem>
+
+        <listitem>
+          <para>A peripheral module implementation, instancing specified IP
+          cores</para>
+        </listitem>
+      </itemizedlist>
+    </listitem>
+
+    <listitem>
+      <para>Firmware specific:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>A header file, containing the system register addresses and
+          bit field definitions</para>
+        </listitem>
+
+        <listitem>
+          <para>A linker script, containing the correct address mapping</para>
+        </listitem>
+
+        <listitem>
+          <para>Optional (custom module): Hardware driver routine
+          auxiliaries</para>
+        </listitem>
+      </itemizedlist>
+    </listitem>
+
+    <listitem>
+      <para>GDB helper scripts:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Memory map address definitions for hardware registers for
+          direct access by GDB</para>
+        </listitem>
+
+        <listitem>
+          <para>Auxiliary dump functions for each register</para>
+        </listitem>
+      </itemizedlist>
+    </listitem>
+  </itemizedlist>
+
+  <section>
+    <title>Usage</title>
+
+    <para>gensoc provides various command line options as listed in <xref
+    linkend="tbl_gensoc_options" />.</para>
+
+    <table id="tbl_gensoc_options">
+      <title>List of gensoc command options</title>
+
+      <tgroup cols="2">
+        <colspec colwidth="1*" />
+
+        <colspec align="justify" colwidth="3*" />
+
+        <thead>
+          <row>
+            <entry align="center">Option name</entry>
+
+            <entry align="center">Description</entry>
+          </row>
+        </thead>
+
+        <tbody>
+          <row>
+            <entry>--help</entry>
+
+            <entry>Show help</entry>
+          </row>
+
+          <row>
+            <entry>--version</entry>
+
+            <entry>Displays the program version</entry>
+          </row>
+
+          <row>
+            <entry>--output=FILE_PREFIX</entry>
+
+            <entry>Output file prefix for all generated files</entry>
+          </row>
+
+          <row>
+            <entry>-q</entry>
+
+            <entry>Be non verbose (quiet) when generating files</entry>
+          </row>
+
+          <row>
+            <entry>-r</entry>
+
+            <entry>Emit register and bitfield definition C header file</entry>
+          </row>
+
+          <row>
+            <entry>-s</entry>
+
+            <entry>Emit system register map (VHDL package containing register
+            definitions and read/write ports</entry>
+          </row>
+
+          <row>
+            <entry>-m</entry>
+
+            <entry>Emit peripheral I/O module (mmr_perio) entity for
+            instancing by SoC</entry>
+          </row>
+
+          <row>
+            <entry>-g</entry>
+
+            <entry>Emit GDB auxiliary script</entry>
+          </row>
+
+          <row>
+            <entry>--decoder=REGMAP_ID</entry>
+
+            <entry>Generate bus decoder for specified REGMAP_ID</entry>
+          </row>
+
+          <row>
+            <entry>--map-prefix=MAP_PREFIX</entry>
+
+            <entry>Register map prefixing options. 0: Do not use a prefix, 1:
+            Use register map prefix for register definition, 2: Use prefix
+            also for bit field definitions</entry>
+          </row>
+
+          <row>
+            <entry>--reg-prefix=REG_PREFIX</entry>
+
+            <entry>Define register prefix. For VHDL code, the default prefix
+            is 'R_'</entry>
+          </row>
+
+          <row>
+            <entry>--interface-type=IFACE_TYPE</entry>
+
+            <entry>Selects interface type. By default, registers are defined
+            as 'std_logic_vector'.</entry>
+          </row>
+
+          <row>
+            <entry>--device=SEL_DEVICE</entry>
+
+            <entry>When a device description contains multiple device
+            definitions, uses the given SEL_DEVICE device id to select a
+            specific device.</entry>
+          </row>
+
+          <row>
+            <entry>--data-width=DATA_WIDTH</entry>
+
+            <entry>Data bus width. Default is 16.</entry>
+          </row>
+
+          <row>
+            <entry>--entity-prefix=ENT_PREFIX</entry>
+
+            <entry>Decoder entity prefix. Default is 'decode_'.</entry>
+          </row>
+
+          <row>
+            <entry>--use-ack</entry>
+
+            <entry>Implement ACK signal for decoder</entry>
+          </row>
+
+          <row>
+            <entry>--use-reset</entry>
+
+            <entry>Implement RESET signal for decoder. This also implements
+            setting the defaults.</entry>
+          </row>
+
+          <row>
+            <entry>--use-read-delay</entry>
+
+            <entry>Enable delayed (1 cycle) bus read. Use for congested buses
+            or complex I/O maps Make sure your CPU core supports this!</entry>
+          </row>
+
+          <row>
+            <entry>--errlevel</entry>
+
+            <entry>One of [failure, warning]. Defines the exception error
+            level for VHDL simulation</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+  </section>
+
+  <section>
+    <title>Detailed options</title>
+
+    <para>Some options control the behaviour of the emitted address decoder
+    logic or peripheral instancing module.</para>
+
+    <section>
+      <title>Option 'use-ack'</title>
+
+      <para>By default, no ACK signal is generated by the address decoder.
+      Therefore, accessing undefined addresses only causes a report event in
+      simulation, unless the <option>use-ack</option> option is specified.
+      This option is only relevant for the address decoder. The peripheral
+      instancing module does not yet implement the ACK option. One use case is
+      a I2C slave address decoder which has to be able to return a "not
+      acknowledged" condition to the I2C bus.</para>
+    </section>
+
+    <section>
+      <title>Option 'use-reset'</title>
+
+      <para>By default, the registers supplied with default values are
+      initialized at boot up of the logic. For some architecture it might be
+      desired to not use initializers, rather the register defaults are
+      initialized using a reset signal. If this option is specified, logic is
+      emitted to reset the registers to their default values. This adds a
+      reset pin to the top level port of each decoder and the mmr_perio
+      module.</para>
+    </section>
+
+    <section>
+      <title>Option 'use-read-delay'</title>
+
+      <para>By default, a read cycle in the peripheral address decoder module
+      asserts the read data one cycle after address assertion. In some cases,
+      complex address decoder configuration can cause congestion in the FPGA
+      logic, resulting in reduced speed. As a countermeasure, it may help to
+      insert a further delay, which is inserting another flipflop stage for
+      each read logic. Note that busy signals must be created outside the
+      perio module.</para>
+    </section>
+  </section>
+
+  <section>
+    <title>Application notes</title>
+
+    <section id="sec_app_regprefix">
+      <title>Register and bit field prefixes</title>
+
+      <para>In some cases, a complex chip definition may include several
+      register maps where register or bitfield IDs might be identical and
+      cause namespace clashes. This can be avoided up to some extent by using
+      the <option>map-prefix</option> option. Assume, the register map's name
+      is 'MMR', then the results obtained as shown in <xref
+      linkend="tbl_prefixes" />. The last example produces an incorrect
+      definition, due to the wrong map prefix value.</para>
+
+      <table id="tbl_prefixes">
+        <title>Bit field examples on --map-prefix</title>
+
+        <tgroup cols="3">
+          <thead>
+            <row>
+              <entry align="center">Bit field name--</entry>
+
+              <entry align="center">map-prefix value</entry>
+
+              <entry align="center">Resulting definition</entry>
+            </row>
+          </thead>
+
+          <tbody>
+            <row>
+              <entry>MMR_CFG_sys</entry>
+
+              <entry>0 or 1</entry>
+
+              <entry>BV_MMR_CFG_sys</entry>
+            </row>
+
+            <row>
+              <entry>CFG_sys</entry>
+
+              <entry>2</entry>
+
+              <entry>BV_MMR_CFG_sys</entry>
+            </row>
+
+            <row>
+              <entry>MMR_SELECT_sys</entry>
+
+              <entry>2</entry>
+
+              <entry>B_MMR_MMR_SELECT_sys</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+
+      <para>Likewise, a value of 1 has the equivalent effect on
+      <emphasis>register</emphasis> definitions.</para>
+    </section>
+  </section>
+</section>

@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<devdesc version="0.1"
+         xsi:schemaLocation="http://www.section5.ch/dclib/schema/devdesc devdesc.xsd"
+         xmlns="http://www.section5.ch/dclib/schema/devdesc"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:xi="http://www.w3.org/2001/XInclude"
+         xmlns:ns22="http://www.w3.org/1999/xhtml"
+         xmlns:ns2="http://www.xmlmind.com/xmleditor/schema/bugreport"
+         xmlns:ns="http://www.section5.ch/dclib/schema/devdesc"
+         xmlns:memmap="http://www.section5.ch/dclib/schema/memmap"
+         xmlns:interfaces="http://www.section5.ch/dclib/schema/interfaces"
+         xmlns:html="http://www.xmlmind.com/xmleditor/schema/xhtml"
+         xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+  <vendor>&lt;your vendor name&gt;</vendor>
+
+  <!--// (c) 2015 Martin Strubel <hackfin@section5.ch>
+// $Id: $
+-->
+
+  <revision>
+    <major>0</major>
+
+    <minor>0</minor>
+
+    <extension>develop</extension>
+  </revision>
+
+  <device id="busdef" name="BusDefinitions" protocol="PROPERTY">
+    <revision>
+      <major>0</major>
+
+      <minor>0</minor>
+    </revision>
+
+    <!-- Bus definitions:-->
+
+    <registermap endian="LITTLE" hidden="false" id="zpu" name="ZPUBus"
+                 nodecode="true">
+      <info>Just a bus definition. Contains pseudo registers for pin definitions</info>
+
+      <register addr="0x00" id="addr" size="2">
+        <info>I/O address bus of ZPU</info>
+      </register>
+
+      <register access="RW" addr="0x00" id="datain" size="4">
+        <info>32 bit data in port</info>
+      </register>
+
+      <register access="RO" addr="0x00" id="dataout" size="4">
+        <info>32 bit data out port</info>
+      </register>
+
+      <register access="WO" addr="0x00" id="buscontrol">
+        <info>Bus control pseudo register</info>
+
+        <bitfield lsb="0" msb="0" name="wren">
+          <info>Write enable</info>
+        </bitfield>
+
+        <bitfield lsb="1" msb="1" name="rden">
+          <info>Read enable</info>
+        </bitfield>
+      </register>
+
+      <register access="RO" addr="0x00" id="busstatus">
+        <info>Bus status pseudo register</info>
+
+        <bitfield lsb="2" msb="2" name="iobusy">
+          <info>IO busy</info>
+        </bitfield>
+      </register>
+    </registermap>
+
+    <registermap endian="LITTLE" hidden="false" id="wb" name="Wishbone"
+                 nodecode="true">
+      <info>Wishbone bus description</info>
+
+      <register access="WO" addr="0x00" id="adr" size="4">
+        <info>32 bit address bus</info>
+      </register>
+
+      <register access="RW" addr="0x00" id="dat" size="4" volatile="true">
+        <info>32 bit data in/out bus</info>
+      </register>
+
+      <register addr="0x02" id="Select">
+        <info>Bus selection</info>
+
+        <bitfield lsb="0" msb="3" name="sel">
+          <info>Bus slave select field</info>
+        </bitfield>
+      </register>
+
+      <register access="WO" addr="0x00" id="busctrl_w" size="1">
+        <info>Bus control</info>
+
+        <bitfield lsb="0" msb="0" name="cyc">
+          <info>Bus cycle in progress</info>
+        </bitfield>
+
+        <bitfield lsb="1" msb="1" name="stb">
+          <info>Bus strobe</info>
+        </bitfield>
+
+        <bitfield lsb="2" msb="2" name="we">
+          <info>Write enable</info>
+        </bitfield>
+
+        <bitfield lsb="7" msb="7" name="rst">
+          <info>Bus Reset</info>
+        </bitfield>
+      </register>
+
+      <register access="RO" addr="0x00" id="busstat_r" size="1">
+        <info>Bus status (read only)</info>
+
+        <bitfield lsb="0" msb="0" name="ack">
+          <info>Bus acknowledge (from slave)</info>
+        </bitfield>
+
+        <bitfield lsb="1" msb="1" name="inta">
+          <info>Interrupt A channel</info>
+        </bitfield>
+      </register>
+    </registermap>
+
+    <registermap endian="LITTLE" hidden="false" id="ahb" name="AHBL"
+                 nodecode="true">
+      <info>AHB lite bus description (DEPRECATED). Compatibility only.</info>
+
+      <register access="WO" addr="0x00" id="haddr" size="4">
+        <info>32 bit address bus</info>
+      </register>
+
+      <register access="RO" addr="0x00" id="hrdata" size="4" volatile="true">
+        <info>32 bit data in bus</info>
+      </register>
+
+      <register access="WO" addr="0x00" id="hwdata" size="4" volatile="true">
+        <info>32 bit data out bus</info>
+      </register>
+
+      <register access="WO" addr="0x00" id="ahbctrl_w" size="1">
+        <info>Bus control</info>
+
+        <bitfield lsb="0" msb="4" name="hsel">
+          <info>Bus slave select field</info>
+        </bitfield>
+
+        <bitfield lsb="0" msb="0" name="hrd">
+          <info>Bus read</info>
+        </bitfield>
+
+        <bitfield lsb="1" msb="1" name="hwrite">
+          <info>Bus write</info>
+        </bitfield>
+
+        <bitfield lsb="0" msb="1" name="htrans">
+          <info>Transaction code</info>
+        </bitfield>
+
+        <bitfield lsb="0" msb="3" name="hmask">
+          <info>Bus access mask</info>
+        </bitfield>
+
+        <bitfield lsb="0" msb="2" name="hsize">
+          <info>Bus access size</info>
+        </bitfield>
+
+        <bitfield lsb="7" msb="7" name="hreset">
+          <info>Bus Reset</info>
+        </bitfield>
+      </register>
+
+      <register access="RO" addr="0x00" id="ahbstat" size="1">
+        <info>Bus status (read only)</info>
+
+        <bitfield lsb="0" msb="0" name="hready">
+          <info>Bus ready</info>
+        </bitfield>
+      </register>
+    </registermap>
+  </device>
+</devdesc>

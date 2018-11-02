@@ -1,0 +1,628 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<devdesc version="0.1"
+         xsi:schemaLocation="http://www.section5.ch/dclib/schema/devdesc devdesc.xsd"
+         xmlns="http://www.section5.ch/dclib/schema/devdesc"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:xi="http://www.w3.org/2001/XInclude"
+         xmlns:ns22="http://www.w3.org/1999/xhtml"
+         xmlns:ns2="http://www.xmlmind.com/xmleditor/schema/bugreport"
+         xmlns:ns="http://www.section5.ch/dclib/schema/devdesc"
+         xmlns:memmap="http://www.section5.ch/dclib/schema/memmap"
+         xmlns:interfaces="http://www.section5.ch/dclib/schema/interfaces"
+         xmlns:html="http://www.xmlmind.com/xmleditor/schema/xhtml"
+         xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+  <vendor>section5</vendor>
+
+  <!--// (c) 2013-2015 Martin Strubel <strubel@section5.ch>
+// $Id: $
+-->
+
+  <revision>
+    <major>0</major>
+
+    <minor>0</minor>
+
+    <extension>develop</extension>
+  </revision>
+
+  <!--This is a header file specification. Statements in this field will be included
+in handler skeleton code and in the generated property list.
+Including a header is necessary when implementing access to global variables.-->
+
+  <header language="C">// #include &lt;stdlib.h&gt;</header>
+
+  <header language="VHDL">library work;
+use work.busdef.all;
+use work.global_config.all;</header>
+
+  <device id="system_map" name="MaSoCist_minimal" protocol="REGISTER">
+    <revision>
+      <major>0</major>
+
+      <minor>1</minor>
+
+      <extension>[develop]</extension>
+    </revision>
+
+    <registermap endian="LITTLE" hidden="true" name="port_pins"
+                 nodecode="true">
+      <!-- This register map is abused for pin definitions. It is not decoded, see flags 'hidden' and 'nodecode'-->
+
+      <info>This pseudo register map contains port pin definitions for peripherals</info>
+
+      <register access="RO" addr="0x02" id="scache">
+        <info>System I/O for SCache</info>
+
+        <bitfield access="RO" lsb="0" msb="0" name="reset">
+          <info>Interrupt vector address, 16 bit only</info>
+        </bitfield>
+
+        <bitfield access="WO" lsb="0" msb="1" name="sel">
+          <info>Reset pin</info>
+        </bitfield>
+
+        <bitfield access="WO" lsb="0" msb="0" name="irq">
+          <info>Interrupt vector address, 16 bit only</info>
+        </bitfield>
+
+        <bitfield access="WO" lsb="0" msb="0" name="hold"/>
+
+        <bitfield access="WO" lsb="2" msb="CONFIG_BRAM_ADDR_WIDTH-1"
+                  name="da_phys"/>
+
+        <bitfield access="RO" lsb="2" msb="CONFIG_ADDR_WIDTH-1" name="da_virt"/>
+
+        <bitfield access="WO" lsb="2" msb="CONFIG_BRAM_ADDR_WIDTH-1"
+                  name="ia_phys"/>
+
+        <bitfield access="RO" lsb="2" msb="CONFIG_ADDR_WIDTH-1" name="ia_virt"/>
+      </register>
+
+      <register addr="0x02" id="gpio_port" size="2">
+        <info>GPIO I/O port</info>
+      </register>
+
+      <register access="RO" addr="0x02" id="sicio">
+        <info>System Interrupt Controller</info>
+
+        <bitfield access="RO" lsb="0" msb="0" name="reset">
+          <info>Reset pin</info>
+        </bitfield>
+
+        <bitfield access="RO" lsb="0" msb="0" name="nmi">
+          <info>Non maskable interrupt (exceptions)</info>
+        </bitfield>
+
+        <bitfield access="RO" lsb="0" msb="3" name="irq_in">
+          <info>IRQ input pins</info>
+        </bitfield>
+
+        <bitfield access="WO" lsb="0" msb="0" name="irq_out">
+          <info>IRQ output (masked) pins</info>
+        </bitfield>
+
+        <bitfield access="WO" lsb="0" msb="0" name="irq_ovr">
+          <info>IRQ override signal (priority)</info>
+        </bitfield>
+
+        <bitfield access="WO" lsb="0" msb="CONFIG_BRAM_ADDR_WIDTH-1"
+                  name="ivaddr">
+          <info>Interrupt vector address, 16 bit only</info>
+        </bitfield>
+      </register>
+
+      <register addr="0x02" id="spio">
+        <info>Pseudo register for SPI I/Os</info>
+
+        <bitfield access="WO" lsb="0" msb="0" name="cs">
+          <info>Low active Chip Select</info>
+        </bitfield>
+
+        <bitfield access="WO" lsb="1" msb="1" name="sclk">
+          <info>SPI clock</info>
+        </bitfield>
+
+        <bitfield access="WO" lsb="2" msb="2" name="mosi">
+          <info>Master data out</info>
+        </bitfield>
+
+        <bitfield access="RO" lsb="3" msb="3" name="miso">
+          <info>Master data in</info>
+        </bitfield>
+      </register>
+
+      <register addr="0x00" id="pgio">
+        <bitfield access="WO" lsb="0" msb="0" name="pout"/>
+      </register>
+    </registermap>
+
+    <registermap endian="LITTLE" id="pinmap_default" name="irq_pinmap"
+                 nodecode="true" offset="0x0000">
+      <info>Pseudo register map for internal pin mapping definitions only</info>
+
+      <register addr="0x00" id="IRQ_DEFAULT_MAP">
+        <info>IRQ default pin map</info>
+
+        <bitfield lsb="0" msb="0" name="PINMAP_IRQ_UART0">
+          <info>UART0 IRQ</info>
+        </bitfield>
+
+        <bitfield lsb="1" msb="3" name="PINMAP_IRQ_TIMER">
+          <info>TIMER IRQ</info>
+        </bitfield>
+      </register>
+
+      <register addr="0x00" id="IRQ_SCACHE">
+        <info>IRQ pin map for Board with SCache option</info>
+
+        <bitfield lsb="0" msb="0" name="PINMAP_IRQ_SCACHE">
+          <info>SCache interrupt</info>
+        </bitfield>
+
+        <bitfield lsb="1" msb="1" name="PINMAP_IRQ_UART">
+          <info>UART interrupt</info>
+        </bitfield>
+
+        <bitfield lsb="2" msb="2" name="PINMAP_IRQ_GPIO_A">
+          <info>GPIO Bank A interrupt</info>
+        </bitfield>
+
+        <bitfield lsb="2" msb="2" name="PINMAP_IRQ_TIMER0">
+          <info>Timer0 interrupt</info>
+        </bitfield>
+
+        <bitfield lsb="3" msb="3" name="PINMAP_IRQ_GPIO_B">
+          <info>GPIO Bank B interrupt</info>
+        </bitfield>
+      </register>
+    </registermap>
+
+    <registermap endian="LITTLE" hidden="false" id="soc_mmr" name="MMR"
+                 nodecode="true" offset="0x78000">
+      <info>This address map contains definitions for the address bit decoding only</info>
+
+      <register addr="0x00" id="adec_common" size="4">
+        <!--Very important dummy register, specifying the address slicing-->
+
+        <info>Generic address decode pseudo register</info>
+
+        <bitfield lsb="0" msb="5" name="MMR_CFG_sic">
+          <info>System interrupt controller address space</info>
+        </bitfield>
+
+        <bitfield lsb="0" msb="6" name="MMR_CFG_cache">
+          <info>Cache config address space</info>
+        </bitfield>
+
+        <bitfield lsb="0" msb="5" name="MMR_CFG_sys">
+          <info>Address space reserved for the System Config module</info>
+        </bitfield>
+
+        <!--Reserved bitfield names: Those are the fields specifying the unit number and bus number-->
+
+        <bitfield lsb="10" msb="12" name="MMR_SELECT_perio">
+          <info>The select bit for the perio unit</info>
+        </bitfield>
+      </register>
+
+      <register addr="0x00" id="adec_spi" size="2">
+        <info/>
+
+        <bitfield lsb="0" msb="3" name="MMR_CFG_spi">
+          <info>SPI controller address space</info>
+        </bitfield>
+
+        <bitfield lsb="5" msb="6" name="MMR_SELECT_DEVINDEX_SPI">
+          <info>The bit field to select the SPI device index</info>
+        </bitfield>
+      </register>
+
+      <register addr="0x00" id="adec_proto" size="2">
+        <bitfield lsb="0" msb="7" name="MMR_CFG_playground">
+          <info>Playground address space</info>
+        </bitfield>
+
+        <bitfield lsb="8" msb="8" name="MMR_SELECT_DEVINDEX_PROTO">
+          <info>The bit field to select the PROTO device index</info>
+        </bitfield>
+      </register>
+    </registermap>
+
+    <registermap endian="LITTLE" id="sys" name="SysCtrl">
+      <register access="RW" addr="0x00" id="SysCtrl" size="1">
+        <info>System control register</info>
+
+        <bitfield lsb="0" msb="0" name="PERIO_RESET">
+          <info>1: Reset peripheral I/O section</info>
+        </bitfield>
+
+        <bitfield lsb="2" msb="2" name="SYS_RESET">
+          <info>System reset. Resets entire CPU (1 active)</info>
+        </bitfield>
+
+        <default>xxxxx0x0</default>
+      </register>
+
+      <register access="WO" addr="0x0c" id="SysConsole_W" size="1"
+                volatile="true">
+        <info>System Console output register. Normally for simulation/JTAG debugging only.</info>
+      </register>
+
+      <register access="RO" addr="0x0c" id="SysConsole_R" size="2"
+                volatile="true">
+        <info>System Console Input register. Normally for simulation/JTAG debugging only.</info>
+
+        <bitfield lsb="0" msb="7" name="CONSOLE_DATA">
+          <info>System console input character data</info>
+        </bitfield>
+
+        <bitfield lsb="8" msb="8" name="DATA_VALID">
+          <info>When this bit is set, CONSOLE_DATA is valid</info>
+        </bitfield>
+      </register>
+
+      <!--If you need to extend this map, MAKE SURE to move the following registers always to the end of the map (according to the width
+of the CFG_sys bitfield) to preserve downwards compatibility such that newer embedded software is able to detect older hardware.
+DO NOT move them to the bottom without checking CFG_sys!-->
+
+      <register access="RO" addr="0x34" id="Magic" size="4">
+        <info>Magic number (typically CPU ID). Used for detection.</info>
+      </register>
+
+      <register access="RO" addr="0x38" id="SocInfo" size="2">
+        <info>System type identification field</info>
+
+        <bitfield lsb="0" msb="3" name="SOCTYPE">
+          <info>SoC type (0: local bus, 1: Wishbone, 2: AHB lite)</info>
+        </bitfield>
+
+        <bitfield lsb="4" msb="7" name="CPUARCH">
+          <info>CPU architecture field (undocumented)</info>
+        </bitfield>
+
+        <bitfield lsb="8" msb="15" name="CPUFLAGS">
+          <info>Core specific CPU flags (undocumented)</info>
+        </bitfield>
+      </register>
+
+      <register access="RO" addr="0x3c" id="HWVersion" size="4">
+        <info>Hardware revision word. Reserved for Simulation: 0xff01</info>
+
+        <bitfield lsb="0" msb="7" name="REV_MINOR">
+          <info>Minor hardware revision number</info>
+        </bitfield>
+
+        <bitfield lsb="8" msb="15" name="REV_MAJOR">
+          <info>Major hardware revision number</info>
+        </bitfield>
+
+        <bitfield lsb="16" msb="31" name="REV_RESERVED">
+          <info>Reserved for further revision tags</info>
+        </bitfield>
+      </register>
+
+      <!--Note MMR address range, no register higher than HW_VERSION.-->
+    </registermap>
+
+    <registermap endian="BIG" id="sic" name="IRQ" size="16">
+      <info>System interrupt controller register map</info>
+
+      <register access="RW" addr="0x00" id="SIC_IMASK" size="1">
+        <info>System interrupt mask. When '1', interrupt is enabled</info>
+
+        <default>00</default>
+      </register>
+
+      <register access="RO" addr="0x04" id="SIC_ILAT" size="1">
+        <info>IRQ latch register. When IRQ was just received, the corresponding bit is set</info>
+      </register>
+
+      <register access="RO" addr="0x08" id="SIC_IPEND" size="1">
+        <info>IRQ pending register. When enabled in SIC_IMASK, a latched IRQ is marked '1' in this register when pending.</info>
+      </register>
+
+      <register access="WO" addr="0x08" id="SIC_IPEND_W1C" size="1"
+                volatile="true">
+        <info>When IRQ is pending, clear the corresponding IPEND flag by writing a '1' to this register</info>
+      </register>
+
+      <register access="WO" addr="0x04" id="SIC_ILAT_W1C" size="1"
+                volatile="true">
+        <info>When IRQ is latched, clear the corresponding ILAT flag by writing a '1' to this register</info>
+      </register>
+
+      <register access="RW" addr="0x0c" id="SIC_IAR" size="2">
+        <info>Interrupt assignment register</info>
+
+        <bitfield lsb="0" msb="12" name="IAR">
+          <info>IRQ channel mapping</info>
+        </bitfield>
+
+        <default>XXXX101011100100</default>
+      </register>
+
+      <register access="RW" addr="0x10" id="SIC_IV0" size="2">
+        <info>Interrupt vector 0</info>
+      </register>
+
+      <register access="RW" addr="0x14" id="SIC_IV1" size="2">
+        <info>Interrupt vector 1</info>
+      </register>
+
+      <register access="RW" addr="0x18" id="SIC_IV2" size="2">
+        <info>Interrupt vector 2</info>
+      </register>
+
+      <register access="RW" addr="0x1c" id="SIC_IV3" size="2">
+        <info>Interrupt vector 3</info>
+      </register>
+
+      <register access="RW" addr="0x20" id="SIC_EV0" size="2">
+        <info>Exception Vector 0</info>
+      </register>
+
+      <register access="RO" addr="0x24" id="SIC_MISS" size="2">
+        <info>Interrupt MISS register</info>
+      </register>
+
+      <register access="WO" addr="0x24" id="SIC_MISS_W1C" size="2"
+                volatile="true">
+        <info>Interrupt MISS register writeonly write-one-to-clear</info>
+      </register>
+    </registermap>
+
+    <registermap endian="LITTLE" id="spi" name="SPI8">
+      <info>SPI master core registers</info>
+
+      <register access="RW" addr="0x00" id="SPI_CONTROL" size="2">
+        <info>SPI control register</info>
+
+        <bitfield lsb="15" msb="15" name="SPIRESET">
+          <info>Set 1 to reset SPI, 0 to resume</info>
+        </bitfield>
+
+        <bitfield lsb="14" msb="14" name="SPICS">
+          <info>Set '0' to select SPI</info>
+        </bitfield>
+
+        <bitfield lsb="4" msb="6" name="NBITS">
+          <info>Number of bits to transfer</info>
+        </bitfield>
+
+        <bitfield lsb="3" msb="3" name="LSBFIRST">
+          <info>1; Send LSB first, 0: MSB first</info>
+        </bitfield>
+
+        <bitfield lsb="2" msb="2" name="CPHA">
+          <info>Capture phase bit</info>
+        </bitfield>
+
+        <bitfield lsb="1" msb="1" name="CPOL">
+          <info>Invert clock polarity</info>
+        </bitfield>
+
+        <bitfield lsb="0" msb="0" name="PUMP">
+          <info>When set, access (R or W) to the SPIData register pumps a new transfer</info>
+        </bitfield>
+      </register>
+
+      <register access="RO" addr="0x04" id="SPI_STATUS" size="1">
+        <info>SPI status register</info>
+
+        <bitfield lsb="0" msb="0" name="SPIBUSY">
+          <info>When 1, SPI is busy transferring data</info>
+        </bitfield>
+
+        <bitfield lsb="6" msb="7" name="SPIWIDTH">
+          <info>SPI data width: 0: 8 bit, 1: 16 bit: 2: 32 bit</info>
+        </bitfield>
+      </register>
+
+      <register access="RW" addr="0x0c" id="SPI_CLKDIV" size="2">
+        <info>SPI clock divider register</info>
+
+        <bitfield lsb="15" msb="15" name="CLKDIV_BYPASS">
+          <info>When set, bypass clock divider</info>
+        </bitfield>
+
+        <bitfield lsb="0" msb="7" name="CLKDIV">
+          <info>Clock divider value</info>
+        </bitfield>
+
+        <default>0XXXXXXX00000011</default>
+      </register>
+
+      <register access="WO" addr="0x08" id="SPI_TX" size="1" volatile="true">
+        <info>SPI transmit register</info>
+      </register>
+
+      <register access="RO" addr="0x08" id="SPI_RX" size="1" volatile="true">
+        <info>SPI receive register</info>
+      </register>
+    </registermap>
+
+    <registermap endian="BIG" id="playground" name="PROTO">
+      <register access="RO" addr="0x00" id="TEST_STAT" size="2">
+        <info>Test register</info>
+
+        <bitfield lsb="0" msb="0" name="TEST_BUSY"/>
+      </register>
+
+      <register access="RW" addr="0x04" id="TEST_CTRL" size="1">
+        <info>Test configuration and control register</info>
+
+        <bitfield lsb="0" msb="3" name="TEST_MODE">
+          <info>Test mode, 1: Slow, 2: Fast, 0: Disable</info>
+        </bitfield>
+
+        <bitfield lsb="7" msb="7" name="TEST_RESET">
+          <info>Resets the test</info>
+        </bitfield>
+
+        <default>10000000</default>
+      </register>
+
+      <register access="RW" addr="0x08" id="TEST_IO" size="2" volatile="true"/>
+    </registermap>
+
+    <!-- FIXME: This should go to the memory map definitions file -->
+
+    <registermap endian="LITTLE" id="mmap_dcache" name="DCacheMmap"
+                 nodecode="true" offset="0x10000">
+      <info>Memory map definitions</info>
+
+      <register addr="0x00" id="DCacheBase" size="2"/>
+    </registermap>
+
+    <registermap endian="LITTLE" id="mmap_icache" name="ICacheMmap"
+                 nodecode="true" offset="0x11000">
+      <info>Memory map definitions</info>
+
+      <register addr="0x00" id="ICacheBase" size="2"/>
+    </registermap>
+
+    <group hidden="true" name="UNIT_MAP">
+      <info>This group contains the device unit mapping for the I/O address decoder of the gensoc SoC. It must contain the reserved properties SelectPerio, SelectDevice, SelectCfg.</info>
+
+      <!--This special property defines the global bit field used for the peripheral unit selection:-->
+
+      <property name="SelectPerio" type="MODE">
+        <info>Peripheral unit selection values</info>
+
+        <regref bits="MMR_SELECT_perio" ref="adec_common"/>
+
+        <choice>
+          <item name="sys">
+            <info>System unit device number</info>
+
+            <value>0</value>
+          </item>
+
+          <item name="sic">
+            <info>System interrupt controller</info>
+
+            <value>1</value>
+          </item>
+
+          <item name="spi">
+            <info>Selection value for the SPI controller
+</info>
+
+            <value>2</value>
+          </item>
+
+          <item name="cache">
+            <info>Selection value for the SCACHE controller
+</info>
+
+            <value>6</value>
+          </item>
+
+          <item name="playground">
+            <info>Selection value for the prototyping area
+</info>
+
+            <value>7</value>
+          </item>
+        </choice>
+      </property>
+
+      <!--This special struct defines the bit field used per device for multi device decoder generation:-->
+
+      <struct name="SelectDevice">
+        <info>Device index</info>
+
+        <property name="playground" type="REGISTER">
+          <regref bits="MMR_SELECT_DEVINDEX_PROTO" ref="adec_proto"/>
+        </property>
+      </struct>
+
+      <!--This Field selects the configuration address space per IP module:-->
+
+      <struct name="SelectCfg">
+        <info>Configuration address space</info>
+
+        <property name="sys" type="REGISTER">
+          <regref bits="MMR_CFG_sys" ref="adec_common"/>
+        </property>
+
+        <property name="sic" type="REGISTER">
+          <regref bits="MMR_CFG_sic" ref="adec_common"/>
+        </property>
+
+        <property name="cache" type="REGISTER">
+          <regref bits="MMR_CFG_cache" ref="adec_common"/>
+        </property>
+
+        <property name="spi" type="REGISTER">
+          <regref bits="MMR_CFG_spi" ref="adec_common"/>
+        </property>
+
+        <property name="playground" type="REGISTER">
+          <regref bits="MMR_CFG_playground" ref="adec_proto"/>
+        </property>
+      </struct>
+    </group>
+
+    <group hidden="true" name="INSTANCES">
+      <info>This group contains the auto generated perio unit instances</info>
+
+      <property name="sys" type="REGISTER">
+        <info>System controller</info>
+
+        <!-- We don't have any pins, use dummy -->
+
+        <value/>
+      </property>
+
+      <property name="spi" type="REGISTER">
+        <info>Simple SPI controller</info>
+
+        <?config CONFIG_SPI?>
+
+        <regref ref="spio"/>
+
+        <choice>
+          <item name="NBITS_POWER">
+            <info>Must correspond to width of SPI_CONTROL::NBITS</info>
+
+            <value>CONFIG_SPI_BITS_POWER</value>
+          </item>
+        </choice>
+      </property>
+
+      <property name="sic" type="REGISTER">
+        <?config CONFIG_SIC?>
+
+        <info>System interrupt controller</info>
+
+        <regref ref="sicio"/>
+      </property>
+
+      <array name="playground">
+        <?config CONFIG_virtual?>
+
+        <info>Prototyping playground</info>
+
+        <size>
+          <value>2</value>
+        </size>
+
+        <property name="item" type="REGISTER">
+          <info>Prototyping area</info>
+
+          <regref ref="pgio"/>
+
+          <choice>
+            <item name="NUM_BITS">
+              <value>4</value>
+            </item>
+          </choice>
+        </property>
+      </array>
+    </group>
+  </device>
+
+  <xi:include href="ghdlex_templates.xml" xpointer="ghdlex_template"/>
+</devdesc>

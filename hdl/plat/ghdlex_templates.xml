@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<devdesc version="0.1"
+         xsi:schemaLocation="http://www.section5.ch/dclib/schema/devdesc devdesc.xsd"
+         xmlns="http://www.section5.ch/dclib/schema/devdesc"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:xi="http://www.w3.org/2001/XInclude"
+         xmlns:ns22="http://www.w3.org/1999/xhtml"
+         xmlns:ns2="http://www.xmlmind.com/xmleditor/schema/bugreport"
+         xmlns:ns="http://www.section5.ch/dclib/schema/devdesc"
+         xmlns:memmap="http://www.section5.ch/dclib/schema/memmap"
+         xmlns:interfaces="http://www.section5.ch/dclib/schema/interfaces"
+         xmlns:html="http://www.xmlmind.com/xmleditor/schema/xhtml"
+         xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+  <vendor>section5</vendor>
+
+  <device id="ghdlex_template" name="GHDLex" protocol="PROPERTY">
+    <revision>
+      <major>0</major>
+
+      <minor>1</minor>
+    </revision>
+
+    <info>The GHDLex template file for Co-simulation support</info>
+
+    <group id="ghdlex_templates" name="GHDLex templates">
+      <info>This group only contains templates for internal generation of entities. Accessing them explicitely will have no effect or crash the system.</info>
+
+      <struct hidden="true" id="ghdlex_fifo" name="Fifo">
+        <property access="RW" id="fifobuf" name="Buffer" type="BUFFER">
+          <!--A buffer object that is handled via a handler function. See handler.c
+(Function get_fifo()/set_fifo() for details.)-->
+
+          <info>A FIFO buffer for communication between VHDL simulation and external software.</info>
+
+          <handler type="DYNAMIC">fifo</handler>
+        </property>
+
+        <property access="RO" id="fifo_infill" name="InFill" type="INT">
+          <handler type="DYNAMIC">fifo_infill</handler>
+        </property>
+
+        <property access="RO" id="fifo_outfill" name="OutFill" type="INT">
+          <handler type="DYNAMIC">fifo_outfill</handler>
+        </property>
+      </struct>
+
+      <struct hidden="true" id="ghdlex_ram" name="RAM">
+        <property access="RW" id="rambuf" name="Buffer" type="BUFFER">
+          <!--A buffer object that is handled via a handler function. See handler.c
+(Function get_fifo()/set_fifo() for details.)-->
+
+          <info>A RAM proxy</info>
+
+          <handler type="DYNAMIC">rambuf</handler>
+        </property>
+
+        <property access="RW" id="offset" name="Offset" type="INT">
+          <handler type="DYNAMIC">ramoffset</handler>
+        </property>
+      </struct>
+
+      <struct hidden="true" id="ghdlex_bus" name="Vbus">
+        <info>Virtual Bus structure export to netpp.</info>
+
+        <property access="RO" name="Width" type="INT">
+          <handler type="DYNAMIC">vbus_width</handler>
+        </property>
+
+        <property name="Addr" type="REGISTER">
+          <info>32 bit address, written first</info>
+
+          <handler type="DYNAMIC">vbus_addr</handler>
+        </property>
+
+        <property name="DataBurst" type="BUFFER">
+          <info>Buffer whose size must be a multiple of BusWidth. When read or written, a bus burst access is triggered.</info>
+
+          <handler type="DYNAMIC">vbus_data</handler>
+        </property>
+
+        <property name="Data" type="REGISTER">
+          <info>Data word. When read or written, a bus access is triggered.</info>
+
+          <handler type="DYNAMIC">vbus_data</handler>
+        </property>
+      </struct>
+    </group>
+  </device>
+</devdesc>

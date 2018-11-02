@@ -1,0 +1,87 @@
+##################################################################################
+## BPC3003_2.03+.ucf
+##
+## Author: Jack Gassett
+##
+## Details: http://gadgetforge.gadgetfactory.net/gf/project/butterfly_one/
+##
+## Contains assignment and iostandard information for
+## all used pins as well as timing and area constraints for Papilio One 2.03 and higher boards. Papilio One boards started using 32Mhz oscillators at version 2.02 and above.
+##
+##################################################################################
+
+# Crystal Clock - use 32MHz onboard oscillator
+NET "clk" PERIOD = 31.25 ns;
+NET "clk" IOSTANDARD = LVCMOS25;
+NET "clk" LOC = P89;
+
+# Wing1 Column A
+NET "W1A<0>" LOC = "P18" ;
+NET "W1A<1>" LOC = "P23" ;
+NET "W1A<2>" LOC = "P26" ;
+NET "W1A<3>" LOC = "P33" ;
+NET "W1A<4>" LOC = "P35" ;
+NET "W1A<5>" LOC = "P40" ;
+NET "W1A<6>" LOC = "P53" ;
+NET "W1A<7>" LOC = "P57" ;
+NET "W1A<8>" LOC = "P60" ;
+NET "W1A<9>" LOC = "P62" ;
+NET "W1A<10>" LOC = "P65" ;
+NET "W1A<11>" LOC = "P67" ;
+NET "W1A<12>" LOC = "P70" ;
+NET "pwm<2>" LOC = "P79" | IOSTANDARD = LVCMOS33;
+NET "pwm<1>" LOC = "P84" | IOSTANDARD = LVCMOS33;
+NET "pwm<0>" LOC = "P86" | IOSTANDARD = LVCMOS33;
+
+# Wing1 Column B
+NET "lcd_cs" LOC = "P85" | IOSTANDARD = LVCMOS33;
+NET "lcd_a0" LOC = "P83" | IOSTANDARD = LVCMOS33;
+NET "lcd_rd" LOC = "P78" | IOSTANDARD = LVCMOS33;
+NET "lcd_wr" LOC = "P71" | IOSTANDARD = LVCMOS33;
+#
+# NET "f245_rxf" LOC = "P68" ;
+# NET "f245_txe" LOC = "P66" ;
+NET "rx1" LOC = "P68" | IOSTANDARD = LVCMOS33;
+NET "tx1" LOC = "P66" | IOSTANDARD = LVCMOS33;
+NET "lcd_d[0]" LOC = "P63" | IOSTANDARD = LVCMOS33;
+NET "lcd_d[1]" LOC = "P61" | IOSTANDARD = LVCMOS33;
+NET "lcd_d[2]" LOC = "P58" | IOSTANDARD = LVCMOS33;
+NET "lcd_d[3]" LOC = "P54" | IOSTANDARD = LVCMOS33;
+NET "lcd_d[4]" LOC = "P41" | IOSTANDARD = LVCMOS33;
+NET "lcd_d[5]" LOC = "P36" | IOSTANDARD = LVCMOS33;
+NET "lcd_d[6]" LOC = "P34" | IOSTANDARD = LVCMOS33;
+NET "lcd_d[7]" LOC = "P32" | IOSTANDARD = LVCMOS33;
+NET "lcd_bgled" LOC = "P25" | IOSTANDARD = LVCMOS33;
+NET "lcd_rst" LOC = "P22" | IOSTANDARD = LVCMOS33;
+
+# Wing2 Column C
+NET "W2C<0>" LOC = "P91" ;
+NET "W2C<1>" LOC = "P92" ;
+NET "W2C<2>" LOC = "P94" ;
+NET "W2C<3>" LOC = "P95" ;
+NET "W2C<4>" LOC = "P98" ;
+NET "W2C<5>" LOC = "P2" ;
+NET "W2C<6>" LOC = "P3" ;
+NET "W2C<7>" LOC = "P4" ;
+NET "W2C<8>" LOC = "P5" ;
+NET "W2C<9>" LOC = "P9" ;
+NET "W2C<10>" LOC = "P10" ;
+NET "W2C<11>" LOC = "P11" ;
+NET "W2C<12>" LOC = "P12" ;
+NET "W2C<13>" LOC = "P15" ;
+NET "W2C<14>" LOC = "P16" ;
+# NET "W2C<15>" LOC = "P17" ;
+
+NET "reset" LOC = "P17" | PULLDOWN ;
+
+## RS232
+NET "rx0" LOC = "P88" | IOSTANDARD = LVCMOS33;
+NET "tx0" LOC = "P90" | IOSTANDARD = LVCMOS33 | DRIVE = 8 | SLEW = FAST;
+
+# SPI flash
+
+NET "spi_mosi" LOC = "P27" | IOSTANDARD = LVCMOS33 ;
+NET "spi_cs" LOC = "P24" | IOSTANDARD = LVCMOS33 | SLEW = SLOW | DRIVE = 8;
+NET "spi_miso" LOC = "P44" | IOSTANDARD = LVCMOS33 | SLEW = FAST | DRIVE = 8;
+NET "spi_sclk" LOC = "P50" | IOSTANDARD = LVCMOS33 | SLEW = FAST | DRIVE = 8;
+

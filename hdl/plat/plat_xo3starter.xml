@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<devdesc version="0.1"
+         xsi:schemaLocation="http://www.section5.ch/dclib/schema/devdesc devdesc.xsd"
+         xmlns="http://www.section5.ch/dclib/schema/devdesc"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:xi="http://www.w3.org/2001/XInclude"
+         xmlns:ns22="http://www.w3.org/1999/xhtml"
+         xmlns:ns2="http://www.xmlmind.com/xmleditor/schema/bugreport"
+         xmlns:ns="http://www.section5.ch/dclib/schema/devdesc"
+         xmlns:memmap="http://www.section5.ch/dclib/schema/memmap"
+         xmlns:interfaces="http://www.section5.ch/dclib/schema/interfaces"
+         xmlns:html="http://www.xmlmind.com/xmleditor/schema/xhtml"
+         xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+  <vendor>&lt;your vendor name&gt;</vendor>
+
+  <!--// (c) 2012 Martin Strubel
+// $Id: $
+-->
+
+  <revision>
+    <major>0</major>
+
+    <minor>0</minor>
+
+    <extension>develop</extension>
+  </revision>
+
+  <header>// #include &lt;stdlib.h&gt;</header>
+
+  <returncodes>
+    <errorspec code="-1024" name="GENERIC_ERROR">
+      <info>Generic, unspecified error code</info>
+    </errorspec>
+
+    <warnspec code="1" name="GENERIC_WARNING">
+      <info>Something is not ok, but we don't fail.</info>
+    </warnspec>
+  </returncodes>
+
+  <device id="platform_xo3starter" name="Breakout Platform"
+          protocol="REGISTER">
+    <revision>
+      <major>0</major>
+
+      <minor>0</minor>
+    </revision>
+
+    <info>Platform specific data for XO3 starter kid board</info>
+
+    <!-- Secondary register map for I/O definition:-->
+
+    <registermap endian="LITTLE" id="user" name="Userdefined" nodecode="false">
+      <info>GPIO map for quick dynamic I/O control. DEVELOPMENT ONLY.</info>
+
+      <register addr="0x00" id="dummy_gpio_map" size="2">
+        <bitfield lsb="0" msb="6" name="BREAKOUT_LEDS"/>
+      </register>
+    </registermap>
+  </device>
+</devdesc>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE appendix PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<appendix id="app_custom">
+  <title>Custom SoC documentation</title>
+
+  <section id="sec_soc_mmap">
+    <title>'agathe'/'beatrix' specific maps</title>
+
+    <section>
+      <title>ZPUng address map</title>
+
+      <para>The ZPUng has a no shared Program/Data/Heap and stack memory,
+      instead, it uses a separate stack as shown in <xref
+      linkend="tbl_addrmap_zpung"/>.</para>
+
+      <table id="tbl_addrmap_zpung">
+        <title>ZPUng v1 RAM default address map</title>
+
+        <tgroup cols="2">
+          <thead>
+            <row>
+              <entry align="center">Address range</entry>
+
+              <entry align="center">Description</entry>
+            </row>
+          </thead>
+
+          <tbody>
+            <row>
+              <entry><constant>0x0000-0x3fff</constant></entry>
+
+              <entry>Program memory and Heap</entry>
+            </row>
+
+            <row>
+              <entry><hardware><constant>0x4000-0x41ff</constant></hardware></entry>
+
+              <entry>Stack memory</entry>
+            </row>
+
+            <row>
+              <entry><hardware><constant>0x8000-0xffff</constant></hardware></entry>
+
+              <entry>Memory mapped registers (MMR)</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+
+      <note>
+        <para>The stack memory start address always immediately follows the
+        program memory (which is configured by CONFIG_BRAM_ADDR_WIDTH)</para>
+      </note>
+    </section>
+  </section>
+</appendix>

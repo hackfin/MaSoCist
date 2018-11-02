@@ -1,0 +1,93 @@
+
+menu "Software options"
+
+config PRINTF
+	bool "Support for printf()"
+	default y
+	help
+	  When set, enable simple printf functionality. Note that this must not
+	  be enabled for safety applications.
+
+config STRICT_PRECISION
+	bool "printf strict string precision"
+	depends on PRINTF
+	help
+	  When set, requires a string precision spec in the format string, like
+	  '%-16s'. If not specified, the sprintf will print out '<PRECISION!>'
+	  instead. If not defined, a default limiting string length will be set.
+
+choice
+	prompt "libc functions"
+	default LIBC_NONE
+
+config LIBC_NONE
+	bool "No libc"
+	help
+	  Do not support libc calls at all
+
+config LIBC_MINIMUM
+	bool "Minimal emulation"
+	help
+	  Very few libc calls are emulated (arch/$ARCH/sysemu)
+
+config LIBC_NEWLIB
+	bool "Newlib libc enabled"
+	depends on !NEO430
+	help
+	  Newlib libc is used for linking
+
+endchoice
+
+
+choice
+	prompt "Code optimization"
+	default OPT_SIZE
+
+config OPT_SIZE
+	bool "Size"
+	help
+	  Optimize for code size
+
+config OPT_SPEED
+	bool "Speed"
+	help
+	  Optimize for code speed
+
+endchoice
+
+menu "Networking"
+
+config ETHERNET
+	bool "Ethernet support"
+	depends on MAC
+	default y
+	help
+	  Ethernet 802.11 HW EMAC support
+
+config MAC_MTU
+	int "Ethernet MTU"
+	depends on ETHERNET
+	default 512
+	help
+	  Maximum raw ethernet packet size (MTU)
+	  Depends on amount of memory or buffer layout used
+	  (implementation dependent)
+
+endmenu
+
+config FULL_REENTRANCY
+	bool "IRQ reentrancy"
+	default n
+	help
+	  When enabled, no static memory registers are used, however you
+	  have to supply the _regpush()/_regpop() functions to your code.
+	  In this case, the generated code is fully reentrant without code
+	  modifications.
+
+config TASK_MANAGEMENT
+	bool "Enable rudimentary task management"
+	default n
+	help
+	  Rudimentary time slice based task management.
+
+endmenu

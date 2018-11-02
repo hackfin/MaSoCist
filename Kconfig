@@ -1,0 +1,202 @@
+mainmenu "SoC configuration"
+
+config VENDOR_CONFIG
+	string
+	option env="VENDOR"
+
+comment "Generic config"
+
+config SOCDESC
+	string "Soc device description"
+	default "system"
+	help
+	  System device description. The possible system device descriptions
+	  are found in hdl/plat/*.xml
+
+config MAP_PREFIX
+	bool "Enable map prefix"
+	depends on HAVE_GENSOC
+	default n
+	help
+	  Enables map prefix if your system device description needs extended
+	  namespaces. Do not change unless you create an entirely new device
+	  description from scratch.
+
+source "vendor/$VENDOR_CONFIG/Kconfig"
+
+source hdl/core/Kconfig
+
+choice
+	prompt "Bus system"
+	default WISHBONE
+
+config WISHBONE
+	bool "Wishbone bus support"
+	help
+	  Support for Wishbone bus
+
+config LOCALBUS
+	bool "Simple local bus support"
+	help
+	  Support for simple local bus
+
+config AHB
+	bool "AHB support"
+	depends on PYPS
+	help
+	  Preliminary AHB (light) variant
+	  (Legacy / compatibility to other cores)
+
+endchoice
+
+choice
+	prompt "Target FPGA architecture"
+	default MACHXO2
+
+config MACHXO2
+	bool "Lattice MachXO2"
+	help
+	  Support for Lattice MACHXO2 platforms
+
+config MACHXO3
+	bool "Lattice MachXO3"
+	help
+	  Support for Lattice MACHXO3 platforms
+
+config ECP3
+	bool "Lattice ECP3"
+	help
+	  Support for Lattice ECP3 platforms
+
+config ECP5
+	bool "Lattice ECP5"
+	help
+	  Support for Lattice ECP5 platforms
+
+config SPARTAN3
+	bool "Xilinx Spartan3"
+	help
+	  Support for Xilinx Spartan3 platforms
+
+config SPARTAN6
+	bool "Xilinx Spartan6"
+	help
+	  Support for Xilinx Spartan6 platforms
+
+config VIRTUAL_SILICON
+	bool "Virtual silicon"
+	help
+	  Virtual Silicon option (Simulation only)
+
+endchoice
+
+menu "Clock configuration"
+
+config MACHXO2_OSC_CLK
+	depends on MACHXO2 || MACHXO3
+	int "Oscillator clock in Hz"
+	default "22170000"
+
+config SYSCLK
+	depends on !MACHXO2 && !MACHXO3
+	int "System clock in Hz"
+	default "25000000"
+
+config VIDEO_MASTERCLK
+	depends on VIDEO
+	int "Video reference clock in Hz"
+	default "27000000"
+
+config VIRTUALCLK_PERIOD
+	depends on virtual
+	string "Virtual board clock period [ns, us, ms]"
+	default "20 ns"
+
+config PLL_MUL
+	depends on MACHXO2 || MACHXO3 || ECP3 || SPARTAN6
+	int "PLL multiplier"
+	default "7"
+
+config PLL_DIV
+	depends on MACHXO2 || MACHXO3 || ECP3 || SPARTAN6
+	int "PLL divider"
+	default "2"
+
+endmenu
+
+menu "Peripheral I/O"
+source hdl/perio/Kconfig
+endmenu
+
+source hdl/tap/Kconfig
+
+source sw/Kconfig
+
+menu "Simulation options"
+
+config GHDLEX_PATH
+	string "Path to GHDLEX"
+	default "../contrib/ghdlex"
+	help
+	  Path to the GHDLex distribution top directory
+
+choice
+	prompt "Simulation target architecture"
+	default NATIVE
+
+config NATIVE
+	bool "Native"
+	help
+	  Typically the native platform is your Linux box, i.e. somewhat
+	  intel'ish.
+
+config MINGW32
+	bool "mingw32"
+	help
+	  If you need to run your executables on a Windows machine, use this
+	  option. You need to have a working toolchain for this.
+
+endchoice
+
+
+config EMULATE_PLATFORM_IP
+	bool "Emulate platform IP"
+	help
+	  This option emulates platform specific IP such as hardware specific
+	  PLL units, etc. in a generic way. When instancing vendor specific
+	  primitives, you may have to write emulation code when using this option.
+
+config USE_PLATFORM_IP_LIBRARY
+	bool "Simulate platform IP"
+	help
+	  This option uses the vendor-provided IP code for simulation and
+	  adds support for std_logic_arith quirks.
+	  If you use generated IP cores that are encrypted, rather use
+	  the EMULATE_PLATFORM_IP option.
+
+config LIBSIM
+	string "Simulation library name"
+	default "jtagsim"
+	help
+	  Name of the simulation library (ghdlex extension)
+
+config SIM_BUS_ERROR
+	bool "Abort simulation on bus error"
+	depends on HAVE_GENSOC
+	default n
+	help
+	  The simulation will abort on a peripheral bus error (unknown address)
+	  when this variable is set  
+
+config SIM_BREAK
+	bool "Abort simulation on SW break"
+	depends on HAVE_GENSOC
+	default n
+	help
+	  The simulation will abort on a software break when emulation is
+	  not enabled.
+
+
+endmenu
+
+

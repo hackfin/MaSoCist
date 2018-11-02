@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<section id="sec_uart">
+  <title>Simple UART</title>
+
+  <para>The UARTSimple module implements a primitive UART with limited
+  functionality:</para>
+
+  <itemizedlist>
+    <listitem>
+      <para>8 bit frame size only, one start, one stop bit</para>
+    </listitem>
+
+    <listitem>
+      <para>No parity support</para>
+    </listitem>
+
+    <listitem>
+      <para>No break detection</para>
+    </listitem>
+
+    <listitem>
+      <para>No handshaking</para>
+    </listitem>
+  </itemizedlist>
+
+  <para>The UART is configured by setting the UART_CONTROL::UART_CLKDIV
+  bitfield to a value of <markup>sysclk / 16 / baudrate - 1</markup>. Whenever
+  the clock is changed, the (UART_CONTROL::UART_RESET) bit needs to be set and
+  released as well for proper clock operation.</para>
+
+  <para>When the RX_IRQ_ENABLE bit is set, UART receive events trigger an IRQ
+  on the UART irq line. See <xref linkend="app_custom" /> how this IRQ pin
+  corresponds to the SIC interrupt channels.</para>
+
+  <figure floatstyle="H">
+    <title>UART control register</title>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="img/reg_UART_CONTROL.pdf" />
+      </imageobject>
+    </mediaobject>
+  </figure>
+
+  <para>For simple operation, the RXREADY/TXREADY bits of the UART_STATUS are
+  polled before writing to UART_RXR and UART_TXR, respectively. Error bits are
+  reset upon issue of a UART_CONTROL::UART_RESET toggle. The meaning of the
+  status/error bits is as follows:</para>
+
+  <variablelist>
+    <varlistentry>
+      <term>TXBUSY</term>
+
+      <listitem>
+        <para>When set, characters are left to transmit in the FIFO queue.
+        However, you can keep writing data as long as TXREADY is asserted
+        high</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>FRERR</term>
+
+      <listitem>
+        <para>When set, a framing error occured (less than 8 bits transmitted,
+        or glitch)</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>TXOVR</term>
+
+      <listitem>
+        <para>The transmit FIFO was overrun, i.e. a write occured although
+        TXREADY is low</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term>RXOVR</term>
+
+      <listitem>
+        <para>The receive FIFO was overrun, because the UART_RXR register was
+        not read in time</para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+
+  <para><note>
+      <para>The non-pipelined Zealot CPU may have difficulties keeping up with
+      high baud rates. There is no guarantee of a maximum baud rate and
+      depends on the deployed system configuration and software</para>
+    </note></para>
+
+  <figure floatstyle="H">
+    <title>UART Status register</title>
+
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="img/reg_UART_STATUS.pdf" />
+      </imageobject>
+    </mediaobject>
+  </figure>
+
+  <xi:include href="../device_properties.xml" xpointer="tbl_regmap_uart"
+              xmlns:xi="http://www.w3.org/2001/XInclude" />
+</section>

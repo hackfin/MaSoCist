@@ -1,0 +1,30 @@
+// ZPUng netpp_node/dagobert BMM file
+// (c) 2017, <hackfin@section5.ch>
+//
+
+ADDRESS_MAP zpung_s3 PPC405 0
+    ADDRESS_SPACE memory1 RAMB16 [0x00000000:0x00007FFF]
+        BUS_BLOCK
+            soc/rom/Mram_ram16 RAMB16 [31:30]  [0:4095] OUTPUT = r16.mem;
+            soc/rom/Mram_ram15 RAMB16 [29:28]  [0:4095] OUTPUT = r15.mem;
+            soc/rom/Mram_ram14 RAMB16 [27:26]  [0:4095] OUTPUT = r14.mem;
+            soc/rom/Mram_ram13 RAMB16 [25:24]  [0:4095] OUTPUT = r13.mem;
+            soc/rom/Mram_ram12 RAMB16 [23:22]  [0:4095] OUTPUT = r12.mem;
+            soc/rom/Mram_ram11 RAMB16 [21:20]  [0:4095] OUTPUT = r11.mem;
+            soc/rom/Mram_ram10 RAMB16 [19:18]  [0:4095] OUTPUT = r10.mem;
+            soc/rom/Mram_ram9  RAMB16 [17:16]  [0:4095] OUTPUT = r9.mem;
+
+            soc/rom/Mram_ram8 RAMB16 [15:14]  [0:4095] OUTPUT = r8.mem;
+            soc/rom/Mram_ram7 RAMB16 [13:12]  [0:4095] OUTPUT = r7.mem;
+            soc/rom/Mram_ram6 RAMB16 [11:10]  [0:4095] OUTPUT = r6.mem;
+            soc/rom/Mram_ram5 RAMB16 [9:8]    [0:4095] OUTPUT = r5.mem;
+            soc/rom/Mram_ram4 RAMB16 [7:6]    [0:4095] OUTPUT = r4.mem;
+            soc/rom/Mram_ram3 RAMB16 [5:4]    [0:4095] OUTPUT = r3.mem;
+            soc/rom/Mram_ram2 RAMB16 [3:2]    [0:4095] OUTPUT = r2.mem;
+            soc/rom/Mram_ram1 RAMB16 [1:0]    [0:4095] OUTPUT = r1.mem;
+        END_BUS_BLOCK;
+    END_ADDRESS_SPACE;
+
+
+END_ADDRESS_MAP;
+

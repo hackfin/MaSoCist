@@ -1,0 +1,107 @@
+------------------------------------------------
+-- Generated file
+-- Only modify when having a .chdl filename extension!
+
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+
+library work;
+--  System map definitions:
+	use work.busdef.all;
+
+
+entity efb_wrapper is
+	generic ( NUM_CS : natural := 2);
+	port (
+	-- Port export for efbio pseudo register
+		i2c1_scl             : inout  std_logic;
+		i2c1_sda             : inout  std_logic;
+		i2c1_irqo            : out    std_logic;
+		i2c2_scl             : inout  std_logic;
+		i2c2_sda             : inout  std_logic;
+		i2c2_irqo            : out    std_logic;
+#ifdef CONFIG_MACHXO_EFB_SPI
+		spi_clk              : inout  std_logic;
+		spi_miso             : inout  std_logic;
+		spi_mosi             : inout  std_logic;
+		spi_scsn             : in     std_logic;
+		spi_csn              : out    std_logic_vector(NUM_CS-1 downto 0);
+#endif
+		tc_clki              : in     std_logic;
+		tc_rstn              : in     std_logic;
+		tc_ic                : in     std_logic;
+		tc_in                : in     std_logic;
+		tc_int               : out    std_logic;
+		tc_oc                : out    std_logic;
+		pll0_bus_i           : in     std_logic_vector((1+8-0) - 1 downto 0);
+		pll0_bus_o           : out    std_logic_vector((1+16-0) - 1 downto 0);
+		pll1_bus_i           : in     std_logic_vector((1+8-0) - 1 downto 0);
+		pll1_bus_o           : out    std_logic_vector((1+16-0) - 1 downto 0);
+
+		ce         : in  std_logic;
+		bus_in     : in  wb_WritePort;
+		data_out   : out unsigned(32-1 downto 0);
+		reset      : in  std_logic;
+		clk        : in std_logic
+	);
+end entity efb_wrapper;
+
+
+architecture behaviour of efb_wrapper is
+	signal ce_d : std_logic;
+	signal bus_stb : std_logic;
+	signal bus_stb_d : std_logic;
+	signal data : std_logic_vector(7 downto 0);
+begin
+	-- This is an ugly HACK:
+	bus_stb <= (bus_in.stb or bus_stb_d) and (ce or ce_d);
+
+	process(clk) 
+	begin
+		if rising_edge(clk) then
+			bus_stb_d <= bus_in.stb;
+			ce_d <= ce;
+		end if;
+	end process;
+
+eft_inst: entity work.efb_agneta
+	port map (
+
+        i2c1_scl    =>         i2c1_scl    ,
+        i2c1_sda    =>         i2c1_sda    ,
+        i2c1_irqo   =>         i2c1_irqo   ,
+        i2c2_scl    =>         i2c2_scl    ,
+        i2c2_sda    =>         i2c2_sda    ,
+        i2c2_irqo   =>         i2c2_irqo   ,
+#ifdef CONFIG_MACHXO_EFB_SPI
+        spi_clk     =>         spi_clk     ,
+        spi_miso    =>         spi_miso    ,
+        spi_mosi    =>         spi_mosi    ,
+        spi_scsn    =>         spi_scsn    ,
+        spi_csn     =>         spi_csn     ,
+#endif
+        tc_clki     =>         tc_clki     ,
+        tc_rstn     =>         tc_rstn     ,
+        tc_ic       =>         tc_ic       ,
+        tc_int      =>         tc_int      ,
+        tc_oc       =>         tc_oc       ,
+        pll0_bus_i  =>         pll0_bus_i  ,
+        pll0_bus_o  =>         pll0_bus_o  ,
+        pll1_bus_i  =>         pll1_bus_i  ,
+        pll1_bus_o  =>         pll1_bus_o  ,
+
+        wb_clk_i    => clk,
+        wb_rst_i    => bus_in.rst,
+        wb_cyc_i    => bus_in.cyc,
+        wb_stb_i    => bus_stb,
+        wb_we_i     => bus_in.we,
+        wb_adr_i    => std_logic_vector(bus_in.adr(9 downto 2)), -- 32 bit
+        wb_dat_i    => std_logic_vector(bus_in.dat(7 downto 0)),
+        wb_dat_o    => data,
+        wb_ack_o    => open
+	);
+
+	data_out(7 downto 0) <= unsigned(data);
+
+end architecture;

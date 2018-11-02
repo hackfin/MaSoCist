@@ -1,0 +1,678 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<chapter>
+  <title>Software</title>
+
+  <section id="sec_configure">
+    <title>Configure and build</title>
+
+    <para>The configure system is borrowed from the Linux kernel project and
+    uses a <filename>.config</filename> file for the target configuration. The
+    simulation build system fully relies on Gnu Make. Synthesis is partially
+    (for specific platforms) supported by Makefiles as well.</para>
+
+    <para>The Makefile structure of the SoC project is somewhat modular and
+    described in more detail below.</para>
+
+    <section>
+      <title>Kconfig</title>
+
+      <para>The target configuration is done like in the Linux project,
+      however, the kconfig frontend package needs to be installed. Then, the
+      target can be configured by running the command</para>
+
+      <para><command>make menuconfig</command></para>
+
+      <para>from the top level MaSoCist directory.</para>
+
+      <para>When the kconfig package is set up correctly, a dialog should
+      display as shown in <xref linkend="fig_menuconfig"/>.</para>
+
+      <figure id="fig_menuconfig">
+        <title>Typical menuconfig dialog</title>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="img/menuconfig.png" scale="66"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
+
+      <para>The configuration is saved in the file
+      <filename>.config</filename> (again in the top level MaSoCist
+      directory). This is a simple text file with typical configuration
+      statements like CONFIG_FOO=y. To verify a configuration variable, the
+      text file can be opened directly. It is also possible to manually edit
+      the file and change variables, however care needs to be taken about the
+      syntax and possile configuration variable dependencies. kconfig is able
+      to fix most mistakes, so when the configuration turns out to be invalid,
+      simply run menuconfig again.</para>
+
+      <section>
+        <title>Default configurations</title>
+
+        <para>The vendor specific directories (vendor/$VENDOR) contain default
+        configurations for one or more board supply packages, recognized by
+        the prefix <filename>defconfig_</filename>. To use this configuration,
+        which is basically copying them over the local .config, type
+        "<command>make &lt;board&gt;_config</command>" where &lt;board&gt; is
+        among the supplied defconfig_&lt;board&gt; files.</para>
+
+        <para>To store a valid, changed configuration, type <command>make
+        defconfig</command>. The make rule script will check for changes using
+        the diff tool and ask you if you want to overwrite the previous
+        configuration. When denying the overwrite, it will call an external
+        diff tool (default: meld) to interactively display the changes and let
+        you edit them.</para>
+
+        <para>Note that the defconfig rule will choose the default board name
+        to generate a defconfig_board file in your default vendor directory.
+        If you have different variants for one board, use the
+        <varname>CONFIG_PLAT_EXTENSION</varname> variable to name your
+        specific configuration variant.</para>
+      </section>
+    </section>
+
+    <section>
+      <title>Makefiles</title>
+
+      <para>Every subdirectory that contains configureable modules typically
+      contains a Makefile which is included from a superiour Makefile. Plus,
+      several auxiliary make files with the *.mk suffix are included from the
+      top level build Makefiles.</para>
+
+      <para>The list of supporting Makefiles:</para>
+
+      <variablelist>
+        <varlistentry>
+          <term>config.mk</term>
+
+          <listitem>
+            <para>Contains system environment specific settings. Edit this
+            file to configure your toolchain paths.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>platform.mk</term>
+
+          <listitem>
+            <para>Contains platform specific configuration settings</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>gensoc.mk</term>
+
+          <listitem>
+            <para>Gensoc specific build rules</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>generate.mk</term>
+
+          <listitem>
+            <para>All rules for VHDL file generation</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>hdl/vhdlconfig.mk</term>
+
+          <listitem>
+            <para>Generates a VHDL configuration package from the Kconfig
+            configuration</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>hdl/core/zpu.mk</term>
+
+          <listitem>
+            <para>ZPU core specific build rules</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>sim/libsim.mk</term>
+
+          <listitem>
+            <para>Simulation library specific build rules</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>syn/lattice/diamond_proj.mk</term>
+
+          <listitem>
+            <para>Makefile to create TCL helper scripts to import files to a
+            Diamond project</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>syn/xilinx/ise_proj.mk</term>
+
+          <listitem>
+            <para>Makefile to create TCL helper scripts to import files to a
+            ISE project</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+
+      <para>Some build processes depend on external tools whose location must
+      be customized to the local machine settings. These settings are
+      typically made in <filename>vendor/$VENDOR/local_config.mk</filename>.
+      For example, to configure the diff tool to be the 'meld' application,
+      you'll find a line like</para>
+
+      <programlisting>DIFF = meld</programlisting>
+
+      <section>
+        <title>Typical make rules</title>
+
+        <para>A make rule defines how things should be built and are executed
+        by "<command>make</command> &lt;rule&gt;" They should be only executed
+        from the top level or inside the <filename>sim/</filename> or
+        <filename>syn/</filename> directory. All other Makefiles, especially
+        those in lower directory hierarchies, require environment
+        settings.</para>
+
+        <variablelist>
+          <varlistentry>
+            <term>sim</term>
+
+            <listitem>
+              <para>Builds the top level simulation entity</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>syn</term>
+
+            <listitem>
+              <para>For supported platforms, the synthesis is run and a bit
+              file is typically generated. If automated build is not
+              supported, a TCL script is generated to ease the import into an
+              existing project.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>run</term>
+
+            <listitem>
+              <para>The simulation is run for a certain time. See
+              <filename>sim/Makefile</filename> for the exact parameters and
+              output files.</para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+      </section>
+    </section>
+
+    <section>
+      <title>C preprocessing</title>
+
+      <para>The C preprocessor <application>cpp</application> is used for
+      conditional code generation according to the CONFIG variables generated
+      by the kconfig tool. This is also used for some VHDL files. The source
+      files are given the .chdl extension. If you edit the generated VHDL
+      files, keep in mind the changes will not be permanent, as they will be
+      overwritten by the next build procedure. A warning in the file header
+      will typically remind you again of this detail.</para>
+    </section>
+
+    <section id="sec_overlay">
+      <title>Large programs - function overlay</title>
+
+      <para>If the <varname>CONFIG_SCACHE_INSN</varname> option is present in
+      the board supply package, larger programs than the actual block ram size
+      allows can be created. Depending on the board configuration, functions
+      may be placed into the extended program area by default, or a special
+      attribute might be required to decorate the function. See also <xref
+      linkend="sec_insncache"/>.</para>
+
+      <para>Which of these applies, is easily determined by the first letter
+      of the board supply package name. If it begins with 'a', then you will
+      need to use the decorator attribute. If it begins with 'c' or later, the
+      linker script will put all non-decorated program code into extended
+      memory. For details, please look at the generated map files or linker
+      script of your board supply package. Also, the SoC specific section
+      might describe implementation specific details.</para>
+
+      <important>
+        <para>Up to the ZPUng v1 architecture, program code in extended memory
+        can not be single step debugged using ICE. When single stepping inside
+        exception code, the debugger may freeze.</para>
+      </important>
+
+      <section>
+        <title>Linker scripting</title>
+
+        <para>Where a program section is placed, is determined by the linker
+        and a memory map specified in the linker script that is specific to
+        each board supply package and memory configuration.</para>
+
+        <para>By default, code ends up in the <varname>.text</varname>
+        segment. If the special attribute define
+        <varname>EXTERN_PROG</varname> is used, code is placed in the
+        <varname>.ext.text</varname> section. The linker script snippet below
+        defines the placement of functions from this segment in the
+        <varname>xprog</varname> section. Likewise, read-only data that is no
+        program code is allocated into the <varname>xdata</varname>
+        segment.</para>
+
+        <programlisting>  /* external cached data area: */
+  .ext.text           :
+  {
+    _ext_program_memory = .;
+    KEEP (*(.ext.text))
+  } &gt; xprog
+
+  . = 0x10000;
+  .ext.rodata         :
+  {
+    _ext_data_memory = .;
+    /* Put bitmap files into ext ROM */
+    bm*.o(.rodata)
+    *(.ext.rodata)
+  } &gt; xdata
+</programlisting>
+
+        <para>The sections are typically defined in a board layout specific
+        separate linker script that is included or in the header of the active
+        linker script. The section memory layout must specifically match the
+        memory map of the SoC, as shown in the SoC specific memory map <xref
+        linkend="sec_soc_mmap"/>. If the cache is not enabled at all, the
+        <varname>l1cache</varname> area can be used for normal program/data
+        storage. The snippet below shows an example MEMORY
+        specification.</para>
+
+        <programlisting>MEMORY
+{
+  l1ram(rwx): ORIGIN = 0x0000, LENGTH = 0x2000
+  l1cache(rwx): ORIGIN = 0x2000, LENGTH = 0x2000
+  xprog(r): ORIGIN = 0x08000, LENGTH = 0x8000
+  xdata(r): ORIGIN = 0x20000, LENGTH = 0x20000
+}
+</programlisting>
+      </section>
+
+      <section>
+        <title>Program layout and timing issues</title>
+
+        <para>Note that loading from SPI flash takes some time. It is
+        therefore recommended, to make sure that frequently used code is not
+        spread across different pages, unless code in l1ram is called.</para>
+
+        <warning>
+          <para>Currently, functions can not cross a page boundary. Make sure
+          your functions are completely inside one cache page!</para>
+        </warning>
+
+        <para>To examine the precise memory layout of the program, a map file
+        is typically output during compilation. More advanced linker scripts
+        may assert that no code inside a function can overlap the page
+        boundaries.</para>
+
+        <para>Also important to know is that interrupt routines must not be in
+        extended program memory, since the exception handlers are
+        NON-reentrant. Even if reentrancy would be implemented, it would
+        massively slow down execution due to frequent external memory
+        access.</para>
+
+        <para>During an exception handler, no other interrupts are allowed
+        from ZPUng v1.1 on, unlike v1.0. This change was necessary to address
+        safety issues with repeated spurious interrupts that could under
+        certain conditions cause unwanted reentrancy.</para>
+      </section>
+    </section>
+  </section>
+
+  <section>
+    <title>Firmware</title>
+
+    <para>The software running on the FPGA is named 'firmware' in this
+    reference. It is cross compiled using the target toolchain within the
+    general HDL build process.</para>
+
+    <section>
+      <title>Shell</title>
+
+      <para>The standard board supply packages are featured by a simple UART
+      shell and a few test functions. Users wishing to test their hardware on
+      a low level can do so easily by extending the
+      <function>exec_cmd()</function> function of their board supply test code
+      (naming scheme <filename>test_$PLATFORM.c</filename>)</para>
+    </section>
+
+    <section>
+      <title>Register access</title>
+
+      <para>The firmware source code is written in C using a GNU cross
+      compiler toolchain. Direct register access is supported through a few
+      macros by using generated register definitions
+      (<filename>soc_register.h</filename>). Programmers who wish to write
+      their own drivers are encouraged to include the mid level auxiliary
+      header <filename>driver.h</filename> and access registers as
+      follows:</para>
+
+      <programlisting>#include "driver.h"
+
+...
+// Set GPIO port 0 bits (14..15) to out:
+MMR(Reg_GPIO_GPIO_OUT) = 0xc000;
+</programlisting>
+
+      <para>Note that some CPU cores do not care about the effective register
+      width, plus big endian (default) and little endian aspects become
+      relevant. On the default MaSoCist SoC distribution, all registers are
+      accessed using the MMR() macro. Other SoC variants using the PyPS core
+      may use macros of the sort MMR16(), etc.</para>
+
+      <para>When accessing a register of width &lt; 32 bits, the upper bits
+      are undefined and can be garbage.</para>
+
+      <important>
+        <para>The most effective code is produced on the Zealot when accessing
+        the bus using a 32 bit wide access. If you assign the result of an MMR
+        query to a variable with higher width than the actual register you
+        were reading, you have to mask out the undefined MSBs before
+        comparison!</para>
+      </important>
+    </section>
+
+    <section id="sec_romgen">
+      <title>ROM file generation</title>
+
+      <para>The ROM builder utility <filename>utils/buildrom.py</filename> is
+      a Python script converting from an ELF format into a set of VHDL files
+      that can be used to generate a preinitialized DRAM emulating a Boot ROM.
+      It currently supports ZPU and MIPS architectures. It relies on an open
+      source elf.py module, also included in the utils directory. The
+      generation rules are found in generate.mk.</para>
+
+      <para>buildrom.py relies on the external 'intelhex' python module. You
+      may have to obtain this module separately.</para>
+
+      <para>The Makefile will build two files from your program code:</para>
+
+      <variablelist>
+        <varlistentry>
+          <term>rom_generated.vhd</term>
+
+          <listitem>
+            <para>The built in boot loader code, used to initialized the block
+            RAM</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>flashdata.bin</term>
+
+          <listitem>
+            <para>The overlay program and data for the SPI flash user
+            partition</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+
+      <para>The synthesis tool will typically build a
+      <filename>.bit</filename> file from your design. An extra script will
+      append the binary image <filename>flashdata.bin</filename> to this bit
+      file which will be used to program the flash.</para>
+
+      <para>There are also options to use in-system upgrade functionality for
+      a user program. See SoC specific section <xref linkend="app_custom"/>
+      whether these options are present.</para>
+    </section>
+  </section>
+
+  <section>
+    <title>gdb - the GNU debugger</title>
+
+    <para>The following sections describe how to access the SoC ZPU core
+    through the GNU debugger for non-intrusive debugging (to the most possible
+    extent on this architecture).</para>
+
+    <section>
+      <title>uniproxy - the SoC debug agent</title>
+
+      <para>The uniproxy debug server (former gdbproxy/rproxy) is a small
+      debug agent to allow remote debugging of a target featured by
+      StdTAP/JTAG. It listens on a TCP port (standard: 2000) for incoming
+      connections from a GNU debugger. It is making use of the uniemu TAP
+      library that supports several processor architectures through a uniform
+      test access port implementation (StdTAP IP core). It also supports
+      various JTAG TAPs of different FPGA manufacturers. It is typically
+      started from a linux console as follows:</para>
+
+      <para><command>gdbproxy zpu</command></para>
+
+      <para>and responds with the following output upon successful detection
+      of the SoC:</para>
+
+      <screen>Remote proxy for GDB, v0.9.302, Copyright (C) 1999 Quality Quorum Inc.
+Blackfin target adaption (C) 2005-2012 and
+StdTap generic interface [ZPU, MIPS, plm32, FLiX]
+            (c) 2013 by www.section5.ch
+
+notice:    Found FTDI unbranded adapter device
+notice:    Setting clock to 6 MHz (wait cycle: 0)
+IR size: 8
+Trying Lattice ECP3 35EA, got id c2048080
+Found Lattice ECP3 35EA
+Got user id (cmd 17): f77db57b, reverse: deadbeef
+notice:    Detected 1 device(s)
+notice:    Selecting CPU 0
+notice:    gdbproxy: waiting on TCP port 2000
+</screen>
+
+      <para>Now, connection to the target SoC can be made.</para>
+
+      <note>
+        <para>From the v1.0 package release on, the proxy is called 'uniproxy'
+        to avoid conflicts with other gdbproxy distributions</para>
+      </note>
+
+      <para>If the device is not found, you might have to use a different port
+      using the <option>--port</option> option.</para>
+
+      <section>
+        <title>Virtual gdbproxy</title>
+
+        <para>As part of a Co-Simulation extension to the SoC project, a
+        special proxy version is supplied to connect to the running simulation
+        via a virtual JTAG adapter. This allows to live-debug the simulated
+        CPU and SoC over gdb.</para>
+      </section>
+    </section>
+
+    <section>
+      <title>Connecting to the Target</title>
+
+      <para>Start GDB using the command zpu-elf-gdb and provide the firmware
+      executable of the SoC as argument, for example:</para>
+
+      <para><command>zpu-elf-gdb main</command></para>
+
+      <para>Then make a target connection using</para>
+
+      <para>(gdb) <command>target remote :2000</command></para>
+
+      <para>Once connected, gdb shows the current position the program was
+      interrupted in, for example:</para>
+
+      <screen>0x0000030b in _neqbranch ()
+(gdb) 
+</screen>
+
+      <para>The program can then be resumed using the
+      <command>continue</command> command and interrupted again by using
+      <command>Ctrl-C</command>.</para>
+    </section>
+
+    <section id="sec_download">
+      <title>Program download</title>
+
+      <para>To load the program onto the target at runtime, it is important to
+      know that the SoC core is a stack machine and requires a valid stack
+      pointer address in order to operate correctly by In Circuit Emulation.
+      Therefore the core must be reset using <command>monitor reset</command>
+      before download. It is no longer required to explicitely set the stack
+      pointer.</para>
+
+      <programlisting>define init
+        monitor reset
+        load
+end
+</programlisting>
+
+      <para>To load the current main program, only type
+      <command>init</command>:</para>
+
+      <screen>Loading section .fixed_vectors, size 0x400 lma 0x0
+Loading section .init, size 0x7 lma 0x400
+Loading section .text, size 0x16e8 lma 0x407
+...
+Start address 0x0, load size 8857
+Transfer rate: 11809 bits/sec, 98 bytes/write.
+</screen>
+
+      <para>For all other gdb commands, please type <command>help</command> or
+      use the various gdb documentation resources from the internet.</para>
+
+      <note>
+        <para><command>monitor reset</command> may not fully reset all logic,
+        depending on your peripheral configuration. If peripheral logic
+        prevents the CPU from booting correctly, like for example interrupts,
+        you may have implement further reset scripts to restore default
+        register values. See <xref linkend="sec_reginit"/> for specific reset
+        initialization options.</para>
+      </note>
+
+      <para>When downloading a large program using function overlays the jump
+      addresses may have changed. Therefore, functions that call code from
+      non-updated ROM will likely crash or produce unexpected results. When
+      testing programs via RAM downloads, make sure your ROM is up to date or
+      not called (CONFIG_SCACHE_INSN disabled). Another possibility is to
+      avoid relative jump addresses by using the
+      <option>--mno-callpcrel</option> flag during compilation
+      (<varname>CFLAGS</varname> variable in the Makefile).</para>
+
+      <para>If the startup procedure of your program code is not depending on
+      any global variables that can be altered, you can use <command>monitor
+      reset</command> to restart. If your program may have been altered
+      however, be it a malfunction or a feature, you will have to reload it
+      into the block RAM.</para>
+    </section>
+
+    <section>
+      <title>Debugging and interactive register dumps</title>
+
+      <section>
+        <title>Native microcode debugging</title>
+
+        <para>The ZPU small core provides an emulation feature for a few
+        assembly instructions that are not implemented in hardware. Therefore,
+        when interrupting the program, the CPU may be stuck in the emulation
+        routines ('native microcode') outside the firmware program. In this
+        case, the backtrace (<command>bt</command>) may not show the correct
+        stack trace. To return to a CPU state where the trace is valid, use
+        the <command>next</command> command (or just <command>n</command>) to
+        continue until exit:</para>
+
+        <para><screen>(gdb) n
+Single stepping until exit from function _neqbranch, 
+which has no line number information.
+0x00000577 in delay (i=32620) at main.c:59
+59            while (j--) { asm("nop"); }
+</screen></para>
+
+        <para>It is recommended to use breakpoints as far as possible to stop
+        the program at specific points. If fully atomic assembly debugging of
+        a program is required, there are several options:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para>Use ZPU variant with full hardware instruction
+            implementation</para>
+          </listitem>
+
+          <listitem>
+            <para>Use ZPUng with emulation masking option (EMUMASK bit set,
+            this is the default operation). This feature is not
+            documented.</para>
+          </listitem>
+        </itemizedlist>
+
+        <note>
+          <para>On the ZPUng, non-native microcode (outside the 0x0-0x400
+          area) can not be debugged.</para>
+        </note>
+
+        <para>The uniproxy debug agent automatically detects the used CPU type
+        via JTAG, thus no further configuration by the user should be
+        required.</para>
+      </section>
+
+      <section>
+        <title>Local variables</title>
+
+        <para>Typically, when breaking inside a function, it will display the
+        local variables. On the ZPU/Zealot default platform, these variables
+        may not be correct or not be displayed at all if optimization flags
+        are used or if the <option>--speed=0</option> option is given to
+        uniproxy (disables pseudo register stack reads). For critical
+        applications that require repeated dumps of variables, it is
+        recommended to use a global variable in memory. The reason for this
+        behaviour is that the ZPU architecture is a stack machine and full
+        context tracking is limited on the current GCC toolchain.</para>
+      </section>
+
+      <section>
+        <title>Interactive register inspection</title>
+
+        <para>For interactive register inspection, gensoc creates a GDB
+        auxiliary script <filename>soc_mmr.gdb</filename> for the entire SoC
+        register map. This provides a quick method to dump the bit fields or
+        the value of a register.</para>
+
+        <para>For example, a verbose dump of the IRQ SIC_ILAT register is
+        executed by the following command sequence:</para>
+
+        <screen>(gdb) source soc_mmr.gdb
+(gdb) dump_irq_sic_ilat 0
+
+Address: 00008304 SIC_ILAT:	00000080
+</screen>
+
+        <para>The '0' given after the dump call is the device index, in case
+        there are several instances of a device controller. Single device
+        units do not require the '0' on single instance devices.</para>
+
+        <note>
+          <para>The script does not explicitely check the bit width of the
+          register being dumped. The MSBs may contain garbage when accessing
+          registers with width &lt; 32 bits.</para>
+        </note>
+
+        <para>The <filename>.gdbinit</filename> startup file of the firmware
+        (see <filename><filename>sw/</filename></filename> folder) contains
+        various debug scripts to obtain the current register status. Likewise,
+        manual configuration of hardware registers can take place. For
+        example, the following code sets a GPIO output:</para>
+
+        <programlisting linenumbering="numbered">source soc_mmr.gdb
+
+define initLED
+    set *$Reg_GPIO_GPIO_OUT = 0x8000
+    set *$Reg_GPIO_GPIO_DIR = 0x8000
+end</programlisting>
+      </section>
+    </section>
+  </section>
+</chapter>

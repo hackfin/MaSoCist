@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE appendix PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<appendix>
+  <title>Known issues</title>
+
+  <para>This appendix lists known bugs for cores and peripheral hardware
+  versions.</para>
+
+  <section>
+    <title>CPU cores</title>
+
+    <section>
+      <title>Zealot small</title>
+
+      <para>For these issues, no workaround is present.</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Too frequent interrupts can trash the stack</para>
+        </listitem>
+
+        <listitem>
+          <para>Emulation steps inside microcode</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+
+    <section>
+      <title>ZPUng overview</title>
+
+      <para>Known issues about the ZPUng architecture are listed in <xref
+      linkend="tbl_issues"/>. For a detailed workaround description, see
+      below.</para>
+
+      <table id="tbl_issues">
+        <title>ZPUng issues</title>
+
+        <tgroup cols="4">
+          <colspec colwidth="1*"/>
+
+          <colspec align="justify" colwidth="4*"/>
+
+          <colspec colwidth="1*"/>
+
+          <colspec colwidth="1*"/>
+
+          <thead>
+            <row>
+              <entry align="center">Version</entry>
+
+              <entry align="center">Description</entry>
+
+              <entry align="center">Workaround</entry>
+
+              <entry align="center">Fixed</entry>
+            </row>
+          </thead>
+
+          <tbody>
+            <row>
+              <entry>0alpha</entry>
+
+              <entry>Exception/IRQ handlers require at least four cycles from
+              clearing the IPEND register until return</entry>
+
+              <entry>n</entry>
+
+              <entry>v1</entry>
+            </row>
+
+            <row>
+              <entry>0alpha</entry>
+
+              <entry>ICE single stepping would under certain conditions freeze
+              the system (IRQ during immediate opcode)</entry>
+
+              <entry>n</entry>
+
+              <entry>v1</entry>
+            </row>
+
+            <row>
+              <entry>0alpha</entry>
+
+              <entry>Interrupts may no longer be triggered when using the
+              reentrancy software trick</entry>
+
+              <entry>y</entry>
+
+              <entry>v1</entry>
+            </row>
+
+            <row>
+              <entry>v1.0</entry>
+
+              <entry>Stack trashing (underrun) not guarded. Program will just
+              crash.</entry>
+
+              <entry>y</entry>
+
+              <entry>-</entry>
+            </row>
+
+            <row>
+              <entry>1.0</entry>
+
+              <entry>Code in extended program memory can not be
+              debugged</entry>
+
+              <entry>y</entry>
+
+              <entry>-</entry>
+            </row>
+
+            <row>
+              <entry>1.0</entry>
+
+              <entry>Data in extended ROM area can not be dumped
+              directly</entry>
+
+              <entry>y</entry>
+
+              <entry>-</entry>
+            </row>
+
+            <row>
+              <entry>1.0</entry>
+
+              <entry>Low priority interrupt handlers can become accidentally
+              reentrant</entry>
+
+              <entry>n</entry>
+
+              <entry>v1.1</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </section>
+
+    <section>
+      <title>ZPUng v0</title>
+
+      <para>All issues below are fixed in v1</para>
+
+      <section>
+        <title>Issues without workarounds</title>
+
+        <para><itemizedlist>
+            <listitem>
+              <para>Exception/IRQ handlers require at least four cycles from
+              clearing the IPEND register until return</para>
+            </listitem>
+
+            <listitem>
+              <para>ICE single stepping would under certain conditions freeze
+              the system (IRQ during immediate opcode)</para>
+            </listitem>
+          </itemizedlist></para>
+      </section>
+
+      <section>
+        <title>Issues with workarounds</title>
+
+        <variablelist>
+          <varlistentry>
+            <term>Interrupts may no longer be triggered when using the
+            reentrancy software trick</term>
+
+            <listitem>
+              <para>Make sure to check for other interrupts inside a handler
+              being serviced and clear ALL IPEND bits at the end of the
+              routine. In very rare cases, if current IRQ reentrancy is
+              wanted, you may have to use semaphores with guaranteed atomic
+              behaviour.</para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+      </section>
+    </section>
+
+    <section>
+      <title>ZPUng v1 rev0</title>
+
+      <section>
+        <title>Issues without workarounds</title>
+
+        <para><variablelist>
+            <varlistentry>
+              <term>Stack trashing (underrun) not guarded. Program will just
+              crash.</term>
+
+              <listitem>
+                <para>If stack underrun occurs due to recursive calling of a
+                function, undefined behaviour may occur. This can be fixed
+                using the WPU from all 'c' architectures (cranach, ...)</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term>Low priority interrupt handlers can become accidentally
+              reentrant</term>
+
+              <listitem>
+                <para>If a low priority IRQ routine is interrupted by a high
+                priority interrupt, the interrupt rearming logic may cause a
+                situation where, after returning from the high prio handler,
+                the low prio IRQ handler interrupts itself again. This is
+                causing unwanted reentrancy, as shown in <xref
+                linkend="fig_irqfailure1"/>. This could cause a counter to be
+                incremented twice. Fixed in v1rev1.</para>
+
+                <figure id="fig_irqfailure1">
+                  <title>IRQ failure scenario</title>
+
+                  <mediaobject>
+                    <imageobject>
+                      <imagedata fileref="img/irq_scenario1.png" format="PNG"/>
+                    </imageobject>
+                  </mediaobject>
+                </figure>
+              </listitem>
+            </varlistentry>
+          </variablelist></para>
+      </section>
+
+      <section>
+        <title>Issues with workarounds</title>
+
+        <variablelist>
+          <varlistentry>
+            <term>Code in extended program memory can not be debugged</term>
+
+            <listitem>
+              <para>Place the routines in the .text default area first. Once
+              you have found them to be stable, you can move them to the
+              extended program memory. For examining the data, see
+              below.</para>
+
+              <para>Experimental software based workarounds do exist, however
+              they don't work with the standard debugger. .</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>Data in extended ROM area can not be dumped directly</term>
+
+            <listitem>
+              <para>Set a break point in the cache handler after the data has
+              been read from the ROM and examine the data from the cache area.
+              Use gdb helper scripts to calculate the proper address.</para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+      </section>
+    </section>
+
+    <section>
+      <title>ZPUng v1 rev1</title>
+
+      <para>Change in behaviour:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>During an exception in service, IRQs can no longer interrupt
+          the exception handler, even if the exception cause is cleared. The
+          pending interrupt request is serviced after a IUNLK (opcode 0xf)
+          instruction is issued.</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+  </section>
+
+  <section>
+    <title>Peripheral hardware 'agathe' and 'beatrix'</title>
+
+    <section>
+      <title>Revision 0.1</title>
+
+      <para>This section applies to the hardware definition v0.1. All listed
+      issues are fixed in the v0.3 revision, if not noted otherwise.</para>
+
+      <section>
+        <title>SIC</title>
+
+        <itemizedlist>
+          <listitem>
+            <para>No hardware support for reentrant interrupt services</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section>
+        <title>Timer and PWM</title>
+
+        <itemizedlist>
+          <listitem>
+            <para>Changing the PWMCLKDIV register would not reset the timer.
+            This could cause a somewhat nondeterministic behaviour of the
+            PWM</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section>
+        <title>SPI</title>
+
+        <itemizedlist>
+          <listitem>
+            <para>Pre-Division of system clock for SPI is too high, therefore
+            SPI max. clock is limited</para>
+
+            <itemizedlist>
+              <listitem>
+                <para>v0.2 uses predivider 4 instead of 16</para>
+              </listitem>
+
+              <listitem>
+                <para>v0.3 introduces BYPASS bit for highest possible
+                speed</para>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+        </itemizedlist>
+      </section>
+    </section>
+
+    <section>
+      <title>Revision 0.2</title>
+
+      <section>
+        <title>SIC</title>
+
+        <itemizedlist>
+          <listitem>
+            <para>When exception handling interrupt had lower priority and a
+            simultaneous high priority event occured, the higher priority
+            interrupt service handler would be executed instead</para>
+
+            <itemizedlist>
+              <listitem>
+                <para>0.3 SICv2 uses specific exception (NMI) input with
+                highest priority, but allows lower priority IRQs to occur once
+                the exception cause has been cleared.</para>
+              </listitem>
+            </itemizedlist>
+
+            <note>
+              <para>Exceptions are BY DEFAULT non-reentrant!</para>
+            </note>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section>
+        <title>Timer and PWM</title>
+
+        <itemizedlist>
+          <listitem>
+            <para>PWM_WIDTH and PWM_PERIOD were swapped in behaviour. This did
+            not have any effect with the used pwm.c driver. Fixed in 0.3, make
+            sure to use the functions in pwm.c</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+    </section>
+  </section>
+
+  <section>
+    <title>Peripheral hardware 'bertram'</title>
+
+    <section>
+      <title>Revision 0.3</title>
+
+      <section>
+        <title>PWMPlus</title>
+
+        <itemizedlist>
+          <listitem>
+            <para>Experimental: Has swapped register behaviour with PWM. Fixed
+            in 0.4</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+    </section>
+  </section>
+
+  <section>
+    <title>Peripheral hardware 'cordula', 'cranach'</title>
+
+    <note>
+      <para>Cordula/Cranach use different CPU cores, but same peripherals and
+      mandatory MMR 32 bit access width</para>
+    </note>
+
+    <section>
+      <title>Revision 0.0</title>
+
+      <para>All listed issues are fixed in v0.1.</para>
+
+      <section>
+        <title>SIC</title>
+
+        <itemizedlist>
+          <listitem>
+            <para>Interrupt handling could show false behaviour in simulation
+            model. Does not apply to hardware!</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+    </section>
+
+    <section>
+      <title>Revision 0.1</title>
+
+      <para>This section applies to the hardware definition v0.1. All listed
+      issues are fixed in the v0.3 revision, if not noted otherwise.</para>
+
+      <section>
+        <title>DMA</title>
+
+        <itemizedlist>
+          <listitem>
+            <para>DMA engine revised for one clock cycle delay, but higher
+            speed and compatibility to vendor specific FIFOs</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section>
+        <title>ScratchPad memory 'cranach'</title>
+
+        <itemizedlist>
+          <listitem>
+            <para>On cranach, only the ScratchPad memory is DMA capable. On
+            cordula, all data memory can be accessed by DMA.</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+    </section>
+  </section>
+
+  <section>
+    <title>Gensoc issues</title>
+
+    <variablelist>
+      <varlistentry>
+        <term>Wishbone wait states on custom peripherals not supported</term>
+
+        <listitem>
+          <para>This is a current limitation of the perio_mmr module generated
+          by the gensoc v0.2 release. You may have to use manual fixes for the
+          time being.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+</appendix>

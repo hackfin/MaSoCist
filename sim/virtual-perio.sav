@@ -1,0 +1,139 @@
+[*]
+[*] GTKWave Analyzer v3.3.70 (w)1999-2016 BSI
+[*] Mon Oct 30 16:03:59 2017
+[*]
+[dumpfile] "(null)"
+[savefile] "/home/strubi/src/vhdl/masocist/sim/virtual-perio.sav"
+[timestart] 0
+[size] 1110 792
+[pos] 477 34
+*-36.096077 55240000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] soc.
+[treeopen] soc.perio.
+[treeopen] soc.perio.dmaa_multi(0).inst_dev_dmaa.
+[treeopen] soc.perio.dmaa_multi(1).
+[treeopen] soc.perio.dmaa_multi(1).inst_dev_dmaa.
+[treeopen] soc.perio.inst_dev_spi.
+[treeopen] soc.perio.inst_dev_sys.
+[treeopen] soc.perio.spad_multi(0).
+[treeopen] soc.perio.spad_multi(0).inst_custom_spad.
+[treeopen] soc.perio.spad_multi(1).
+[treeopen] soc.perio.spad_multi(1).inst_custom_spad.
+[treeopen] soc.zpucore.
+[sst_width] 257
+[signals_width] 285
+[sst_expanded] 1
+[sst_vpaned_height] 341
+@8022
+[color] 3
+soc.zpucore.pc_r[18:0]
+@20000
+-
+-
+@8022
+[color] 5
+soc.zpucore.sp_r[18:2]
+@20000
+-
+-
+@22
+soc.io_read[31:0]
+@200
+-PERIO
+@28
+soc.perio.ce_dev_dmaa[1:0]
+@c00028
+soc.perio.ce_dev_spad[1:0]
+@28
++{soc.perio.ce_dev_spad[1]} (0)soc.perio.ce_dev_spad[1:0]
++{soc.perio.ce_dev_spad[0]} (1)soc.perio.ce_dev_spad[1:0]
+@1401200
+-group_end
+@200
+-SPAD
+@28
+soc.perio.spad_multi(0).inst_custom_spad.ce
+@22
+soc.perio.spad_multi(0).inst_custom_spad.data_out[31:0]
+soc.perio.spad_multi(0).inst_custom_spad.addr_wr[15:0]
+soc.perio.spad_multi(0).inst_custom_spad.addr_rd[15:0]
+soc.perio.spad_multi(0).inst_custom_spad.data_o[7:0]
+@28
+soc.perio.spad_multi(1).inst_custom_spad.ce
+@200
+-TX_DMA
+@28
+soc.perio.dmaa_multi(0).inst_dev_dmaa.inst_core_dma.dmaio_doneirq
+soc.perio.dmaa_multi(0).inst_dev_dmaa.inst_core_dma.dst_busy
+soc.perio.dmaa_multi(0).inst_dev_dmaa.inst_core_dma.src_busy
+soc.perio.dmaa_multi(0).inst_dev_dmaa.inst_dma_engine.dma_enabled
+soc.perio.dmaa_multi(0).inst_dev_dmaa.select_dp
+soc.perio.dmaa_multi(0).inst_dev_dmaa.inst_dma_engine.dma_running
+@22
+soc.perio.dmaa_multi(0).inst_dev_dmaa.addr_desc[15:2]
+soc.perio.dmaa_multi(0).inst_dev_dmaa.io_addr_s[15:0]
+soc.perio.dmaa_multi(0).inst_dev_dmaa.inst_dma_engine.next_desc[13:0]
+soc.perio.dmaa_multi(0).inst_dev_dmaa.inst_dma_engine.ctrl_start_desc[13:0]
+soc.perio.dmaa_multi(0).inst_decoder_dmaa.data_in[31:0]
+@28
+soc.perio.dmaa_multi(0).inst_decoder_dmaa.we
+@22
+[color] 3
+soc.perio.dmaa_multi(0).inst_dev_dmaa.inst_decoder_dma.addr[4:0]
+@28
+[color] 3
+soc.perio.dmaa_multi(0).inst_dev_dmaa.inst_decoder_dma.we
+@22
+[color] 3
+soc.perio.dmaa_multi(0).inst_dev_dmaa.inst_decoder_dma.data_in[15:0]
+soc.perio.dmaa_multi(0).inst_dev_dmaa.inst_core_dma.dmaio_ptr[15:0]
+@28
+soc.perio.dmaa_multi(0).inst_dev_dmaa.inst_core_dma.dmaio_irqen
+soc.perio.dmaa_multi(0).inst_dev_dmaa.inst_core_dma.dmaio_trigger
+@22
+soc.perio.dmaa_multi(0).inst_dev_dmaa.data[15:0]
+soc.perio.dmaa_multi(0).inst_dev_dmaa.inst_dma_engine.addr[13:0]
+@28
+soc.perio.dmaa_multi(0).inst_dev_dmaa.inst_dma_engine.ctrl_trigger
+@200
+-RX_DMA
+@28
+soc.perio.dmaa_multi(1).inst_dev_dmaa.dma_enabled
+soc.perio.dmaa_multi(1).inst_dev_dmaa.inst_core_dma.dmaio_doneirq
+@22
+soc.perio.dmaa_multi(1).inst_dev_dmaa.inst_core_dma.dmaio_ptr[15:0]
+soc.perio.dmaa_multi(1).inst_dev_dmaa.inst_core_dma.dmaio_curcount[15:0]
+@28
+soc.perio.dmaa_multi(1).inst_dev_dmaa.busy_src
+soc.perio.dmaa_multi(1).inst_dev_dmaa.busy_dst
+soc.perio.dmaa_multi(1).inst_dev_dmaa.inst_dma_engine.dma_running
+@22
+soc.perio.dmaa_multi(1).inst_dev_dmaa.inst_dma_engine.next_desc[13:0]
+@200
+-SPAD_B
+@22
+soc.perio.spad_multi(1).inst_custom_spad.addr_wr[15:0]
+@28
+soc.perio.spad_multi(1).inst_custom_spad.io_we
+@22
+soc.perio.spad_multi(1).inst_custom_spad.data_i[7:0]
+@c00022
+soc.perio.inst_dev_sic.irq[3:0]
+@28
++{soc.perio.inst_dev_sic.irq[3]} (0)soc.perio.inst_dev_sic.irq[3:0]
++{soc.perio.inst_dev_sic.irq[2]} (1)soc.perio.inst_dev_sic.irq[3:0]
++{soc.perio.inst_dev_sic.irq[1]} (2)soc.perio.inst_dev_sic.irq[3:0]
++{soc.perio.inst_dev_sic.irq[0]} (3)soc.perio.inst_dev_sic.irq[3:0]
+@1401200
+-group_end
+@800022
+soc.perio.inst_dev_sic.ipend[3:0]
+@28
++{soc.perio.inst_dev_sic.ipend[3]} (0)soc.perio.inst_dev_sic.ipend[3:0]
++{soc.perio.inst_dev_sic.ipend[2]} (1)soc.perio.inst_dev_sic.ipend[3:0]
++{soc.perio.inst_dev_sic.ipend[1]} (2)soc.perio.inst_dev_sic.ipend[3:0]
++{soc.perio.inst_dev_sic.ipend[0]} (3)soc.perio.inst_dev_sic.ipend[3:0]
+@1001200
+-group_end
+[pattern_trace] 1
+[pattern_trace] 0

@@ -1,0 +1,7 @@
+-- EFB input declaration
+		spi_clk        : inout  std_logic;
+		spi_miso       : inout  std_logic;
+		spi_mosi       : inout  std_logic;
+		spi_scsn       : in     std_logic;
+		spi_csn        : out    std_logic_vector(1 downto 0);
+

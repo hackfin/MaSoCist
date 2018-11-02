@@ -1,0 +1,35 @@
+
+menu "Common Address configuration"
+	visible if ZEALOT || ZPUNG || ZPUNGV2 || NEO430 || NETPP_CPU
+
+config ADDR_WIDTH
+	int "I/O address width (range)"
+	default "17"
+
+config BRAM_ADDR_WIDTH
+	int "Block RAM address width (range)"
+	default "14"
+
+config MMR_ADDR_BIT
+	int "Memory mapped register address bit"
+	range BRAM_ADDR_WIDTH ADDR_WIDTH
+	default "16"
+	help
+	  This bit defines the address base of the I/O mapped (MMR) memory
+	  space. IMPORTANT: When you change this bit, you will have to regenerate
+	  all the software, plus set the $MMR_OFFSET variable in the gdb scripts,
+	  accordingly. Also note that this defines a new SoC architecture, i.e.
+	  you must define a new SoC description plus use another TAP id.
+	  Note that autodetection by firmware will only work when using a
+	  'downward compatible' access method with MSBs set.
+
+endmenu
+
+# No more support for Little Endian
+# config LITTLE_ENDIAN
+# 	bool "Little endian memory mapping"
+# 	depends on ZPUNG
+# 	default n
+
+# Include all vendor specific CPUs in their Kconfig now
+# include pyps/Kconfig

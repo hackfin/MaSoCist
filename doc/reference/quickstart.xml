@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<chapter>
+  <title>Quickstart</title>
+
+  <section>
+    <title>Prerequisites</title>
+
+    <para>You need a development environment which is typically supplied as a
+    docker container. In this case you do not need to worry about the
+    prerequisites, because everything has been installed "ready to go". If you
+    have obtained the bare tar file distribution, you have to make sure that
+    the following tools are installed on your system in order to run the
+    simulation or generate code. The tools are typically found as a package
+    for Debian and other systems with their corresponding name.</para>
+
+    <orderedlist>
+      <listitem>
+        <para>Linux kernel config 'kconfig'</para>
+      </listitem>
+
+      <listitem>
+        <para>GNU full native toolchain with make, gcc, cpp, etc.</para>
+      </listitem>
+
+      <listitem>
+        <para>Target toolchain, zpu-elf-gcc, mips-elf-gcc, etc.</para>
+      </listitem>
+
+      <listitem>
+        <para>python 2.x, IntelHex module</para>
+      </listitem>
+
+      <listitem>
+        <para>xsltproc</para>
+      </listitem>
+    </orderedlist>
+
+    <para>To compile and run the simulation, the following packages are
+    required:</para>
+
+    <orderedlist>
+      <listitem>
+        <para>GHDL v0.30 or greater, GHDLex v0.051 or greater</para>
+      </listitem>
+
+      <listitem>
+        <para>netpp (/usr/lib/libslave.so)</para>
+      </listitem>
+
+      <listitem>
+        <para>gtkwave</para>
+      </listitem>
+    </orderedlist>
+  </section>
+
+  <section>
+    <title>Quick board selection</title>
+
+    <para>The supported board supply packages for your distribution are shown
+    by the top level command:</para>
+
+    <para><command>make which</command></para>
+
+    <para>To configure for one of these boards, run</para>
+
+    <para><command>make &lt;boardname&gt;</command></para>
+
+    <para>Then you are ready to (re)build the source code and HDL
+    files.:</para>
+
+    <para><command>make all</command></para>
+
+    <para>For available custom or third party configurations, see also
+    vendor/$(VENDOR)/defconfig_* or check your custom SoC
+    documentation.</para>
+  </section>
+
+  <section>
+    <title>Simulation</title>
+
+    <para>The entire SoC is simulated by GHDL with a few extensions to support
+    virtual interfaces. Not all boards can be simulated by default, see
+    below.</para>
+
+    <para>To build the simulation, GHDL and the GHDLex library must be
+    present. Then you execute</para>
+
+    <para><command>make sim</command></para>
+
+    <para>in the MaSoCist directory. Possibly you will have to call
+    <command>make -C sim clean</command> after a reconfiguration.</para>
+
+    <section id="sec_runsim">
+      <title>Running the simulation</title>
+
+      <para>Once the simulation was built correctly, the resulting
+      tb_&lt;platform&gt; will be created in the <filename>sim/</filename>
+      directory. Some configurations are based on a virtual UART instance, see
+      <filename>sim/virtualuart.vhdl</filename>. This is started using the
+      init-pty.sh script. Then you can connect to the running simulation using
+      a terminal program, such as minicom:</para>
+
+      <programlisting>minicom -o -D /tmp/virtualcom</programlisting>
+
+      <para><note>
+          <para>When running inside a container (Docker), no manual setup
+          using init-pty.sh is required. The virtual COM port is set up by the
+          Docker container.</para>
+        </note></para>
+
+      <para>Note that this UART is a full UART emulation, so the baud rate
+      defined by the divider value passed to the VirtualUART must match the
+      UART peripherals baud rate, unlike the virtual console
+      (<varname>CONFIG_VIRTUAL_CONSOLE</varname>), which does not depend on a
+      baud rate.</para>
+
+      <para>Finally, the simulation is run by starting the tb_&lt;platform&gt;
+      executable from the command line. For interactive waveform tracing using
+      GTKwave, there is a script <filename>run.sh</filename>, taking the
+      platform name as argument, e.g.</para>
+
+      <para><programlisting>./run.sh papilio</programlisting></para>
+    </section>
+
+    <section>
+      <title>Advanced interactive simulation</title>
+
+      <para>Enter the sim/ directory and type "make run". You should see the
+      GTKwave window popping up, showing a slowly progressing wave display due
+      to the enabled throttle. To disable the throttle, run the following
+      command inside the virtual machine (or on your host)</para>
+
+      <para><command>netpp localhost TapThrottle 0</command></para>
+
+      <para>If you run netpp from your host to access the Virtual Machine or
+      LXC (Linux Container), you need to determine the IP address of its
+      virtual bridge interface (or what you have configured your VM with). For
+      example, <command>ifconfig</command> on Linux may display:</para>
+
+      <screen>vboxnet0  Link encap:Ethernet  HWaddr 0a:00:27:00:00:00  
+          inet addr:192.168.56.1  Bcast:192.168.56.255  Mask:255.255.255.0</screen>
+
+      <para>Then you simply access the simulation via</para>
+
+      <para><command>netpp 192.168.56.1 TapThrottle 0</command></para>
+
+      <para><note>
+          <para>This option only applies when the simulation is configured
+          with a virtual TAP, like <varname>CONFIG_VTAP</varname></para>
+        </note></para>
+    </section>
+
+    <section id="sec_vendorsim">
+      <title>Vendor specific simulation issues</title>
+
+      <para>Simulation of some boards may require libraries that are not
+      included in the MaSoCist, because they are vendor specific. There may be
+      several solutions:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Obtain necessary files from your local FPGA tool installation
+          and create a GHDL library. Use the -P option to GHDL to specify the
+          search path to the GHDL config file.</para>
+        </listitem>
+
+        <listitem>
+          <para>Try the <varname>CONFIG_EMULATE_PLATFORM_IP</varname>
+          option</para>
+        </listitem>
+
+        <listitem>
+          <para>Use a virtual board config that is fully vendor IP
+          independent</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>For example, when you receive an error message like this:</para>
+
+      <para><computeroutput>../hdl/plat/breakout_top.vhdl:16:9: cannot find
+      resource library "machxo2"</computeroutput></para>
+
+      <para>You have to create a file lattice/machxo2-obj93.cf somewhere using
+      the rule:</para>
+
+      <para><programlisting>MACHXO2_VHDL = $(wildcard $(LATTICE_SIM)/machxo2/src/*.vhd)
+lattice/machxo2-obj93.cf: $(MACHXO2_VHDL)
+    [ -e lattice ] || mkdir lattice
+    ghdl -i --workdir=lattice --work=machxo2 $(MACHXO2_VHDL)</programlisting></para>
+
+      <para>where LATTICE_SIM is the directory of your simulation VHDL files,
+      like
+      <filename>/usr/local/diamond/3.1_x64/cae_library/simulation/vhdl/</filename></para>
+
+      <para>Then set the LIBGHDL variable in
+      <filename>vendor/default/local_config.mk</filename> to the directory
+      where you created <filename>lattice/machxo2-obj93.cf</filename>, like:
+      <programlisting>LIBGHDL = $(HOME)/src/vhdl/lib/ghdl</programlisting></para>
+
+      <note>
+        <para>For full 'model in the loop' simulation, it will be necessary to
+        acquire an additional, non-free Simulation package by section5</para>
+      </note>
+    </section>
+  </section>
+
+  <section>
+    <title>Prepare synthesis</title>
+
+    <para>If you have configured something using the menuconfig utility, run
+    either "make syn" from the top level or "make" inside the
+    <filename>syn/</filename> directory to update your files. Then run your
+    synthesis tool and open up the corresponding project file in
+    <filename>syn/&lt;FPGA_VENDOR&gt;/&lt;PLATFORM&gt;</filename>, for
+    example:</para>
+
+    <variablelist>
+      <varlistentry>
+        <term>netpp_node</term>
+
+        <listitem>
+          <para>syn/xilinx/netpp_node/v0.1/netpp_node.xise</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+
+    <para>If the project files are not present for your platform, see below on
+    how to quickly import the files required for synthesis.</para>
+
+    <section>
+      <title>Porting to new platform</title>
+
+      <para>When synthesizing for a new FPGA platform, you will have to create
+      a new project first. The MaSoCist environment helps you with importing
+      all the necessary files by creating TCL scripts for the supported
+      synthesis tools (Xilinx ISE 14.7, Lattice Diamond 3.9 at this
+      time).</para>
+
+      <orderedlist>
+        <listitem>
+          <para>Create the new project in
+          <filename>syn/&lt;fpga_vendor&gt;/&lt;platform_name&gt;/&lt;project_name&gt;</filename></para>
+        </listitem>
+
+        <listitem>
+          <para>To import the project files, open a TCL shell inside your IDE
+          and run</para>
+
+          <para><programlisting>source ../../proj_&lt;platform&gt;.tcl</programlisting></para>
+        </listitem>
+
+        <listitem>
+          <para>Run Synthesis to check if all files referenced are
+          imported</para>
+        </listitem>
+      </orderedlist>
+
+      <note>
+        <para>FPGA platform specific IP cores may have to be manually imported
+        into the project</para>
+      </note>
+    </section>
+  </section>
+
+  <section>
+    <title>Configure and build</title>
+
+    <para>For usage of the kconfig environment, see SoC specific
+    documentation.</para>
+
+    <para>Basically, you execute the kconfig menu by running</para>
+
+    <para><command>make menuconfig</command></para>
+
+    <para>from the top level MaSoCist directory.</para>
+
+    <para>Before synthesis or simulation, it is required to rebuild the
+    corresponding system files:</para>
+
+    <para><command>make syn</command></para>
+
+    <note>
+      <para>In the evaluation version (no gensoc included), the hardware
+      peripherals can not be configured. You can only choose among supplied
+      board configurations in <varname>CONFIG_SOCDESC</varname>.</para>
+    </note>
+  </section>
+
+  <section>
+    <title>Target download</title>
+
+    <section>
+      <title>netpp node</title>
+
+      <para>First, you have to set the <varname>XILINX_ISE_DIR</varname>
+      variable in order to assemble the full firmware image for the SPI flash,
+      you have either options:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Define <varname>XILINX_ISE_DIR</varname> in
+          vendor/opensource/local_config.mk</para>
+        </listitem>
+
+        <listitem>
+          <para>Export <varname>XILINX_ISE_DIR</varname> in .bashrc or
+          alternative shell startup file</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>Example:</para>
+
+      <para><programlisting>XILINX_ISE_DIR = /media/sandbox/Xilinx/14.7/ISE_DS</programlisting></para>
+
+      <para>The Xilinx tools allow to recompile the software without the full
+      ROM synthetisation. See <filename>syn/xilinx/papilio/Makefile</filename>
+      rules:</para>
+
+      <variablelist>
+        <varlistentry>
+          <term>$(PLATFORM)_fw.bit:</term>
+
+          <listitem>
+            <para>Build rule to merge program data with existing firmware bit
+            file</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>download:</term>
+
+          <listitem>
+            <para>Downloads bare SRAM image into target</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>flash:</term>
+
+          <listitem>
+            <para>Merges extended memory (cacheable) space into overlay SPI
+            flash image and programs it into the target</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+
+      <para>For download to the target, the
+      <application>papilio-prog</application> application is required. See
+      Papilio homepage for details.</para>
+
+      <para>The full firmware download is run by <command>make
+      flash</command>. If no SPI code cache and program overlay is used, you
+      can run <command>make download</command> instead. Otherwise, you have to
+      make sure that all addresses are in sync.</para>
+    </section>
+
+    <section>
+      <title>Other boards</title>
+
+      <para>All other boards such as proprietary / custom development can be
+      programmed using an ICEbearPlus adapter, if the JTAG pins are
+      accessible. Some boards may have embedded USB JTAG controllers. See
+      <xref linkend="tbl_prog"/> for details.</para>
+
+      <table id="tbl_prog">
+        <title>Programming method</title>
+
+        <tgroup cols="3">
+          <thead>
+            <row>
+              <entry align="center">Board name</entry>
+
+              <entry align="center">Programming</entry>
+
+              <entry align="center">JTAG adapter</entry>
+            </row>
+          </thead>
+
+          <tbody>
+            <row>
+              <entry>netpp node, papilio</entry>
+
+              <entry>xc3sprog</entry>
+
+              <entry>Integrated USB JTAG</entry>
+            </row>
+
+            <row>
+              <entry>HDR60</entry>
+
+              <entry>Diamond Programmer</entry>
+
+              <entry>Integrated USB JTAG</entry>
+            </row>
+
+            <row>
+              <entry>versa ECP5 eval kit</entry>
+
+              <entry>Diamond Programmer</entry>
+
+              <entry>Integrated USB JTAG</entry>
+            </row>
+
+            <row>
+              <entry>Digilent Spartan-3 Board</entry>
+
+              <entry>xc3sprog</entry>
+
+              <entry>ICEbearPlus</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+
+      <para>The Impact Cableserver for ICEbear is no longer supported.</para>
+    </section>
+  </section>
+</chapter>

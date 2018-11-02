@@ -1,0 +1,153 @@
+[*]
+[*] GTKWave Analyzer v3.3.44 (w)1999-2012 BSI
+[*] Sat Oct 31 12:46:14 2015
+[*]
+[dumpfile] "(null)"
+[savefile] "/home/strubi/src/vhdl/PROTOTYPE/sim/zpung.sav"
+[timestart] 0
+[size] 910 574
+[pos] 32 35
+*-39.222198 612000000000 21734999088 365900000000 530740000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] soc.
+[treeopen] soc.perio.
+[treeopen] soc.perio.inst_dev_sys.
+[treeopen] soc.perio.inst_dev_sys.maybe_console.
+[treeopen] swtap.
+[sst_width] 210
+[signals_width] 258
+[sst_expanded] 1
+[sst_vpaned_height] 143
+@22
+soc.zpucore.insn[7:0]
+@8023
+[color] 5
+soc.zpucore.pc[17:0]
+@20000
+-
+@8022
+[color] 3
+soc.zpucore.sp[17:0]
+@20000
+-
+@22
+soc.zpucore.spval[31:0]
+@28
+soc.zpucore.inst_exec_write
+@22
+soc.zpucore.inst_exec_wreg[31:0]
+@28
+soc.zpucore.reset
+soc.zpucore.branch
+[color] 1
+soc.zpucore.inst_debug_swbreak
+[color] 5
+soc.zpucore.irq
+[color] 5
+soc.zpucore.inst_exec_irqlatch
+[color] 5
+soc.zpucore.inst_exec_irqack
+@22
+[color] 3
+soc.perio.inst_dev_sic.ilat[3:0]
+[color] 3
+soc.perio.inst_dev_sic.ipend[3:0]
+@28
+[color] 2
+soc.zpucore.inst_exec_idim
+[color] 2
+soc.zpucore.inst_exec_idim_save
+@c00022
+soc.zpucore.tap_curpc[31:0]
+@28
+(0)soc.zpucore.tap_curpc[31:0]
+(1)soc.zpucore.tap_curpc[31:0]
+(2)soc.zpucore.tap_curpc[31:0]
+(3)soc.zpucore.tap_curpc[31:0]
+(4)soc.zpucore.tap_curpc[31:0]
+(5)soc.zpucore.tap_curpc[31:0]
+(6)soc.zpucore.tap_curpc[31:0]
+(7)soc.zpucore.tap_curpc[31:0]
+(8)soc.zpucore.tap_curpc[31:0]
+(9)soc.zpucore.tap_curpc[31:0]
+(10)soc.zpucore.tap_curpc[31:0]
+(11)soc.zpucore.tap_curpc[31:0]
+(12)soc.zpucore.tap_curpc[31:0]
+(13)soc.zpucore.tap_curpc[31:0]
+(14)soc.zpucore.tap_curpc[31:0]
+(15)soc.zpucore.tap_curpc[31:0]
+(16)soc.zpucore.tap_curpc[31:0]
+(17)soc.zpucore.tap_curpc[31:0]
+(18)soc.zpucore.tap_curpc[31:0]
+(19)soc.zpucore.tap_curpc[31:0]
+(20)soc.zpucore.tap_curpc[31:0]
+(21)soc.zpucore.tap_curpc[31:0]
+(22)soc.zpucore.tap_curpc[31:0]
+(23)soc.zpucore.tap_curpc[31:0]
+(24)soc.zpucore.tap_curpc[31:0]
+(25)soc.zpucore.tap_curpc[31:0]
+(26)soc.zpucore.tap_curpc[31:0]
+(27)soc.zpucore.tap_curpc[31:0]
+(28)soc.zpucore.tap_curpc[31:0]
+(29)soc.zpucore.tap_curpc[31:0]
+(30)soc.zpucore.tap_curpc[31:0]
+(31)soc.zpucore.tap_curpc[31:0]
+@1401200
+-group_end
+@28
+soc.zpucore.tap_emuexec
+@22
+soc.zpucore.tap_emuir[7:0]
+@28
+soc.zpucore.tap_emumask
+[color] 1
+soc.zpucore.tap_emureq
+soc.zpucore.tap_emuack
+@22
+swtap.registers.reg_sim_debug_pins[15:0]
+@28
+soc.zpucore.tap_emurdy
+@22
+[color] 1
+soc.perio.inst_decoder_sic.reg_sic_iv1[15:0]
+@28
+[color] 2
+soc.perio.uartio_rx
+[color] 2
+soc.perio.uartio_tx
+[color] 3
+soc.perio.spio_cs
+[color] 3
+soc.perio.spio_miso
+[color] 3
+soc.perio.spio_mosi
+[color] 3
+soc.perio.spio_sclk
+@22
+soc.perio.inst_dev_spi.data[7:0]
+@28
+soc.perio.ce_spi
+soc.perio.inst_decoder_spi.bit_pump
+@22
+soc.perio.inst_decoder_spi.addr[4:0]
+@28
+[color] 5
+soc.perio.inst_decoder_spi.bit_cpha
+[color] 5
+soc.perio.inst_decoder_spi.bit_cpol
+[color] 5
+soc.perio.inst_decoder_spi.bit_lsbfirst
+[color] 5
+soc.perio.inst_decoder_spi.bit_pump
+[color] 5
+soc.perio.inst_dev_spi.csi
+@800022
+soc.perio.inst_dev_sys.maybe_console.vconsole.pipe_flags[0:3]
+@28
+(0)soc.perio.inst_dev_sys.maybe_console.vconsole.pipe_flags[0:3]
+(1)soc.perio.inst_dev_sys.maybe_console.vconsole.pipe_flags[0:3]
+(2)soc.perio.inst_dev_sys.maybe_console.vconsole.pipe_flags[0:3]
+(3)soc.perio.inst_dev_sys.maybe_console.vconsole.pipe_flags[0:3]
+@1001200
+-group_end
+[pattern_trace] 1
+[pattern_trace] 0

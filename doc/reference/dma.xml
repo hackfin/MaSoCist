@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<section id="sec_dma">
+  <title>DMA controller</title>
+
+  <section>
+    <title>Overview</title>
+
+    <para><xref linkend="tbl_regmap_dma"/> shows the DMA unit register map.
+    Basically, a DMA transfer is started by configuring the <link
+    linkend="fig_dmactrl">DMA_CONTROL</link> register with the DMA transfer
+    mode and initializing the DMA_SRC and DMA_DST registers with the source
+    and destination addresses. Finally, the DMA_COUNT register must be set to
+    the number of transfer words <emphasis>minus one</emphasis>.</para>
+
+    <note>
+      <para>The addresses in this implementation are 16 bit only, therefore
+      restricted to certain memory banks. The memory bank the DMA controller
+      can operate in, is defined by its channel number. See below how the
+      channels are mapped.</para>
+    </note>
+
+    <para>The DMA transfer itself is started by the DMA_ENABLE bit in the
+    <link linkend="tbl_reg_DMA_CONTROL">DMA_CONTROL</link> register. The code
+    can then either poll the DMA_DONE bit from the <link
+    linkend="tbl_reg_DMA_STAT">DMA_STAT</link> register or wait for a DMA
+    interrupt to occur (if supported).</para>
+
+    <para>Normally, a DMA transaction finishes with DONE when all number of
+    words requested by DMA_COUNT are copied. However, a peripheral may embed
+    framing information in the data stream and signal an end of a data packet
+    to the DMA controller. In this case, the DONE bit is set, but DMA_CURCOUNT
+    does not match (DMA_COUNT+1).</para>
+
+    <para>Also, the DONE condition represents an interrupt signal which is
+    wired to an interrupt channel through the SoC family-specific <link
+    linkend="sec_sys">SysCtrl</link> unit. How the IRQ channels are assigned
+    to the DMA units is specified in <application><xref
+    linkend="sec_irqmap"/></application>.</para>
+
+    <xi:include href="../device_properties.xml" xpointer="tbl_regmap_dma"
+                xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+    <variablelist>
+      <varlistentry>
+        <term>DMA_SRCINC and DMA_DSTINC</term>
+
+        <listitem>
+          <para>DMA address source/destination increment of source word
+          address register. When using byte wide transfer, this value is
+          typically one. Striding is possible by specifying other
+          values.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>DMA_CURCOUNT</term>
+
+        <listitem>
+          <para>Number of bytes transferred so far while 'RUNNING'. When the
+          DONE bit is set, the current value remains until a new DMA transfer
+          is fired by toggling the DMA_ENABLE bit. Note that this register
+          contains the effective number of transferred words.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </section>
+
+  <section>
+    <title>The DMA control register</title>
+
+    <para><xref linkend="tbl_reg_DMA_CONTROL"/> shows the detailed DMA_CONTROL
+    register bits. The DMA controller is currently capable of currently two
+    transfer modes, 8 bit and 16 bit. The DMA_MODE value determines the
+    transfer type. When in 16 bit mode, the DMA_???INC registers effectively
+    increment the memory byte address by the value times two.<figure
+        id="fig_dmactrl">
+        <title>DMA_CONTROL register layout</title>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="img/reg_DMA_CONTROL.pdf" scale="100"/>
+          </imageobject>
+        </mediaobject>
+      </figure></para>
+  </section>
+
+  <section>
+    <title>DMA status register</title>
+
+    <para><figure id="fig_dmastat">
+        <title>DMA_STAT register layout</title>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="img/reg_DMA_STAT.pdf" scale="100"/>
+          </imageobject>
+        </mediaobject>
+      </figure></para>
+
+    <para>While the DMA engine is running, i.e. it has received at least one
+    word and waits for more data to be transferred, the DMA_RUNNING bit is
+    set. In case of a FIFO overflow when accessing peripherals, the FIFO_OVER
+    bit is set. This error is reset by toggling DMA_RESET. When the transfer
+    is done, the RUNNING bit is cleared and the DONE bit is set.</para>
+  </section>
+
+  <section>
+    <title>DMA channels and memory banks</title>
+
+    <para>The DMA IP can be instanced in two variants. On the
+    dorothea/dermot-Platforms however, there is no difference between Memory
+    and Peripheral DMA, the DMA_DST and DMA_SRC register can point to a MMR
+    peripheral register to support both read/write with one DMA controller
+    instance. This is covered in a device specific section.</para>
+
+    <section>
+      <title>Memory to memory</title>
+
+      <para>When instanced as Memory DMA, data can be transferred between
+      different memory blocks, like ScratchPad memory and L1 cache. This is
+      not supported on all platforms. Please see device specific Appendix for
+      details on allowed configurations. For each direction (from/to) a DMA
+      core instance is necessary.</para>
+    </section>
+
+    <section>
+      <title>Memory between Peripheral</title>
+
+      <para>The simple DMA controllers units are typically set up in pairs,
+      like DMA0 for Memory<markup> \leftarrow</markup> Peripheral(RX), DMA1
+      for Memory <markup>\rightarrow</markup> Peripheral(TX).</para>
+
+      <note>
+        <para>DMA_SRC (for RX DMA) and DMA_DST (for TX DMA) have no effect in
+        this case and can be left unconfigured, however it is recommended to
+        set them to zero as well as the increment registers.</para>
+      </note>
+    </section>
+  </section>
+</section>

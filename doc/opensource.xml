@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"/usr/share/xml/docbook/schema/dtd/4.5/docbookx.dtd">
+<book>
+  <bookinfo>
+    <title>MaSoCist Evaluation primer</title>
+
+    <author>
+      <firstname>Martin</firstname>
+
+      <surname>Strubel</surname>
+
+      <affiliation>
+        <orgname>section5</orgname>
+      </affiliation>
+    </author>
+
+    <pubdate>10/2018</pubdate>
+
+    <releaseinfo>v0.2opensource</releaseinfo>
+  </bookinfo>
+
+  <chapter>
+    <title>Overview</title>
+
+    <para>The MaSoCist distribution enables you to quickly design, maintain,
+    document and automatically create a family of Soft core featured System on
+    Chip solutions on various FPGA architectures. It is relying heavily on the
+    Linux kernel config utility and the section5 device description XML
+    language.</para>
+
+    <note>
+      <para>The full MaSoCist development environment is supported for Unix
+      operating systems only</para>
+    </note>
+
+    <para>This evaluation version is featured by the simple System On Chip
+    design 'agathe'. It implements a microcontroller with the following
+    peripherals:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>2x16 GPIO</para>
+      </listitem>
+
+      <listitem>
+        <para>IRQ controller</para>
+      </listitem>
+
+      <listitem>
+        <para>SPI interface</para>
+      </listitem>
+
+      <listitem>
+        <para>Up to 8 PWMs/Timers</para>
+      </listitem>
+
+      <listitem>
+        <para>UART</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>See separate SoC documentation (<filename>soc-agathe.pdf</filename>)
+    for details.</para>
+
+    <para>The MaSoCist environment is available as:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>Docker container. This runs in a virtual machine using
+        <application>boot2docker</application>.</para>
+      </listitem>
+    </itemizedlist>
+
+    <note>
+      <para>Linux container support is dropped for future releases</para>
+    </note>
+
+    <section>
+      <title>Evaluation version specifics</title>
+
+      <para>The evaluation/opensource version lacks a few options. Therefore,
+      a few configuration options can not be altered or have no effect. This
+      behaviour is currently undocumented. The source is provided 'AS
+      IS'.</para>
+
+      <para>Restrictions are present on:</para>
+
+      <orderedlist>
+        <listitem>
+          <para>SoC design functionality</para>
+        </listitem>
+
+        <listitem>
+          <para>Co-Simulation features, virtual hardware
+          implementations</para>
+        </listitem>
+
+        <listitem>
+          <para>Configureable, pipelined CPU cores</para>
+        </listitem>
+
+        <listitem>
+          <para>Debugging (ICE) functionality</para>
+        </listitem>
+      </orderedlist>
+
+      <table>
+        <title>Optional (proprietary) modules</title>
+
+        <tgroup cols="2">
+          <thead>
+            <row>
+              <entry align="center">Module</entry>
+
+              <entry align="center">Description</entry>
+            </row>
+          </thead>
+
+          <tbody>
+            <row>
+              <entry>ghdlex, netpp</entry>
+
+              <entry>free Co-Simulation extensions (partially
+              OpenSource)</entry>
+            </row>
+
+            <row>
+              <entry>gensoc</entry>
+
+              <entry>commercial SoC generator utility</entry>
+            </row>
+
+            <row>
+              <entry>stdtap/uniemu</entry>
+
+              <entry>JTAG debugger (GDB debug agent)</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+
+      <section id="sec_cpp">
+        <title>C preprocessing</title>
+
+        <para>VHDL does not have the full conditional compilation option like
+        the C language. However, the cpp (C preprocessor) is a powerful
+        utility for macro expansion. This can be used to generate conditional
+        or configureable VHDL code. The disadvantage is, that the programming
+        environment requires an installed CPP processor. Code maintenance
+        becomes slightly tricky, because an extra step is required, plus one
+        needs to make sure not to edit the generated file instead of the
+        actual source file.</para>
+
+        <para>These CPP processed files have the suffix .chdl. The
+        corresponding Makefile rule in <filename>generate.mk</filename>
+        is:</para>
+
+        <programlisting># Generate VHDL from CHDL:
+%.vhdl : %.chdl $(TOPDIR)/.config
+    cpp -w -P -o $@ -D__VHDL__ $(CHDL_FLAGS) -I$(TOPDIR)/hdl $&lt;
+</programlisting>
+
+        <para>There are cases where you would not want a macro expanded, like
+        a <varname>CONFIG_FOO</varname> variable holding a time specification
+        for VHDL. In this case you will have to undefine the macro and convert
+        it to a VHDL constant inside the <package>global_config</package>
+        package (more about this below). Example:</para>
+
+        <programlisting>#include "autoconf.h"
+#undef CONFIG_FOO</programlisting>
+      </section>
+    </section>
+
+    <section>
+      <title>Licensing</title>
+
+      <para>The licensing of the MaSoCist distribution depends on its
+      distribution's package tag, e.g. for a tar file:
+      <filename>masocist-$(DIST_TAG)-$(VERSION).tgz</filename>. By default,
+      <varname>DIST_TAG="opensource"</varname>.</para>
+
+      <para>When it comes to hardware designs, licenses such as the GPL (Gnu
+      Public License) are hardly applicaple, in particular because it would
+      complicate development under a dual licensing scheme. Since, by
+      experience, complicated license schemes are seldom respected by hardware
+      developers, an attempt is made to phrase a few rules as follows.</para>
+
+      <formalpara>
+        <title>NONCOMMERCIAL USAGE</title>
+
+        <para><itemizedlist>
+            <listitem>
+              <para>You can use it for educational purposes or non-commercial
+              home projects</para>
+            </listitem>
+
+            <listitem>
+              <para>You will not get much free support, but you may of course
+              feed back bugs</para>
+            </listitem>
+
+            <listitem>
+              <para>You are encouraged to publish your changes, but noone will
+              force you to it. Just respect the principle of fair use.</para>
+            </listitem>
+          </itemizedlist></para>
+      </formalpara>
+
+      <formalpara>
+        <title>COMMERCIAL USAGE</title>
+
+        <para><itemizedlist>
+            <listitem>
+              <para>If you use the code in a commercial environment, you are
+              free to do so, but you are <emphasis>required</emphasis> to
+              publish changes made to the MaSoCist code base, including your
+              own code that depends on MaSoCist functionality.</para>
+            </listitem>
+
+            <listitem>
+              <para>If you are making a product that you are re-licensing or
+              re-selling to others, you will need to acquire a license for the
+              IP you use</para>
+            </listitem>
+          </itemizedlist></para>
+      </formalpara>
+
+      <para>The opensource variant also has the
+      <varname>CONFIG_OPENSOURCE</varname> variable defined. Code under an
+      exclusive OpenSource license will then throw a warning on compilation
+      into a simulation. This is used to mark source released under the
+      implicated OpenSource agreement. Removal of the
+      <varname>CONFIG_OPENSOURCE</varname> checks are considered a violation
+      of this OpenSource license.</para>
+
+      <para>If you wish to have a maintained custom package, you will have to
+      sign up for a custom license agreement. This entitles you for a
+      distribution tag. In this case, you are completely free to keep further
+      development proprietary, EXCEPT changes made to the ghdlex
+      package.</para>
+
+      <para>In any case, contributions made by third parties under an open
+      source license agreement will always remain in the open source.</para>
+
+      <para>Note that you also have to follow the GHDL license agreements for
+      distribution of simulation executables.</para>
+    </section>
+
+    <section>
+      <title>Target audience</title>
+
+      <para>The MaSoCist is made for hardware/software developers who mainly
+      wish to play with configureable IP cores and OpenSource HDL CPU cores.
+      The focus lies mostly in rapid prototyping and automatization. It is
+      assumed, that:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>The developer is experienced with linux command line
+          tools</para>
+        </listitem>
+
+        <listitem>
+          <para>Independence of vendor specific tools is a strong
+          desire</para>
+        </listitem>
+
+        <listitem>
+          <para>No support is needed, and the "read the source, luke"
+          principle is acceptable.</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+
+    <section>
+      <title>Board supply packages</title>
+
+      <para>The following boards are supported by this MaSoCist
+      edition:</para>
+
+      <section>
+        <title>netpp node</title>
+
+        <para>The <emphasis>netpp node</emphasis> is a highly flexible SoC
+        module based on a Xilinx Spartan 6-LX9 for process control and
+        measurement systems. Highlights:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para>Analog backend options:,</para>
+
+            <itemizedlist>
+              <listitem>
+                <para>Up to six channel 10 bit ADC</para>
+              </listitem>
+
+              <listitem>
+                <para>Three channel differential 16 bit Sigma-Delta ADC</para>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+
+          <listitem>
+            <para>Add-on options (not part of evaluation kit):</para>
+
+            <itemizedlist>
+              <listitem>
+                <para>SDK with GCC and simple downloader</para>
+              </listitem>
+
+              <listitem>
+                <para>High speed UDP streaming support (RTP)</para>
+              </listitem>
+
+              <listitem>
+                <para>Hardware debugging (integrated JTAG ICE)</para>
+              </listitem>
+
+              <listitem>
+                <para>Safety watchdog functionality for critical
+                applications</para>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+        </itemizedlist>
+
+        <figure id="fig_netppnode">
+          <title>netpp node</title>
+
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="img/netpp-node-top.png" format="JPG"
+                         scale="33"/>
+            </imageobject>
+          </mediaobject>
+        </figure>
+
+        <table floatstyle="ht" id="tbl_netpp_node_io">
+          <title>netpp node user I/O</title>
+
+          <tgroup cols="2">
+            <colspec align="left" colwidth="2*"/>
+
+            <colspec align="justify" colwidth="5*"/>
+
+            <thead>
+              <row>
+                <entry>Designator</entry>
+
+                <entry>Description</entry>
+              </row>
+            </thead>
+
+            <tbody>
+              <row>
+                <entry><property>J1, J2</property></entry>
+
+                <entry>Two expansion headers. For the pinout, please consult
+                netpp node HW reference</entry>
+              </row>
+
+              <row>
+                <entry><property>SW1, SW2</property></entry>
+
+                <entry>Push button switches (Reboot/Reset, User
+                button)</entry>
+              </row>
+
+              <row>
+                <entry><property>D1..D4</property></entry>
+
+                <entry>LEDs (green, red, blue, yellow)</entry>
+              </row>
+
+              <row>
+                <entry><property>X1</property></entry>
+
+                <entry>USB B mini connector (to PC)</entry>
+              </row>
+
+              <row>
+                <entry><property>X2</property></entry>
+
+                <entry>100MBit RJ45 connector</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+      </section>
+
+      <section>
+        <title>Papilio One</title>
+
+        <para>The Papilio platform is a Xilinx Spartan3 based development
+        platform with a USB JTAG solution on board. This board has gained some
+        popularity similar to the Arduino boards. It can be extended using
+        pluggable <emphasis>Wings</emphasis>, developed and supported mostly
+        by a large independent developer community. <xref
+        linkend="fig_papilio"/> shows a Papilio with a TFT wing.</para>
+
+        <figure id="fig_papilio">
+          <title>Papilio with TFT wing</title>
+
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="img/papilio.jpg" format="JPG" scale="33"/>
+            </imageobject>
+          </mediaobject>
+        </figure>
+
+        <para>The Papilio can be purchased from various online shops, see
+        <ulink url="http://papilio.cc">http://papilio.cc</ulink> for more
+        information.</para>
+      </section>
+
+      <section>
+        <title>Virtual silicon</title>
+
+        <para>This is simply a virtual board and nonexistent in hardware. It
+        is meant to be a playground to experiment with.</para>
+      </section>
+    </section>
+  </chapter>
+
+  <xi:include href="reference/quickstart.xml" xpointer="element(/1)"
+              xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <xi:include href="reference/vendor.xml" xpointer="element(/1)"
+              xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <chapter>
+    <title>Troubleshooting</title>
+
+    <para>Typical errors that may appear on your console:</para>
+
+    <variablelist>
+      <varlistentry>
+        <term>/usr/bin/ld: cannot find -lslave</term>
+
+        <listitem>
+          <para>You need to install a netpp slave package or the full netpp
+          source and set the NETPP environment variable to it</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>virtualuart.vhdl:42:24:@0ms:(assertion failure): Failed to open
+        PTY pipe</term>
+
+        <listitem>
+          <para>The virtual UART is not running. Start sim/init-pty.sh first,
+          see <xref linkend="sec_runsim"/>.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>../hdl/plat/breakout_top.vhdl:16:9: cannot find resource library
+        "machxo2"</term>
+
+        <listitem>
+          <para>Vendor specific library not installed, see <xref
+          linkend="sec_vendorsim"/>.</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </chapter>
+</book>

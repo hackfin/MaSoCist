@@ -1,0 +1,131 @@
+#
+# Automatically generated file; DO NOT EDIT.
+# SoC configuration
+#
+
+#
+# Generic config
+#
+CONFIG_SOCDESC="neo430"
+
+#
+# Opensource distribution config
+#
+CONFIG_OPENSOURCE=y
+# CONFIG_ZEALOT is not set
+CONFIG_NEO430=y
+CONFIG_virtual_neo430=y
+# CONFIG_papilio is not set
+# CONFIG_xo2starter is not set
+CONFIG_PLAT_EXTENSION="main"
+
+#
+# NEO430 specific configuration
+#
+# CONFIG_NEO430_NATIVE is not set
+
+#
+# NEO430 hardware configuration
+#
+CONFIG_NEO430_DMEM_WIDTH=10
+# CONFIG_NEO430_DADD is not set
+# CONFIG_NEO430_BOOTLD is not set
+# CONFIG_NEO430_IMEM_RO is not set
+
+#
+# Common Address configuration
+#
+CONFIG_ADDR_WIDTH=16
+CONFIG_BRAM_ADDR_WIDTH=13
+CONFIG_MMR_ADDR_BIT=15
+CONFIG_WISHBONE=y
+# CONFIG_LOCALBUS is not set
+# CONFIG_MACHXO2 is not set
+# CONFIG_MACHXO3 is not set
+# CONFIG_ECP3 is not set
+# CONFIG_ECP5 is not set
+# CONFIG_SPARTAN3 is not set
+# CONFIG_SPARTAN6 is not set
+CONFIG_VIRTUAL_SILICON=y
+
+#
+# Clock configuration
+#
+CONFIG_SYSCLK=25000000
+
+#
+# Peripheral I/O
+#
+# CONFIG_GENSOC_READ_DELAY is not set
+CONFIG_GENSOC_RESET_DEFAULTS=y
+# CONFIG_PLAYGROUND is not set
+# CONFIG_CRC16 is not set
+# CONFIG_GPIO is not set
+# CONFIG_DMA is not set
+CONFIG_SPI=y
+CONFIG_SPI_BITS_POWER=3
+# CONFIG_TIMER is not set
+# CONFIG_SIC is not set
+# CONFIG_LCDIO is not set
+# CONFIG_MAC is not set
+
+#
+# UART support
+#
+CONFIG_UART=y
+CONFIG_UART_SIMPLE=y
+CONFIG_NUM_UART=1
+# CONFIG_OC_UART16550 is not set
+CONFIG_DEFAULT_UART_BAUDRATE=500000
+CONFIG_UART_DEBUGCONSOLE=y
+
+#
+# Generic FIFO support
+#
+# CONFIG_FIFO is not set
+
+#
+# I2C support
+#
+# CONFIG_TWI is not set
+# CONFIG_I2C is not set
+# CONFIG_I2CBRIDGE is not set
+
+#
+# Virtual devices support
+#
+# CONFIG_VIRTUAL_CONSOLE is not set
+CONFIG_VIRTUAL_RAM=y
+# CONFIG_VIRTUAL_I2CSLAVE is not set
+CONFIG_VIRTUAL_UART=y
+
+#
+# TAP configuration
+#
+CONFIG_TAPCLK_PERIOD="50 ns"
+CONFIG_DUMMYTAP=y
+
+#
+# Software options
+#
+# CONFIG_PRINTF is not set
+CONFIG_LIBC_NONE=y
+# CONFIG_LIBC_MINIMUM is not set
+CONFIG_OPT_SIZE=y
+# CONFIG_OPT_SPEED is not set
+
+#
+# Networking
+#
+# CONFIG_FULL_REENTRANCY is not set
+# CONFIG_TASK_MANAGEMENT is not set
+
+#
+# Simulation options
+#
+CONFIG_GHDLEX_PATH=""
+CONFIG_NATIVE=y
+# CONFIG_MINGW32 is not set
+# CONFIG_EMULATE_PLATFORM_IP is not set
+CONFIG_USE_PLATFORM_IP_LIBRARY=y
+CONFIG_LIBSIM="ghdlex"

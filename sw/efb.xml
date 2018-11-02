@@ -1,0 +1,791 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<devdesc version="0.1"
+         xsi:schemaLocation="http://www.section5.ch/dclib/schema/devdesc devdesc.xsd"
+         xmlns="http://www.section5.ch/dclib/schema/devdesc"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:xi="http://www.w3.org/2001/XInclude"
+         xmlns:ns22="http://www.w3.org/1999/xhtml"
+         xmlns:ns2="http://www.xmlmind.com/xmleditor/schema/bugreport"
+         xmlns:ns="http://www.section5.ch/dclib/schema/devdesc"
+         xmlns:memmap="http://www.section5.ch/dclib/schema/memmap"
+         xmlns:interfaces="http://www.section5.ch/dclib/schema/interfaces"
+         xmlns:html="http://www.xmlmind.com/xmleditor/schema/xhtml"
+         xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+  <vendor>Lattice Semiconductor</vendor>
+
+  <!--// (c) 2015 Martin Strubel
+// This is an early prototype for the MACHXO2 EFB hardened IP
+-->
+
+  <revision>
+    <major>0</major>
+
+    <minor>1</minor>
+
+    <extension>develop</extension>
+  </revision>
+
+  <header>// #include &lt;stdlib.h&gt;</header>
+
+  <device id="efb" name="EFB" protocol="REGISTER">
+    <revision>
+      <major>0</major>
+
+      <minor>0</minor>
+    </revision>
+
+    <info>The register definitions for the MACHXO3 EFB block with hardened IP</info>
+
+    <registermap addrsize="8" endian="LITTLE" hidden="true"
+                 name="port_pseudo_registers" nodecode="true">
+      <!-- This register map is abused for pin definitions. It is not decoded, see flags 'hidden' and 'nodecode'-->
+
+      <info>This pseudo register map contains port pin definitions for peripherals</info>
+
+      <register addr="0x00" id="sysio">
+        <bitfield access="RO" lsb="0" msb="15" name="dbgcount"/>
+      </register>
+
+      <register addr="0x00" id="pllio"/>
+    </registermap>
+
+    <registermap endian="LITTLE" id="efb_pll" name="EFB_PLL" offset="0x00">
+      <info>PLL registers. For PLL 2, add 0x20</info>
+
+      <register addr="0x00" id="DIVFBK_FRAC0"/>
+
+      <register addr="0x01" id="DIVFBK_FRAC1"/>
+
+      <register addr="0x02" id="PLLCFGA">
+        <bitfield lsb="7" msb="7" name="LOADREG"/>
+
+        <bitfield lsb="0" msb="6" name="DELA"/>
+      </register>
+
+      <register addr="0x03" id="PLLCFGB">
+        <bitfield lsb="7" msb="7" name="PLLPDN"/>
+
+        <bitfield lsb="0" msb="6" name="DELB"/>
+      </register>
+
+      <register addr="0x04" id="PLLCFGC">
+        <bitfield lsb="7" msb="7" name="WBRESET"/>
+
+        <bitfield lsb="0" msb="6" name="DELC"/>
+      </register>
+
+      <register addr="0x05" id="PLLCFGD">
+        <bitfield lsb="7" msb="7" name="USE_DESI"/>
+
+        <bitfield lsb="0" msb="6" name="DELD"/>
+      </register>
+
+      <register addr="0x06" id="PLLDIVA">
+        <bitfield lsb="7" msb="7" name="REFIN_RESET"/>
+
+        <bitfield lsb="0" msb="6" name="DIVA"/>
+      </register>
+
+      <register addr="0x07" id="PLLDIVB">
+        <bitfield lsb="7" msb="7" name="PLLRST_ENA"/>
+
+        <bitfield lsb="0" msb="6" name="DIVB"/>
+      </register>
+
+      <register addr="0x08" id="PLLDIVC">
+        <bitfield lsb="7" msb="7" name="MRST_ENA"/>
+
+        <bitfield lsb="0" msb="6" name="DIVC"/>
+      </register>
+
+      <register addr="0x09" id="PLLDIVD">
+        <bitfield lsb="7" msb="7" name="STDBY"/>
+
+        <bitfield lsb="0" msb="6" name="DIVD"/>
+      </register>
+
+      <register addr="0x0a" id="PLLREGA">
+        <bitfield lsb="7" msb="7" name="ENABLE_SYNC"/>
+
+        <bitfield lsb="4" msb="6" name="PHIB"/>
+
+        <bitfield lsb="3" msb="3" name="INT_LOCK_STICKY"/>
+
+        <bitfield lsb="0" msb="2" name="PHIA"/>
+      </register>
+
+      <register addr="0x0b" id="PLLREGB">
+        <bitfield lsb="7" msb="7" name="DCRST_ENA"/>
+
+        <bitfield lsb="4" msb="6" name="PHID"/>
+
+        <bitfield lsb="0" msb="2" name="PHIC"/>
+      </register>
+
+      <register addr="0x0c" id="PLLREGC">
+        <bitfield lsb="7" msb="7" name="DDRST_ENA"/>
+
+        <bitfield lsb="4" msb="6" name="SEL_OUTB"/>
+
+        <bitfield lsb="3" msb="3" name="INTFB"/>
+
+        <bitfield lsb="0" msb="2" name="SEL_OUTA"/>
+      </register>
+
+      <register addr="0x0d" id="PLLREGD">
+        <bitfield lsb="6" msb="7" name="LOCK"/>
+
+        <bitfield lsb="3" msb="5" name="SEL_OUTC"/>
+
+        <bitfield lsb="0" msb="2" name="SEL_OUTD"/>
+      </register>
+
+      <register addr="0x0e" id="DIV_SEL">
+        <bitfield lsb="6" msb="7" name="SEL_DIVA"/>
+
+        <bitfield lsb="4" msb="5" name="SEL_DIVB"/>
+
+        <bitfield lsb="2" msb="3" name="SEL_DIVC"/>
+
+        <bitfield lsb="0" msb="1" name="SEL_DIVD"/>
+      </register>
+
+      <register addr="0x0f" id="CLK_TRIM">
+        <bitfield lsb="4" msb="7" name="CLKOP_TRIM"/>
+
+        <bitfield lsb="0" msb="3" name="CLKOS_TRIM"/>
+      </register>
+
+      <register addr="0x10" id="CLKCFG">
+        <bitfield lsb="7" msb="7" name="DYN_SOURCE"/>
+
+        <bitfield lsb="4" msb="6" name="LOCK_SEL"/>
+
+        <bitfield lsb="0" msb="3" name="ENABLE_CLK"/>
+      </register>
+
+      <register addr="0x11" id="BYPASS">
+        <bitfield lsb="7" msb="7" name="TRIMOS3_BYPASS"/>
+
+        <bitfield lsb="6" msb="6" name="TRIMOS2_BYPASS"/>
+
+        <bitfield lsb="5" msb="5" name="TRIMOS_BYPASS"/>
+
+        <bitfield lsb="4" msb="4" name="TRIMOP_BYPASS"/>
+
+        <bitfield lsb="2" msb="3" name="DYN_SEL"/>
+
+        <bitfield lsb="1" msb="1" name="DIRECTION"/>
+
+        <bitfield lsb="0" msb="0" name="ROTATE"/>
+      </register>
+
+      <register access="RO" addr="0x12" id="SEL_REF">
+        <bitfield lsb="7" msb="7" name="LF_RESGRND"/>
+
+        <bitfield lsb="4" msb="6" name="SEL_REF1"/>
+
+        <bitfield lsb="3" msb="3" name="EN_UP"/>
+
+        <bitfield lsb="0" msb="2" name="SEL_REF2"/>
+      </register>
+
+      <register access="RO" addr="0x13" id="FBKCFG">
+        <bitfield lsb="6" msb="7" name="DIVFBK_ORDER"/>
+
+        <bitfield lsb="4" msb="5" name="CLKMUX_FB"/>
+
+        <bitfield lsb="0" msb="3" name="SEL_FBK"/>
+      </register>
+
+      <register access="RO" addr="0x14" id="DIVREF">
+        <bitfield lsb="7" msb="7" name="GMC_RESET"/>
+
+        <bitfield lsb="0" msb="6" name="DIVREF"/>
+      </register>
+
+      <register access="RO" addr="0x15" id="DIVFBK">
+        <bitfield lsb="7" msb="7" name="FORCE_VFILTER"/>
+
+        <bitfield lsb="0" msb="6" name="DIVFBK"/>
+      </register>
+
+      <register access="RO" addr="0x16" id="LFCFG">
+        <bitfield lsb="7" msb="7" name="LF_PRESET"/>
+
+        <bitfield lsb="6" msb="6" name="LF_RESET"/>
+
+        <bitfield lsb="5" msb="5" name="TEST_ICP"/>
+
+        <bitfield lsb="5" msb="5" name="EN_FILTER_OPAMP"/>
+
+        <bitfield lsb="4" msb="4" name="FLOAT_ICP"/>
+
+        <bitfield lsb="0" msb="2" name="GPROG"/>
+      </register>
+
+      <register access="RO" addr="0x17" id="IKPROG">
+        <bitfield lsb="5" msb="7" name="KPROG"/>
+
+        <bitfield lsb="0" msb="4" name="IPROG"/>
+      </register>
+
+      <register access="RO" addr="0x18" id="RPROG">
+        <bitfield lsb="7" msb="7" name="GMC_PRESET"/>
+
+        <bitfield lsb="0" msb="6" name="RPROG"/>
+      </register>
+
+      <register access="RO" addr="0x19" id="SELREF">
+        <bitfield lsb="6" msb="7" name="GMCREF_SEL"/>
+
+        <bitfield lsb="3" msb="5" name="MFGOUT2_SEL"/>
+
+        <bitfield lsb="0" msb="2" name="MFGOUT1_SEL"/>
+      </register>
+
+      <register access="RO" addr="0x1a" id="GMSEL_BYPASS">
+        <bitfield lsb="4" msb="7" name="GMCSEL"/>
+
+        <bitfield lsb="3" msb="3" name="VCO_BYPASS_D0"/>
+
+        <bitfield lsb="2" msb="2" name="VCO_BYPASS_C0"/>
+
+        <bitfield lsb="1" msb="1" name="VCO_BYPASS_B0"/>
+
+        <bitfield lsb="0" msb="0" name="VCO_BYPASS_A0"/>
+      </register>
+
+      <register access="RO" addr="0x1b" id="DPROG">
+        <bitfield lsb="2" msb="2" name="EN_PHI"/>
+
+        <bitfield lsb="0" msb="1" name="DPROG"/>
+      </register>
+
+      <register access="RO" addr="0x1b" id="LOCK_STS">
+        <bitfield lsb="0" msb="0" name="LOCK_STS"/>
+      </register>
+    </registermap>
+
+    <registermap endian="LITTLE" id="efb_i2c" name="EFB_I2C" offset="0x40">
+      <!-- I2C core primary -->
+
+      <register addr="0x00" id="I2C_1_CR">
+        <bitfield lsb="7" msb="7" name="I2CEN">
+          <info>0: I2C disabled, 1: enabled</info>
+        </bitfield>
+
+        <bitfield lsb="6" msb="6" name="GCEN">
+          <info>General Call response enable in slave mode</info>
+        </bitfield>
+
+        <bitfield lsb="5" msb="5" name="WKUPEN">
+          <info>Wake up from standby enable, 0: disable, 1: enable</info>
+        </bitfield>
+
+        <bitfield lsb="2" msb="3" name="SDA_DEL_SEL">
+          <info>SDA output delay selection [200, 150, 75, 0] ns</info>
+        </bitfield>
+
+        <default>00000000</default>
+      </register>
+
+      <register addr="0x01" id="I2C_1_CMDR">
+        <bitfield lsb="7" msb="7" name="STA"/>
+
+        <bitfield lsb="6" msb="6" name="STO"/>
+
+        <bitfield lsb="5" msb="5" name="RD"/>
+
+        <bitfield lsb="4" msb="4" name="WR"/>
+
+        <bitfield lsb="3" msb="3" name="ACK"/>
+
+        <bitfield lsb="2" msb="2" name="CLKSDIS"/>
+
+        <default>000001xx</default>
+      </register>
+
+      <register addr="0x02" id="I2C_1_BR0">
+        <info>i2c clock prescale 0</info>
+
+        <bitfield lsb="0" msb="7" name="I2C_PRESCALE0"/>
+
+        <default>00000000</default>
+      </register>
+
+      <register addr="0x03" id="I2C_1_BR1">
+        <bitfield lsb="0" msb="2" name="I2C_PRESCALE1"/>
+
+        <default>xxxxxx00</default>
+      </register>
+
+      <register access="WO" addr="0x04" id="I2C_1_TXDR"/>
+
+      <register access="RO" addr="0x05" id="I2C_1_SR">
+        <bitfield lsb="7" msb="7" name="TIP">
+          <info>Tranmit in Progress</info>
+        </bitfield>
+
+        <bitfield lsb="6" msb="6" name="BUSY">
+          <info>I2C bus busy</info>
+        </bitfield>
+
+        <bitfield lsb="5" msb="5" name="RARC">
+          <info>Received acknowledge. 1: No ack, 0: got ack</info>
+        </bitfield>
+
+        <bitfield lsb="4" msb="4" name="SRW">
+          <info>Slave read/write; 1: Master receiving, Slave transmitting, 0: Master transmitting, Slave receiving</info>
+        </bitfield>
+
+        <bitfield lsb="3" msb="3" name="ARBL">
+          <info>1: Arbitration lost, 0: normal</info>
+        </bitfield>
+
+        <bitfield lsb="2" msb="2" name="TRRDY">
+          <info>Transmitter/Receiver ready</info>
+        </bitfield>
+
+        <bitfield lsb="1" msb="1" name="TROE">
+          <info>Transmitter/Receiver overrun error or NACK</info>
+        </bitfield>
+
+        <bitfield lsb="0" msb="0" name="HGC">
+          <info>1: Hardware general call received</info>
+        </bitfield>
+      </register>
+
+      <register access="RO" addr="0x06" id="I2C_1_GCDR">
+        <info>General call data register</info>
+      </register>
+
+      <register access="RO" addr="0x07" id="I2C_1_RXDR">
+        <info>Receive data register</info>
+      </register>
+
+      <register addr="0x08" id="I2C_1_IRQ">
+        <info>Interrupt status</info>
+
+        <bitfield lsb="3" msb="3" name="IRQARBL"/>
+
+        <bitfield lsb="2" msb="2" name="IRQTRRDY"/>
+
+        <bitfield lsb="1" msb="1" name="IRQTROE"/>
+
+        <bitfield lsb="0" msb="0" name="IRQHGC"/>
+      </register>
+
+      <register addr="0x09" id="I2C_1_IRQEN">
+        <info>Interrupt enable register</info>
+
+        <bitfield lsb="3" msb="3" name="IRQARBLEN"/>
+
+        <bitfield lsb="2" msb="2" name="IRQTRRDYEN"/>
+
+        <bitfield lsb="1" msb="1" name="IRQTROEEN"/>
+
+        <bitfield lsb="0" msb="0" name="IRQHGCEN"/>
+      </register>
+
+      <!-- I2C core secondary -->
+
+      <register addr="0x0a" id="I2C_2_CR">
+        <bitfield lsb="7" msb="7" name="I2CEN">
+          <info>0: I2C disabled, 1: enabled</info>
+        </bitfield>
+
+        <bitfield lsb="6" msb="6" name="GCEN">
+          <info>General Call response enable in slave mode</info>
+        </bitfield>
+
+        <bitfield lsb="5" msb="5" name="WKUPEN">
+          <info>Wake up from standby enable, 0: disable, 1: enable</info>
+        </bitfield>
+
+        <bitfield lsb="2" msb="3" name="SDA_DEL_SEL">
+          <info>SDA output delay selection [200, 150, 75, 0] ns</info>
+        </bitfield>
+
+        <default>00000000</default>
+      </register>
+
+      <register addr="0x0b" id="I2C_2_CMDR">
+        <bitfield lsb="7" msb="7" name="STA"/>
+
+        <bitfield lsb="6" msb="6" name="STO"/>
+
+        <bitfield lsb="5" msb="5" name="RD"/>
+
+        <bitfield lsb="4" msb="4" name="WR"/>
+
+        <bitfield lsb="3" msb="3" name="ACK"/>
+
+        <bitfield lsb="2" msb="2" name="CLKSDIS"/>
+
+        <default>000001xx</default>
+      </register>
+
+      <register addr="0x0c" id="I2C_2_BR0">
+        <info>i2c clock prescale 0</info>
+
+        <bitfield lsb="0" msb="7" name="I2C_PRESCALE0"/>
+
+        <default>00000000</default>
+      </register>
+
+      <register addr="0x0d" id="I2C_2_BR1">
+        <bitfield lsb="0" msb="2" name="I2C_PRESCALE1"/>
+
+        <default>xxxxxx00</default>
+      </register>
+
+      <register access="WO" addr="0x0e" id="I2C_2_TXDR"/>
+
+      <register access="RO" addr="0x0f" id="I2C_2_SR">
+        <bitfield lsb="7" msb="7" name="TIP">
+          <info>Tranmit in Progress</info>
+        </bitfield>
+
+        <bitfield lsb="6" msb="6" name="BUSY">
+          <info>I2C bus busy</info>
+        </bitfield>
+
+        <bitfield lsb="5" msb="5" name="RARC">
+          <info>Received acknowledge. 1: No ack, 0: got ack</info>
+        </bitfield>
+
+        <bitfield lsb="4" msb="4" name="SRW">
+          <info>Slave read/write; 1: Master receiving, Slave transmitting, 0: Master transmitting, Slave receiving</info>
+        </bitfield>
+
+        <bitfield lsb="3" msb="3" name="ARBL">
+          <info>1: Arbitration lost, 0: normal</info>
+        </bitfield>
+
+        <bitfield lsb="2" msb="2" name="TRRDY">
+          <info>Transmitter/Receiver ready</info>
+        </bitfield>
+
+        <bitfield lsb="1" msb="1" name="TROE">
+          <info>Transmitter/Receiver overrun error or NACK</info>
+        </bitfield>
+
+        <bitfield lsb="0" msb="0" name="HGC">
+          <info>1: Hardware general call received</info>
+        </bitfield>
+      </register>
+
+      <register access="RO" addr="0x10" id="I2C_2_GCDR">
+        <info>General call data register</info>
+      </register>
+
+      <register access="RO" addr="0x11" id="I2C_2_RXDR">
+        <info>Receive data register</info>
+      </register>
+
+      <register addr="0x12" id="I2C_2_IRQ">
+        <info>Interrupt status</info>
+
+        <bitfield lsb="3" msb="3" name="IRQARBL"/>
+
+        <bitfield lsb="2" msb="2" name="IRQTRRDY"/>
+
+        <bitfield lsb="1" msb="1" name="IRQTROE"/>
+
+        <bitfield lsb="0" msb="0" name="IRQHGC"/>
+      </register>
+
+      <register addr="0x13" id="I2C_2_IRQEN">
+        <info>Interrupt enable register</info>
+
+        <bitfield lsb="3" msb="3" name="IRQARBLEN"/>
+
+        <bitfield lsb="2" msb="2" name="IRQTRRDYEN"/>
+
+        <bitfield lsb="1" msb="1" name="IRQTROEEN"/>
+
+        <bitfield lsb="0" msb="0" name="IRQHGCEN"/>
+      </register>
+    </registermap>
+
+    <registermap endian="LITTLE" id="efb_spi" name="EFB_SPI" offset="0x54">
+      <!-- SPI core-->
+
+      <register access="RW" addr="0x00" id="SPICR0">
+        <bitfield lsb="0" msb="2" name="TLead_XCNT"/>
+
+        <bitfield lsb="3" msb="5" name="TTrail_XCNT"/>
+
+        <bitfield lsb="6" msb="7" name="TIdle_XCNT"/>
+      </register>
+
+      <register access="RW" addr="0x01" id="SPICR1">
+        <bitfield lsb="4" msb="4" name="TXEDGE"/>
+
+        <bitfield lsb="5" msb="5" name="WKUPEN_CFG"/>
+
+        <bitfield lsb="6" msb="6" name="WKUPEN_USER"/>
+
+        <bitfield lsb="7" msb="7" name="SPE"/>
+      </register>
+
+      <register access="RW" addr="0x02" id="SPICR2">
+        <bitfield lsb="7" msb="7" name="MSTR"/>
+
+        <bitfield lsb="6" msb="6" name="MCSH"/>
+
+        <bitfield lsb="5" msb="5" name="SDBRE"/>
+
+        <bitfield lsb="2" msb="2" name="CPOL"/>
+
+        <bitfield lsb="1" msb="1" name="CPHA"/>
+
+        <bitfield lsb="0" msb="0" name="LSBF"/>
+      </register>
+
+      <register access="RW" addr="0x03" id="SPIBR">
+        <bitfield lsb="0" msb="5" name="DIVIDER"/>
+
+        <bitfield lsb="7" msb="7" name="MSTR"/>
+      </register>
+
+      <register access="RW" addr="0x04" id="SPICSR"/>
+
+      <register access="WO" addr="0x05" id="SPITXDR"/>
+
+      <register access="RO" addr="0x06" id="SPISR">
+        <bitfield lsb="7" msb="7" name="TIP"/>
+
+        <bitfield lsb="4" msb="4" name="TRDY"/>
+
+        <bitfield lsb="3" msb="3" name="RRDY"/>
+
+        <bitfield lsb="1" msb="1" name="ROE"/>
+
+        <bitfield lsb="0" msb="0" name="MDF"/>
+      </register>
+
+      <register access="RO" addr="0x07" id="SPIRXDR"/>
+
+      <register access="RW" addr="0x08" id="SPIIRQ">
+        <bitfield lsb="4" msb="4" name="IRQTRDY"/>
+
+        <bitfield lsb="3" msb="3" name="IRQRRDY"/>
+
+        <bitfield lsb="1" msb="1" name="IRQROE"/>
+
+        <bitfield lsb="0" msb="0" name="IRQMDF"/>
+      </register>
+
+      <register access="RW" addr="0x09" id="SPIIRQEN">
+        <bitfield lsb="4" msb="4" name="IRQTRDYEN"/>
+
+        <bitfield lsb="3" msb="3" name="IRQRRDYEN"/>
+
+        <bitfield lsb="1" msb="1" name="IRQROEEN"/>
+
+        <bitfield lsb="0" msb="0" name="IRQMDFEN"/>
+      </register>
+    </registermap>
+
+    <registermap endian="LITTLE" id="efb_tmr" name="EFB_TMR" offset="0x5e">
+      <!-- >MACHXO2 Timer/Counter PWM IP core -->
+
+      <register addr="0x00" id="TCCR0">
+        <bitfield lsb="7" msb="7" name="RSTEN"/>
+
+        <bitfield lsb="3" msb="5" name="PRESCALE"/>
+
+        <bitfield lsb="2" msb="2" name="CLKEDGE"/>
+
+        <bitfield lsb="1" msb="1" name="CLKSEL"/>
+      </register>
+
+      <register addr="0x01" id="TCCR1">
+        <bitfield lsb="6" msb="6" name="SOVFEN"/>
+
+        <bitfield lsb="5" msb="5" name="ICEN"/>
+
+        <bitfield lsb="4" msb="4" name="TSEL"/>
+
+        <bitfield lsb="2" msb="3" name="OCM"/>
+
+        <bitfield lsb="0" msb="1" name="TCM"/>
+      </register>
+
+      <register access="WO" addr="0x02" id="TCTOPSET" size="1"/>
+
+      <register access="WO" addr="0x03" id="TCTOPSET1" size="1"/>
+
+      <register access="WO" addr="0x04" id="TCOCRSET0" size="1"/>
+
+      <register access="WO" addr="0x05" id="TCOCRSET1" size="1"/>
+
+      <register addr="0x06" id="TCCR2" size="1">
+        <bitfield lsb="2" msb="2" name="TWBFORCE"/>
+
+        <bitfield lsb="1" msb="1" name="TWBRESET"/>
+
+        <bitfield lsb="0" msb="0" name="TWBPAUSE"/>
+      </register>
+
+      <register access="RO" addr="0x07" id="TCCNT0"/>
+
+      <register access="RO" addr="0x08" id="TCCNT1"/>
+
+      <register access="RO" addr="0x09" id="TCTOP0"/>
+
+      <register access="RO" addr="0x0a" id="TCTOP1"/>
+
+      <register access="RO" addr="0x0b" id="TCOCR0"/>
+
+      <register access="RO" addr="0x0c" id="TCOCR1"/>
+
+      <register access="RO" addr="0x0d" id="TCICR0"/>
+
+      <register access="RO" addr="0x0e" id="TCICR1"/>
+
+      <register access="RO" addr="0x0f" id="TCSR0"/>
+
+      <register addr="0x10" id="TCIRQ">
+        <bitfield lsb="2" msb="2" name="IRQICRF"/>
+
+        <bitfield lsb="1" msb="1" name="IRQOCRF"/>
+
+        <bitfield lsb="0" msb="0" name="IRQOVF"/>
+      </register>
+
+      <register addr="0x11" id="TCIRQEN">
+        <bitfield lsb="2" msb="2" name="IRQICRFEN"/>
+
+        <bitfield lsb="1" msb="1" name="IRQOCRFEN"/>
+
+        <bitfield lsb="0" msb="0" name="IRQOVFEN"/>
+      </register>
+    </registermap>
+
+    <registermap endian="LITTLE" id="efb_cfg" name="EFB_CFG" offset="0x70">
+      <!-- UFM section -->
+
+      <register access="RW" addr="0x00" id="CFGCR">
+        <bitfield lsb="7" msb="7" name="WBCE">
+          <info>Wishbone connection enable</info>
+        </bitfield>
+
+        <bitfield lsb="6" msb="6" name="RSTE">
+          <info>Wishbone connection reset</info>
+        </bitfield>
+      </register>
+
+      <register access="WO" addr="0x01" id="CFGTXDR">
+        <bitfield lsb="0" msb="7" name="CMD"/>
+      </register>
+
+      <register access="RO" addr="0x02" id="CFGSR">
+        <info>Flash memory status register</info>
+
+        <bitfield lsb="7" msb="7" name="WBCACT"/>
+
+        <bitfield lsb="5" msb="5" name="TXFE">
+          <info>Transmit FIFO empty</info>
+        </bitfield>
+
+        <bitfield lsb="4" msb="4" name="TXFF">
+          <info>Transmit FIFO full</info>
+        </bitfield>
+
+        <bitfield lsb="3" msb="3" name="RXFE">
+          <info>Receive FIFO empty</info>
+        </bitfield>
+
+        <bitfield lsb="2" msb="2" name="RXFF">
+          <info>Receive FIFO full</info>
+        </bitfield>
+
+        <bitfield lsb="1" msb="1" name="SPPIACT">
+          <info>Slave SPI active</info>
+        </bitfield>
+
+        <bitfield lsb="0" msb="0" name="I2CACT">
+          <info>I2C interface active</info>
+        </bitfield>
+      </register>
+
+      <register access="RO" addr="0x03" id="CFGRXDR"/>
+
+      <register access="RW" addr="0x04" id="CFGIRQ">
+        <info>Interrupt status</info>
+
+        <bitfield lsb="5" msb="5" name="IRQTXFE">
+          <info>Interrupt status TX FIFO empty</info>
+        </bitfield>
+
+        <bitfield lsb="4" msb="4" name="IRQTXFF">
+          <info>Interrupt status TX FIFO full</info>
+        </bitfield>
+
+        <bitfield lsb="3" msb="3" name="IRQRXFE">
+          <info>Interrupt status RX FIFO empty</info>
+        </bitfield>
+
+        <bitfield lsb="2" msb="2" name="IRQRXFF">
+          <info>Interrupt status RX FIFO full</info>
+        </bitfield>
+
+        <bitfield lsb="1" msb="1" name="IRQSSPIACT">
+          <info>SPI slave active interrupt</info>
+        </bitfield>
+
+        <bitfield lsb="0" msb="0" name="IRQI2CACT">
+          <info>I2C interface active interrupt</info>
+        </bitfield>
+      </register>
+
+      <register access="RW" addr="0x05" id="CFGIRQEN">
+        <info>Interrupt status</info>
+
+        <bitfield lsb="5" msb="5" name="IRQTXFEEN">
+          <info>Interrupt status TX FIFO empty</info>
+        </bitfield>
+
+        <bitfield lsb="4" msb="4" name="IRQTXFFEN">
+          <info>Interrupt status TX FIFO full</info>
+        </bitfield>
+
+        <bitfield lsb="3" msb="3" name="IRQRXFEEN">
+          <info>Interrupt status RX FIFO empty</info>
+        </bitfield>
+
+        <bitfield lsb="2" msb="2" name="IRQRXFFEN">
+          <info>Interrupt status RX FIFO full</info>
+        </bitfield>
+
+        <bitfield lsb="1" msb="1" name="IRQSSPIACTEN">
+          <info>SPI slave active interrupt</info>
+        </bitfield>
+
+        <bitfield lsb="0" msb="0" name="IRQI2CACTEN">
+          <info>I2C interface active interrupt</info>
+        </bitfield>
+      </register>
+    </registermap>
+
+    <registermap endian="LITTLE" id="efb_irq" name="EFB_IRQ" offset="0x76">
+      <register addr="0x01" id="EFBIRQ"/>
+    </registermap>
+
+    <group name="Commands">
+      <property name="Cmd" type="MODE">
+        <regref bits="CMD" ref="CFGTXDR"/>
+
+        <choice>
+          <item name="READ_TRACEID">
+            <value>0x19</value>
+          </item>
+        </choice>
+      </property>
+    </group>
+  </device>
+</devdesc>

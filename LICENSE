@@ -1,0 +1,70 @@
+If you have not read the License notes in the README yet, please do so.
+
+
+Contributions to MaSoCist
+----------------------------------------------------------------------------
+
+Before you add code or make modifications to the MaSoCist environment,
+check:
+
+1) If you're contributing to an Opensource tree (check vendor/<VENDOR>/Kconfig
+   for CONFIG_OPENSOURCE=y)
+2) If you update a custom license vendor tree
+
+Rules:
+
+a) If CONFIG_OPENSOURCE is undefined, you are not obliged to publish
+   your changes, if you are not making usage of MaSoCist IP
+b) You may not change CONFIG_OPENSOURCE back to undefined (this would
+   be in violation of the OpenSource license)
+c) Please add yourself as author to the header of the file you're authoring
+   (except for minor changes, such as fixing bugs) and add a license
+   description, like:
+
+   SILIMAX dual license: MaSoCist Opensource and internal changes reserved
+
+If you *author* a new core and add it to the OpenSource tree, you still
+own sub-licensing rights. Means, if someone would want to use your core under
+a custom closed source license, you would be contacted and you'd have the
+freedom of setting the conditions for a commercial license purchase option.
+
+----------------------------------------------------------------------------
+License mixtures
+
+This is a very complicated subject. The components of the MaSoCist build
+environment are subject to different licenses, some of them may not be
+included in your distribution package.
+The component included in your distribution is noted in the
+config.mk vendor file.
+
+1) netpp: OpenSource license (Dual use)
+2) ghdlex: OpenSource with closed source modules
+3) gensoc [CONFIG_HAVE_GENSOC]: Commercial license
+4) vtap [CONFIG_HAVE_VTAP]: virtual TAP library (closed source)
+5) vendor specific licenses for synthesizable HDL: See vendor specific
+   HDL file. They are not included in the MaSoCist distribution.
+
+Whether you have a license for a specific component is found in the
+vendor/<YOUR_VENDOR_NAME>/config.mk
+
+Special vendor names:
+
+[public] : Public code, not OpenSource
+[opensource] : OpenSource distribution
+
+----------------------------------------------------------------------------
+Custom licensing
+
+If you wish to make use of the MaSoCist for commercial purposes, this is
+the typical way to go:
+
+1) We set up a licensing contract for the desired components
+2) A vendor name is registered for you in the 'master' tree
+3) A specific git branch is set up for you
+4) Access to future updates of the commercial tree is granted for a
+   determined maintenance period, up to ten years. This entitles you
+   to pull updates and changes from the master tree.
+5) A docker container is provided to you such that you can run the reference
+   system for an indeterminate period, avoiding future maintenance costs
+
+

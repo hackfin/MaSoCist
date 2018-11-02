@@ -1,0 +1,24 @@
+diff --git a/rtl/core/neo430_reg_file.vhd b/rtl/core/neo430_reg_file.vhd
+index 448bf1b..178bf4f 100644
+--- a/rtl/core/neo430_reg_file.vhd
++++ b/rtl/core/neo430_reg_file.vhd
+@@ -63,6 +63,8 @@ architecture neo430_reg_file_rtl of neo430_reg_file is
+   -- register file (including dummy regs) --
+   type   reg_file_t is array (15 downto 0) of std_ulogic_vector(15 downto 0);
+   signal reg_file : reg_file_t;
++  signal pc       : unsigned(15 downto 0);
++  signal sp       : unsigned(15 downto 0);
+   signal sreg     : std_ulogic_vector(15 downto 0);
+   signal sreg_int : std_ulogic_vector(15 downto 0);
+ 
+@@ -75,6 +77,9 @@ architecture neo430_reg_file_rtl of neo430_reg_file is
+ 
+ begin
+ 
++  pc <= unsigned(reg_file(0));
++  sp <= unsigned(reg_file(1));
++
+   -- Input Operand Selection --------------------------------------------------
+   -- -----------------------------------------------------------------------------
+   in_data <= pc_boot_addr_c when (ctrl_i(ctrl_rf_boot_c)   = '1') else
+

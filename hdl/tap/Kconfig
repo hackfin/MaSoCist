@@ -1,0 +1,50 @@
+menu "TAP configuration"
+
+# config TAP_ID
+# 	string "TAP IDCODE"
+# 	default "deadbeef"
+# 	help
+# 	  The TAP IDCODE for the in circuit emulation. This is used to detect
+# 	  the TAP type and features used by the CPU core. Values of 'deadbeef'
+# 	  and similar nerdiness are used for experimental cores. Others follow
+# 	  the section5 code scheme for stable cores.
+
+config TAPCLK_PERIOD
+	string "TAP clock period time"
+	default "50 ns"
+	help
+	  The TAP clock period [ms,us,ns,ps]. Make sure the TAP clock frequency is
+	  at least half of the core clock frequency. Otherwise, your simulation
+	  might run slower or show spurious debug events.
+
+choice
+	prompt "Simulation TAP type"
+	default VTAP
+
+config VTAP_DEBUG
+	bool "GHDLex Debug TAP"
+	depends on HAVE_VTAP
+	help
+	  This is an enhanced raw TAP with a few more debug pins accessible
+	  It is not compatible to the hardware TAP and may be subject to
+	  changes.
+	
+config VTAP
+	bool "GHDLex VirtualTAP"
+	depends on HAVE_VTAP
+	help
+	  Virtual TAP for verification
+	
+config DUMMYTAP
+	bool "Dummy TAP"
+	
+endchoice
+
+config VTAP_JTAG
+	bool "Virtual JTAG interface"
+	depends on VTAP
+	help
+	  Enable virtual JTAG (ICEbear Pro compatible)
+	
+
+endmenu

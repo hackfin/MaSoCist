@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<chapter id="cha_vendor">
+  <title>Vendor customisations</title>
+
+  <section>
+    <title>Use cases</title>
+
+    <para>When you wish to use the MaSoCist build system for your own,
+    possibly non-OpenSource designs, you may want to not clutter the publicly
+    visible Makefiles with your vendor specific or private details. In this
+    case, you would typically:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>Create a branch of the git repository</para>
+      </listitem>
+
+      <listitem>
+        <para>Add your vendor specific files in the usual places</para>
+      </listitem>
+
+      <listitem>
+        <para>Add your build rules in the <emphasis>vendor specific</emphasis>
+        Makefiles</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+
+  <section>
+    <title>Files</title>
+
+    <para>These files are typically found in the
+    <filename>vendor/&lt;YOUR_ORGANISATION&gt;/</filename> directory:</para>
+
+    <variablelist>
+      <varlistentry>
+        <term>Makefile</term>
+
+        <listitem>
+          <para>Makefile for HDL project only</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>Kconfig</term>
+
+        <listitem>
+          <para>Your vendor specific configuration options</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>config.mk</term>
+
+        <listitem>
+          <para>Configuration file for all extra Makefile rules, including
+          Software and Hardware options. This file also holds information on
+          the software modules you have acquired and installed.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>local_config.mk</term>
+
+        <listitem>
+          <para>Configuration of software or tool locations that are local to
+          the machine. Optional.</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>vhdlconfig.mk</term>
+
+        <listitem>
+          <para>Included by <filename>$(TOPDIR)/hdl/vhdlconfig.mk</filename>,
+          holds extra config variable conversion options</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+
+    <para>The file usage is documented in detail below.</para>
+
+    <section>
+      <title>Makefile</title>
+
+      <para>Variables to know:</para>
+
+      <variablelist>
+        <varlistentry>
+          <term>GENSOC_MODULES-y</term>
+
+          <listitem>
+            <para>A list of module names defined in the SoC XML file</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>CUSTOM_XMLCONF</term>
+
+          <listitem>
+            <para>A rule to convert a configuration variable to a VHDL
+            configuration variable</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>GENERATED_FILES-y</term>
+
+          <listitem>
+            <para>List of VHDL files that are generated, like by a python or
+            .chdl to .vhdl rule</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>PERIO-y</term>
+
+          <listitem>
+            <para>Specific peripheral modules that reside in hdl/perio</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>SRCFILES-y</term>
+
+          <listitem>
+            <para>General source files that reside in
+            <filename>hdl/</filename></para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>PLAT_SRCFILES-y</term>
+
+          <listitem>
+            <para>Platform specific source VHDL files</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+
+      <section>
+        <title>Examples</title>
+
+        <para>This will for example add the <varname>lcd_core</varname> design
+        module in hdl/perio/lcd.vhdl to the project:</para>
+
+        <programlisting>PERIO-$(CONFIG_LCDIO) += lcd.vhdl
+</programlisting>
+
+        <para>This adds the <interface>lcd</interface> module to the generated
+        SoC peripheral decoders:</para>
+
+        <programlisting>GENSOC_MODULES-$(CONFIG_LCDIO)        += lcd</programlisting>
+
+        <para>This adds a new CONFIG_TEST_ABC configuration to the
+        <varname>global_config</varname> VHDL package:</para>
+
+        <programlisting>CUSTOM_XMLCONF += $(call xml_convert_boolean,CONFIG_TEST_ABC)
+</programlisting>
+      </section>
+    </section>
+
+    <section>
+      <title>config.mk</title>
+
+      <para>Variables to know:</para>
+
+      <variablelist>
+        <varlistentry>
+          <term>DIST_PLATFORMS</term>
+
+          <listitem>
+            <para>These platforms are to be distributed and tested. If you
+            have a working platform, add it to this list.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>DISTFILES</term>
+
+          <listitem>
+            <para>The files to distribute for a 'make dist' rule</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>MODULE_&lt;MODULE&gt;</term>
+
+          <listitem>
+            <para>Module configuration, set to 'y' if the corresponding module
+            is installed</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>GENSOC_VERSION</term>
+
+          <listitem>
+            <para>If <code>MODULE_GENSOC=y</code>, this describes the used
+            GENSOC_VERSION. Do not alter, unless you are upgrading to a
+            compatible version.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+
+      <para>All other rules add to the project building procedures. For
+      example:</para>
+
+      <section>
+        <title>Adding a SoC configuration</title>
+
+        <para>When you wish to add a SoC specific configuration (bound to the
+        <filename>hdl/plat/&lt;soc_edition&gt;.xml</filename>), use a
+        statement like below:</para>
+
+        <programlisting>ifeq ($(CONFIG_SOCDESC),"extra")
+CHDL_FLAGS = -DHAVE_EXTRA
+endif
+</programlisting>
+
+        <para>In the corresponding CHDL module (see also <xref
+        linkend="sec_cpp"/>) you can then switch using:</para>
+
+        <programlisting>#ifdef HAVE_EXTRA
+      extra_vhdl_assignment &lt;= extra_value;
+#endif</programlisting>
+      </section>
+
+      <section>
+        <title>Adding a platform configuration</title>
+
+        <para>Example:</para>
+
+        <programlisting>ifdef CONFIG_my_platform
+HAVE_PLATFORM_DESCRIPTION = yes # Use if a hdl/plat/plat_my_platform.xml exists
+REQUIRE_PREREAD = y             # If we require a common preread wrapper
+CHDL_FLAGS += -DHAVE_MAC
+FPGA_VENDOR = lattice
+FPGA_ARCH = ECP5
+endif
+</programlisting>
+      </section>
+
+      <section>
+        <title>Adding custom C source objects</title>
+
+        <programlisting>OBJS-$(CONFIG_MY_VENDOR_STUFF) += my_vendor/stuff.o
+</programlisting>
+
+        <para>Note that when you are building against any of the public
+        opensource source, you have to publish your code as well. If it is of
+        general use, you might rather add it to the
+        <filename>sw/Makefile</filename>.</para>
+      </section>
+    </section>
+  </section>
+</chapter>

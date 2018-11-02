@@ -1,0 +1,694 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<chapter>
+  <title>Basics</title>
+
+  <section>
+    <title>FPGA/ASIC register map definitions</title>
+
+    <section>
+      <title>Register definitions for VHDL code</title>
+
+      <para>Often it is necessary to create a register map in an internal
+      address space on an FPGA SoC that can be addressed through a Soft or
+      even Hard Core CPU. To implement these registers, you can either use
+      block RAM or distributed resources. In the latter case, you will have
+      some register instance directly specified in the HDL.</para>
+
+      <para>To create a register definition map and a register address decoder
+      at the same time, the gensoc utility comes in handy.</para>
+
+      <para>For specific usage, please refer to examples that may have been
+      provided to you. They are based on Makefiles, during a build procedure
+      (be it synthesis or co-simulation with a netpp client) it can be made
+      sure that the generated output is in sync with the XML
+      definition.</para>
+
+      <para>To implement registers, you use the same technique as when you are
+      designing a register set from the software developer's
+      perspective.</para>
+
+      <para>However, special attention needs to be given to the
+      <property>default</property> property. This defines the default&gt;
+      value that the register is initialized with. Depending on the register
+      architecture, the value in the <property>&lt;default&gt;</property> node
+      needs to obey the following rules:</para>
+
+      <variablelist>
+        <varlistentry>
+          <term>Register is a bitfield container</term>
+
+          <listitem>
+            <para>The value must be a <emphasis>binary</emphasis> sequence of
+            0 or 1, exactly matching the size (span of LSB to MSB) of the
+            register. You may also mark unused bits with 'X'.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>Register is a multiple of a byte wide without bitfield
+          definitions</term>
+
+          <listitem>
+            <para>The value must be a <emphasis>hexadecimal</emphasis> number
+            of the exact size (zero-pre-padded) of the register, as specified
+            in the <property>size</property> attribute.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+
+      <para>Valid example for a bitfield container:</para>
+
+      <programlisting>&lt;register access="RW" addr="0x18" id="TAP_SIMCTRL" size="1"&gt;
+   &lt;bitfield lsb="0" msb="0" name="DEBUG_MODE"/&gt;
+   &lt;default&gt;1&lt;/default&gt;
+&lt;/register&gt;
+</programlisting>
+
+      <para>Valid example for a 32 bit (4 byte) register:</para>
+
+      <para><programlisting>&lt;register access="RW" addr="0x4" id="DYN_ID" size="4"&gt;
+   &lt;default&gt;0000beef&lt;/default&gt;
+&lt;/register&gt;
+</programlisting></para>
+
+      <para>Invalid example: &lt;default&gt; value is too short (and will
+      produce errors in the generated VHDL code):</para>
+
+      <para><programlisting>&lt;register access="RW" addr="0x6" id="DYN_ID" size="1"&gt;
+   &lt;bitfield lsb="0" msb="4" name="VIDEO_MODE"/&gt;
+   &lt;default&gt;001&lt;/default&gt;
+&lt;/register&gt;
+</programlisting></para>
+
+      <note>
+        <para><property>&lt;default&gt;</property> nodes have no effect on
+        register definitions with access="RO"</para>
+      </note>
+
+      <para>The <property>size</property> specification is not mandatory in
+      the register definition. However, if omitted, the hardware decoder
+      requires a default type 'REG_SIZE' to be defined in a separate package
+      which needs to be included using a &lt;header language="VHDL"&gt; node
+      in the devdesc file.</para>
+    </section>
+
+    <section>
+      <title>Address decoder generation</title>
+
+      <para>The <application>gensoc</application> utility creates a register
+      map of a specified <property>&lt;registermap&gt;</property> node by
+      instancing a common definition package file plus an address decoder
+      logic. In more detail, it typically does the following:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Create a register for each bare register found</para>
+        </listitem>
+
+        <listitem>
+          <para>If register contains bitfields, each bitfield is instanced
+          separately</para>
+        </listitem>
+
+        <listitem>
+          <para>Implement the address decoder according to the register
+          definitions in the generated system map package</para>
+        </listitem>
+
+        <listitem>
+          <para>Handles special access attributes like read or write
+          only</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>The <property>access</property> attribute of the register is a
+      crucial option for the register instanciation. If not specified, a
+      register is by default read/writeable. This means, that a register
+      flipflop is instanced for each allocated bit of the register. Such a
+      register can be made writeonly by setting access="WO". This will still
+      instance the bits, but not emit code in the 'read' section of the
+      decoder. A register with readonly ("RO") attribute can only be read out,
+      therefore no flipflops will be allocated.</para>
+
+      <para>Also important is the <property>offset</property> attribute. It
+      needs to be specified only for a fixed offset of an already designed and
+      mapped register set. For the SoC design, the offset should be omitted,
+      as it is calculated from the unit map definition, see <xref
+      linkend="sec_unitmap" />.</para>
+
+      <section>
+        <title>Access modes</title>
+
+        <para>Access modes can be specified per register or even per bitfield.
+        The standard perio bus decoder does not evaluate the bitfield access
+        modes, the bitfield specific access modes are normally used for
+        documentation purposes.</para>
+
+        <para><table id="tbl_access_comb">
+            <title>Register access mode combinations</title>
+
+            <tgroup cols="4">
+              <colspec align="left" colnum="1" colwidth="1*" />
+
+              <colspec align="left" colnum="2" colwidth="1*" />
+
+              <colspec align="justify" colnum="3" colwidth="2*" />
+
+              <colspec align="justify" colnum="4" colwidth="4*" />
+
+              <thead>
+                <row>
+                  <entry>access</entry>
+
+                  <entry>volatile</entry>
+
+                  <entry>Description</entry>
+
+                  <entry>Result</entry>
+                </row>
+              </thead>
+
+              <tbody>
+                <row>
+                  <entry>-</entry>
+
+                  <entry>-</entry>
+
+                  <entry>Default register</entry>
+
+                  <entry>Instances flip flops and read/write handlers for each
+                  register entity</entry>
+                </row>
+
+                <row>
+                  <entry>RW</entry>
+
+                  <entry>false</entry>
+
+                  <entry>Explicit R/W</entry>
+
+                  <entry>Like when not specified.</entry>
+                </row>
+
+                <row>
+                  <entry>RW</entry>
+
+                  <entry>true</entry>
+
+                  <entry>R/W with select signal</entry>
+
+                  <entry>FFs are instanced, plus a select signal for each
+                  register entity. This is used to communicate register
+                  updates and trigger actions, like starting a transmission
+                  when a TX register was written.</entry>
+                </row>
+
+                <row>
+                  <entry>RO</entry>
+
+                  <entry>false</entry>
+
+                  <entry>Read only register</entry>
+
+                  <entry>Directly feeds a status line value to the data bus,
+                  no FF instances</entry>
+                </row>
+
+                <row>
+                  <entry>RO</entry>
+
+                  <entry>true</entry>
+
+                  <entry>Read only register with read notification</entry>
+
+                  <entry>Directly feeds through the status value to the data
+                  bus as above. Creates an additional select signal which
+                  pulses when the register is accessed.</entry>
+                </row>
+
+                <row>
+                  <entry>WO</entry>
+
+                  <entry>false</entry>
+
+                  <entry>Write only register</entry>
+
+                  <entry>Instances FFs for each bit but does not allow
+                  reading. This can be used to multiplex a status and control
+                  register into one by using two register definitions for the
+                  same address.</entry>
+                </row>
+
+                <row>
+                  <entry>WO</entry>
+
+                  <entry>true</entry>
+
+                  <entry>Write only register without flipflop</entry>
+
+                  <entry>Generates two signals for each contained bitfield:
+                  The data and a select signal. Does not instance a FF, the
+                  data is valid during the select signal pulse. Used for
+                  command-like actions, like a "Write one to clear" action for
+                  a sticky error bit.</entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </table><xref linkend="tbl_access_comb" /> shows the different modes
+        in an overview. A '-' means that the attribute is not specified. The
+        'volatile' attribute requires special attention. On the software (C
+        programmer's) side, registers are always volatile type definitions.
+        This 'volatile' attribute is specific to the hardware: it implements a
+        register entity without a flipflop such that customized logic can
+        provide arbitrary read/write behaviour. See also the GPIO example
+        <xref linkend="sec_app_gpio" />.</para>
+
+        <para>For a schematic explanation, see <xref linkend="sec_register" />
+        for the various register implementation possibilities.</para>
+      </section>
+
+      <section id="sec_reginit">
+        <title>Register initialization</title>
+
+        <para>One important topic is the reset value initialization of
+        registers with specified defaults. There are two implementation
+        variants:</para>
+
+        <orderedlist>
+          <listitem>
+            <para>Register is initialized at FPGA boot time (default)</para>
+          </listitem>
+
+          <listitem>
+            <para>Register is initialized using a hard/soft reset (See
+            <option>CONFIG_GENSOC_RESET_DEFAULTS</option>)</para>
+          </listitem>
+        </orderedlist>
+
+        <para>Depending on the FPGA architecture, the explicit reset pin
+        initialization might be preferred.</para>
+
+        <para>Registers that do not contain a default specification are not
+        initialized, therefore their value can be undefined.</para>
+
+        <note>
+          <para>Generally, it is considered good programming practise to only
+          use defaults where necessary and initialize registers within the
+          hardware driver routines.</para>
+        </note>
+
+        <section>
+          <title>Application examples</title>
+
+          <para>One example where defaults are necessary is the SIC_IMASK
+          register. If it is undefined, spurious interrupts may trigger an IRQ
+          while the event vector registers are yet uninitialized. The CPU will
+          then jump into undefined code at startup, which can be tricky to
+          debug. Likewise, it makes sense to initialize specific hardware
+          enable bits for crucial peripherals to zero so that they do not
+          consume power when the system resets, for example due to a watchdog
+          event. In this case, it may be reasonable to enable
+          <option>CONFIG_GENSOC_RESET_DEFAULTS</option>.</para>
+        </section>
+      </section>
+
+      <section>
+        <title>WritePorts/ReadPorts</title>
+
+        <para>When instancing a RW register node, the according flipflops are
+        owned by the decoder. To communicate the input/output values, Port
+        records are created automatically: A ReadPort as input to the decoder
+        and a WritePort as output. A RW register or bitfield definition will
+        create a signal both in the ReadPort and WritePort record. Likewise,
+        RO registers will create the according signal inside the ReadPort
+        record only. Typically, the ReadPort represents the bits of a status
+        register, the WritePort the bits of a control register. The record
+        definitions are created during the translation using
+        <application>gensoc</application>.</para>
+      </section>
+    </section>
+
+    <section>
+      <title>External packages/definitions</title>
+
+      <para>In some cases, existing definitions might have to be used within
+      the XML device description. Like for the software side source code
+      inclusion using C headers, it is possible to import a package using a
+      <property>&lt;header&gt;</property> specification.</para>
+
+      <figure id="fig_header">
+        <title>Header example</title>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="img/header.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+
+      <para><xref linkend="fig_header" /> shows an example definition for both
+      the firmware and the hardware definition side. The
+      <package>iomap_config</package> package for instance defines a default
+      <type>REG_SIZE</type> subtype to allow a default size if the size
+      attribute of a register is not specified.</para>
+    </section>
+
+    <section id="sec_rapidsoc">
+      <title>Rapid design of a System on Chip</title>
+
+      <para>Analogous to various system builder software tools, I/O maps can
+      be generated on the fly using devdesc device descriptions. However,
+      there is a huge number of design options and ways of implementation such
+      that it is almost impossible to define a generic standard. For example,
+      a existing system may restrict you to the usable bus width and
+      addressing modes whereas the attached I/O device may have different
+      properties. In the following sections we will deal with a few different
+      scenarios.</para>
+
+      <section>
+        <title>32 Bit CPU peripheral interfacing</title>
+
+        <para>A typical 32 bit CPU has a 32 bit address bus and a 32 bit wide
+        data bus. In a FPGA soft CPU design, access to peripheral controllers
+        is typically implemented using memory mapped registers (MMR) in a
+        specific I/O addressing section. To save extra addressing logic, these
+        MMR registers map on a 4 byte boundary, i.e. the two least significant
+        bits in the address are zero. Now this can turn into a little problem,
+        when we have to map an existing peripheral map that has a different
+        data width into this MMR space.</para>
+
+        <para>To define the address mapping to various bus widths, a dummy
+        register map with the name <interfacename>MMR</interfacename> is
+        created in the device description XML file. This map can contain one
+        or more pseudo register definitions that again contain bit fields
+        specifying address decoding portions, the 'MMR config bitfield'. These
+        have a internally standardized (with respect to the conversion style
+        sheet) prefix: <varname>MMR_CFG_</varname>. For each
+        <classname>&lt;registermap&gt;</classname> node specified in the
+        device description, a corresponding
+        MMR_CFG_<emphasis>&lt;id&gt;</emphasis> bitfield must exist. For
+        example, you define a register map with id 'i2c_controller', then you
+        have to define a bitfield called
+        <property>MMR_CFG_i2c_controller</property> in the dummy register of
+        the MMR registermap.</para>
+
+        <para><important>
+            <para>It is mandatory to set the <property>id</property> attribute
+            of the register map for the conversion to HDL to operate
+            correctly.</para>
+          </important>The MMR config bitfield is used to slice a local address
+        portion out of the MMR address space. A peripheral map such as an i2c
+        controller typically gets by with eight registers, therefore only
+        three address lines are needed. In case of a 32 bit wide addressing
+        however, we do not slice the three least significant bits but skip the
+        first two LSBs. So our <property>MMR_CFG_i2c_controller</property>
+        bitfield definition would look like:</para>
+
+        <para><programlisting>&lt;bitfield lsb="2" msb="4" name="MMR_CFG_i2c_controller"&gt;
+   &lt;info&gt;Configuration address range for i2c unit with 8 bit addressing&lt;/info&gt;
+&lt;/bitfield&gt;
+</programlisting>This definition creates a VHDL <type>subtype</type>:</para>
+
+        <para><programlisting>subtype     BV_MMR_CFG_i2c_controller is integer range 4 downto 2;
+</programlisting>This subtype is then used to slice the required address bits
+        from the MMR bus address in the generated VHDL code.<note>
+            <para>The default behaviour of gensoc is, to emit the bitfield
+            definitions with no prefix. However, when using the useMapPrefix=2
+            option, the register map's name is prepended. See <xref
+            linkend="sec_app_regprefix" /> for details.</para>
+          </note></para>
+      </section>
+
+      <section>
+        <title>Endianness issues</title>
+
+        <para>Endianess is a crucial item when it comes to I/O access to
+        registers of a specific width. Assume a register map where registers
+        may have widths of 16 and 32. It is easier for the decoding logic, if
+        registers are mapped to long word boundary addresses, i.e. a multiple
+        of four. Now here comes the catch: On a little endian system, a 32 bit
+        access truncated to 16 bit will yield the same value as the 16 bit
+        access. On a big endian system, it may not, unless there is a specific
+        access logic present that detects the 16 bit access on the hardware
+        and maps the data lines accordingly. The following scheme elaborates
+        this effect. Assume that a 32 bit register value of 0xdeadbeef is
+        mapped at address 0x8000. A 16 bit read on a little endian
+        architecture will return 0xbeef, a big endian 16 bit read 0xdead. If a
+        16 bit register is implemented "little endian" style, a 16 bit read
+        from 0x8004 as shown below will return an undefined value (determined
+        by the last access). If it is to be implemented the "big endian" way,
+        the 16 bit register will have to be aligned to the MSB as shown
+        below.</para>
+
+        <programlisting>Little endian map:
+0x8000:   deadbeef
+0x8004:   xxxxf00d
+
+16 bit "big endian:
+0x8004    f00dxxxx
+</programlisting>
+
+        <important>
+          <para>The decoders emitted by gensoc version &lt;0.2 are
+          <emphasis>little endian</emphasis> only, the registermap's
+          <property>endian</property> attribute is currently ignored in the
+          decoder generation.</para>
+        </important>
+      </section>
+
+      <section>
+        <title>Automatic updating</title>
+
+        <para>Once you have created a registermap inside a device description,
+        the automated procedures typically create:</para>
+
+        <orderedlist>
+          <listitem>
+            <para>A hardware decoding logic in HDL</para>
+          </listitem>
+
+          <listitem>
+            <para>A C header file</para>
+          </listitem>
+
+          <listitem>
+            <para>Documentation</para>
+          </listitem>
+        </orderedlist>
+
+        <para>Within a SoC design, it is desired to control this all with one
+        call to <application>make</application> to keep everything in sync.
+        So, whenever a register definition is changed, the following happens
+        under the hood when executing make:</para>
+
+        <orderedlist>
+          <listitem>
+            <para>The C program is recompiled with the new register
+            addresses</para>
+          </listitem>
+
+          <listitem>
+            <para>The ROM generator creates a memory initialization file in
+            HDL</para>
+          </listitem>
+
+          <listitem>
+            <para>The simulation or netlist file is recompiled</para>
+          </listitem>
+        </orderedlist>
+
+        <para>To simplify the building and synchronization of all files,
+        several tools or files are involved.</para>
+
+        <variablelist>
+          <varlistentry>
+            <term>generate.mk</term>
+
+            <listitem>
+              <para>Master generator makefile making use of the tools/make
+              rules below</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>gensoc.mk</term>
+
+            <listitem>
+              <para>Contains the rules to create the decoder instances and the
+              system map package from the device description
+              $(DEVICEFILE)</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>utils/buildrom.py</term>
+
+            <listitem>
+              <para>Python script to build a VHDL instance of a preinitialized
+              RAM from an ELF format executable (supports ZPU and MIPS
+              architectures only)</para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+
+        <para>These tools are typically found in the distribution of your SoC
+        evaluation package.</para>
+      </section>
+    </section>
+  </section>
+
+  <section>
+    <title>Application examples</title>
+
+    <section>
+      <title>A status register with 'sticky bit'</title>
+
+      <para>In case a peripheral detects a low priority error and needs to
+      communicate this to the firmware in a non-interrupt based manner, a
+      status register is typically implemented containing one or more 'sticky'
+      error bits. The 'sticky' attribute means, that the error bit is set by
+      the error condition, but not cleared on a subsequent, successful
+      transaction. Rather, the peripheral expects the software to clear the
+      error bit, once it has read the status.</para>
+
+      <para>In such case, a W1C ("write one to clear") approach can be used.
+      The status register is then not purely read-only, but implemented using
+      a <property>volatile=true</property> attribute.</para>
+
+      <figure id="fig_w1c">
+        <title>W1C example</title>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="../../masocist/doc/img/w1c_example.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+
+      <para><xref linkend="fig_w1c" /> shows an example implementation of a
+      classic interrupt controller. For an "interrupt pending" SIC_IPEND
+      register, two definitions are made, one for the readonly part (whose
+      bits are set by an external event) and the W1C part which causes a reset
+      of the according bit when written '1'.</para>
+    </section>
+
+    <section id="sec_app_gpio">
+      <title>A general purpose I/O port</title>
+
+      <para>Assume a classic I/O port which has a direction register, defining
+      whether a pin is input or output, plus a output register defining the
+      port output levels. Like in the previous example, you may also want to
+      have a W1C type of register that sets only bits that are 1, likewise for
+      the clearing mechanism.</para>
+
+      <para>Meanwhile, you might always want to be able to read out the
+      current GPIO output state. Means, the GPIO output register may have to
+      be fully under external control. This is achieved by defining a GPIO_OUT
+      register as <property>access=RW</property> with
+      <property>volatile=true</property>. In both the read/write scenario, an
+      external signal member gpio_out is routed through the gpio_ReadPort and
+      the gpio_WritePort in the resulting register decoder, next to the
+      select_gpio_out signal that is used as notification-on-write. There is
+      no notification-on-read in this case.</para>
+    </section>
+
+    <section>
+      <title>A communication controller device</title>
+
+      <section>
+        <title>SPI example</title>
+
+        <para>On a SPI port you may want to trigger a simultaneous
+        transmission on a write to a TX register. This is just the same
+        configuration as in the W1C technique from above. On the other hand,
+        you might not want to trigger a transaction on a RX read, but remove
+        the read character from the FIFO. This case is covered by a register
+        definition using <property>volatile=true</property> and
+        <property>access=RO</property>.</para>
+      </section>
+
+      <section>
+        <title>A i2c slave device</title>
+
+        <para>Apart from a read/write trigger signal, you might want to notify
+        the IP core of an illegal register access. This can come handy when
+        debugging accesses of a memory mapped register space, however it may
+        make way more sense in an i2c slave device emulation, where register
+        accesses are implemented using gensoc, likewise. This can be achieved
+        using the <option>useACK</option> option to the decoder generator.
+        When an unknown register is accessed via i2c from a foreign master, a
+        NAK can be signalled to the i2c engine using the internal ack
+        notification mechanisms.</para>
+
+        <note>
+          <para>This option might not be available in the public gensoc
+          version</para>
+        </note>
+      </section>
+    </section>
+
+    <section>
+      <title>Multiple instancing of peripheral controllers</title>
+
+      <para>Assume a controller instance mapped somewhere in the MMR space.
+      Now if several instances are desired, for example a second UART, another
+      portion of the MMR address might be needed to select the corresponding
+      peripheral unit. This has to be encoded in two domains:</para>
+
+      <orderedlist>
+        <listitem>
+          <para>The HDL domain</para>
+        </listitem>
+
+        <listitem>
+          <para>The peripheral driver C source code</para>
+        </listitem>
+      </orderedlist>
+
+      <para>A simple way to cover the C source side would be to duplicate the
+      register map and use different offsets. It is more elegant however, to
+      define a macro that calculates an address offset for each device
+      according to the device index. This device index is sliced from the MMR
+      address on the hardware side, like with the MMR config bitfield from
+      above. The selection of the device index portion from the MMR address is
+      therefore defined with a
+      <varname>MMR_SELECT_DEVINDEX_&lt;name&gt;</varname> bitfield entry in
+      the MMR pseudo map. The resulting define
+      <varname>BV_MMR_SELECT_DEVINDEX_&lt;name&gt;</varname> in the VHDL code
+      can then be used likewise. On some conversion systems, the entire
+      instancing of peripherals is controlled and generated automatically by a
+      specific property section inside the device file.</para>
+
+      <note>
+        <para>One might be tempted to use the two unused LSBs for the device
+        index. However, this is not a portable solution and very much depends
+        on the CPU allowing 32 bit wide data addressing to addresses that are
+        not on a four byte boundary.</para>
+      </note>
+
+      <para>For example, a macro to access a specific UART device register
+      map:<programlisting>#define uart_dev_mmr(dev, x) \
+        ((volatile unsigned long *) x)[(dev &lt;&lt; (MMR_SELECT_DEVINDEX_uart_SHFT-2))]
+</programlisting></para>
+
+      <para>Care must be taken with using the
+      MMR_SELECT_DEVINDEX_&lt;foo&gt;_SHFT value, depending on the address
+      width, this must be decremented by 1 for 16 bit, 2 for 32 bit (as for
+      the case above).</para>
+
+      <para>The UART register is then simply accessed like</para>
+
+      <para><programlisting>uart_dev_mmr(1, Reg_UART_THR) = 0x55;</programlisting><important>
+          <para>This approach only works when sufficient address space is
+          reserved between different controller MMR maps. Otherwise, the
+          address decoding must be done manually with specific
+          functions.</para>
+        </important></para>
+
+      <para>This topic is again covered from a different aspect in <xref
+      linkend="sec_multiperio" />.</para>
+    </section>
+  </section>
+</chapter>

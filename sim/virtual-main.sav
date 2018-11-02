@@ -1,0 +1,70 @@
+[*]
+[*] GTKWave Analyzer v3.3.70 (w)1999-2016 BSI
+[*] Mon Oct 22 16:49:58 2018
+[*]
+[dumpfile] "(null)"
+[savefile] "/home/strubi/src/vhdl/maso/sim/virtual-main.sav"
+[timestart] 0
+[size] 1153 853
+[pos] 516 132
+*-39.386486 1412000000000 1078734375000 195484375000 202578125000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] uut.
+[treeopen] uut.soc.
+[treeopen] uut.soc.perio.
+[treeopen] uut.soc.perio.inst_dev_spi.
+[treeopen] uut.soc.zpucore.
+[sst_width] 288
+[signals_width] 225
+[sst_expanded] 1
+[sst_vpaned_height] 344
+@c08022
+uut.soc.zpucore.pc[14:0]
+@28
+(0)uut.soc.zpucore.pc[14:0]
+(1)uut.soc.zpucore.pc[14:0]
+(2)uut.soc.zpucore.pc[14:0]
+(3)uut.soc.zpucore.pc[14:0]
+(4)uut.soc.zpucore.pc[14:0]
+(5)uut.soc.zpucore.pc[14:0]
+(6)uut.soc.zpucore.pc[14:0]
+(7)uut.soc.zpucore.pc[14:0]
+(8)uut.soc.zpucore.pc[14:0]
+(9)uut.soc.zpucore.pc[14:0]
+(10)uut.soc.zpucore.pc[14:0]
+(11)uut.soc.zpucore.pc[14:0]
+(12)uut.soc.zpucore.pc[14:0]
+(13)uut.soc.zpucore.pc[14:0]
+(14)uut.soc.zpucore.pc[14:0]
+@1401200
+-group_end
+@20000
+-
+-
+@8022
+[color] 5
+uut.soc.zpucore.sp[14:0]
+@20000
+-
+-
+@28
+[color] 1
+uut.soc.zpucore.inst_debug_swbreak
+uut.soc.perio.ce_sys
+@22
+uut.soc.perio.data_out_sys[31:0]
+@28
+uut.soc.zpucore.mmr_re
+@200
+-Peripheral
+@29
+user_reset
+@28
+[color] 7
+uart_rx
+uart_tx
+uut.soc.spi_cs
+uut.soc.spi_miso
+uut.soc.spi_mosi
+uut.soc.spi_sclk
+[pattern_trace] 1
+[pattern_trace] 0

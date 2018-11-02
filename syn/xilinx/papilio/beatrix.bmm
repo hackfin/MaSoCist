@@ -1,0 +1,20 @@
+// ZPUng papilio BMM file
+// (c) 2015, <hackfin@section5.ch>
+//
+
+ADDRESS_MAP zpung_s3 PPC405 0
+    ADDRESS_SPACE memory1 RAMB16 [0x00000000:0x00003FFF]
+        BUS_BLOCK
+            soc/rom/Mram_ram8 RAMB16 [31:28]  [0:4095] OUTPUT = r8.mem;
+            soc/rom/Mram_ram7 RAMB16 [27:24]  [0:4095] OUTPUT = r7.mem;
+            soc/rom/Mram_ram6 RAMB16 [23:20]  [0:4095] OUTPUT = r6.mem;
+            soc/rom/Mram_ram5 RAMB16 [19:16]  [0:4095] OUTPUT = r5.mem;
+            soc/rom/Mram_ram4 RAMB16 [15:12]  [0:4095] OUTPUT = r4.mem;
+            soc/rom/Mram_ram3 RAMB16 [11:8]   [0:4095] OUTPUT = r3.mem;
+            soc/rom/Mram_ram2 RAMB16 [7:4]    [0:4095] OUTPUT = r2.mem;
+            soc/rom/Mram_ram1 RAMB16 [3:0]    [0:4095] OUTPUT = r1.mem;
+        END_BUS_BLOCK;
+    END_ADDRESS_SPACE;
+
+END_ADDRESS_MAP;
+
