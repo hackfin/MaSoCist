@@ -15,15 +15,47 @@ on Chip solutions. It may therefore hurt less for you.
 Prerequisites
 ------------------
 
-You need a build environment, consisting of:
+You need the build environment. Because dependencies have become complex,
+a Dockerfile plus various build recipes to build the environment for you is
+supplied in contrib/docker.
 
-- GCC toolchain (ZPU by default)
-- Linux kconfig setup
-- netpp slave library package
-- Python IntelHex for ROM generation
+Here's a short howto to set up an environment ready to play with.
+You can try this online at
 
-This would typically be taken care of by providing you with a linux container
-or a virtual machine.
+https://labs.play-with-docker.com, for example.
+
+Just register yourself a Docker account, login and start playing in your
+online sandbox. You'll need to build and copy some files from contrib/docker
+to the remote Docker machine instance.
+
+Run 'make dist' inside contrib/docker, this will create a file masocist_sfx.sh
+Copy Dockerfile and init-pty.sh to the Docker playground by dragging the files onto
+the Playground browser shell window.
+
+Build the container and run it:
+
+    docker build -t masocist .
+
+    docker run -it -v/root:/usr/local/src
+
+Copy masocist_sfx.sh to the Docker machine and run, inside the running
+container's home dir (/home/masocist):
+
+    sudo sh /usr/local/src/masocist_sfx.sh
+
+Now pull and build all necessary packages:
+
+    make all
+
+If nothing went wrong, the simulation for the neo430 CPU will be built
+and started with a virtual UART and SPI simulation. A minicom terminal will
+connect to that UART and you'll be able to speak to the neo430 'bare metal'
+shell, for example, you can dump the content of the virtual SPI flash by:
+
+    s 0 1
+
+When you exit minicom by hitting `Ctrl+A`, then `q`, the simulation will be
+terminated.
 
 Quick start
 ------------
