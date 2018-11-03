@@ -1,5 +1,4 @@
 
-GCC_VERSION = 7.2.0
 VHDL_STD ?= 93c
 
 # Make sure we get the rebuild rules right: '93c' results in suffix '93'
@@ -14,24 +13,6 @@ ifdef MINGW32
 include $(TOPDIR)/vendor/default/mingw32_config.mk
 else
 	DLLEXT = so
-	ifdef TEST_GHDL
-	GHDL_ARCH = x86_64-pc-linux-gnu
-
-	BUILDDIR = /media/strubi/scratch/build
-	
-	TEST_EXTENSION = -test
-	GHDL_SANDBOX = $(BUILDDIR)/ghdl-3.5/test/usr/local/
-
-	GHDL_PREFIX = $(GHDL_SANDBOX)/lib/ghdl/
-
-	GHDL = $(GHDL_SANDBOX)/bin/ghdl
-
-	GHDL_LDFLAGS += \
-		--GHDL1=$(GHDL_SANDBOX)/libexec/gcc/$(GHDL_ARCH)/$(GCC_VERSION)/ghdl1
-
-
-
-	endif
 	DUTIES = $(SIM_TOP)
 endif
 
@@ -55,12 +36,9 @@ ifndef SAVFILE
 SAVFILE = view.sav
 endif
 
-ifndef GHDL
-GHDL=ghdl
-endif
+GHDL ?= ghdl
 
 .PHONY: gsim gshow xref $(SIM_TOP)
-
 
 gsim: $(SIM_TOP)
 	$(GHDL) -r $(SIM_TOP) --stop-time=$(DURATION) --wave=$(SIM_TOP).ghw
