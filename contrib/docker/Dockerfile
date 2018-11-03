@@ -14,7 +14,6 @@ RUN wget -qO - https://section5.ch/section5-apt.key | apt-key add -
 
 RUN echo "deb http://section5.ch/debian buster non-free" > /etc/apt/sources.list.d/section5.list
 
-
 RUN apt-get update ; \
 	apt-get install -y gensoc binutils-msp430 gcc-msp430 msp430-libc
 
@@ -27,8 +26,11 @@ RUN echo "export LD_LIBRARY_PATH=\$HOME/src/vhdl/ghdlex/src:$LD_LIBRARY_PATH" >>
 RUN adduser masocist sudo
 RUN echo "masocist ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/masocist-nopw
 
+COPY init-pty.sh /home/masocist
+RUN chown masocist /home/masocist/init-pty.sh; \
+	chmod a+x /home/masocist/init-pty.sh
+
 USER masocist
 WORKDIR /home/masocist
-COPY init-pty.sh /home/masocist
 
 ENTRYPOINT ["/home/masocist/init-pty.sh"]

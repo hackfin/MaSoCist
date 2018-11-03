@@ -12,7 +12,10 @@ dry-run:
 	echo -------------------------- $$i ------------------------------; \
 	$(MAKE) -f $$i dry-run; done
 
-masocist-installer.tgz: Makefile config.mk recipes
+
+DISTFILES = Makefile config.mk recipes
+
+masocist-installer.tgz: $(DISTFILES)
 	tar cfz $@ $^
 
 dist: masocist-installer.tgz

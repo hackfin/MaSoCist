@@ -28,13 +28,13 @@ or a virtual machine.
 Quick start
 ------------
 
-1. Choose a configuration [breakout, papilio] and create the config file,
-    for example, when you want to build for the breakout board:
+1. Choose a configuration from an available set:
 
 > make which
+
   (select a configuration, e.g. 'virtualboard')
- 
- > make virtualboard
+
+> make virtualboard
 
 This would build all `$(BUILD_DUTIES)`, which are typically 'sim' for
 Simulation:
@@ -131,7 +131,7 @@ where `LATTICE_SIM` is the directory of your simulation VHDL files, like:
   /usr/local/diamond/3.1_x64/cae_library/simulation/vhdl/
 ```
 
-Then set the LIBGHDL variable in vendor/default/local_config.mk 
+Then set the LIBGHDL variable in `vendor/default/local_config.mk`
 to the directory where you created lattice/machxo2-obj93.cf, like:
 
 ```make

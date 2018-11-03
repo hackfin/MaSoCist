@@ -3,7 +3,8 @@
 
 include config.mk
 
-GHDLLIB_URL = $(REPO_SERVER)/ghdllib.git
+# GHDLLIB_URL = $(REPO_SERVER)/ghdllib.git
+GHDLLIB_URL = http://section5.ch/downloads/ghdllib-devel.tgz
 
 # We depend on ghdlex:
 GHDLEX = src/vhdl/ghdlex
@@ -18,17 +19,24 @@ dry-run:
 $(GHDLEX):
 	$(MAKE) install-ghdlex
 
-$(GHDLLIB)/ghdlex-obj93.cf: | $(GHDLLIB) $(GHDLEX) 
+$(GHDLLIB)/ghdlex-obj93.cf: $(GHDLLIB) | $(GHDLEX) 
 	$(MAKE) -C $(dir $@) all
 	
 src/vhdl:
 	mkdir $@
 
-$(GHDLLIB): | src/vhdl
-	cd $(dir $@) && \
-	git clone $(GHDLLIB_URL) $(LIBNAME)
+# Currently disabled, we pull a snapshot:
+# $(GHDLLIB): | src/vhdl
+# 	cd $(dir $@) && \
+# 	git clone $(GHDLLIB_URL) $(LIBNAME)
+# 
 
-src/vhdl/lib: | $(GHDLLIB)
-	cd src/vhdl && ln -s ghdllib lib
+$(GHDLLIB): | src/vhdl
+	cd $(dir $(GHDLLIB)) && \
+	wget $(GHDLLIB_URL) && \
+	tar xfz ghdllib-devel.tgz
+
+# src/vhdl/lib: | $(GHDLLIB)
+# 	cd src/vhdl && ln -s ghdllib lib
 
 .PHONY: all
