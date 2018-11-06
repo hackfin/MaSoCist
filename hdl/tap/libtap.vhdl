@@ -41,6 +41,7 @@ package stdtap is
 	type tap_in_rec is record
 		emuack		: std_logic;  --! Core has acknowledged EMULATION request
 		emurdy		: std_logic;  --! Core ready to execute next instruction
+		break     	: std_logic;  --! Core has run into a BREAK condition
 		emudata  	: emudata_t;  --! Emulation data I/O register
 		count 	    : emucount_t; --! Custom counter register
 		--! Extra status bits, core dependent
@@ -51,7 +52,7 @@ package stdtap is
 	end record;
 
 	constant TAP_IN_REC_NULL : tap_in_rec := tap_in_rec'(
-		'0', '0', (others => '0'), (others => '0'), (others => '0'),
+		'0', '0', '0', (others => '0'), (others => '0'), (others => '0'),
 		(others => '0')
 	);
 

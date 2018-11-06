@@ -1005,6 +1005,7 @@ zpucore: entity work.ZPUng
 		tap_emureq    => tin.emurequest
 	);
 
+	tout.break <= dbg_exstat(B_ZPU_BREAK - 8);
 	tout.emuack <= emuack;
 	tout.emurdy <= emurdy;
 	tout.emudata <= std_logic_vector(dbg_emudata);
@@ -1037,6 +1038,7 @@ zpucore : ZPUSmallCore
 		addr_o => io_addr, write_en_o => io_we, read_en_o => io_re
 	);
 
+	tout.break <= break;
 	tout.emudata <= std_logic_vector(dbg.stk_a);
 	tout.dbgpc <= std_logic_vector(dbg.pc);
 	tout.count <= x"0000" & std_logic_vector(dbgcount);

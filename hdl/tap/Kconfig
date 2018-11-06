@@ -37,6 +37,13 @@ config VTAP
 	
 config DUMMYTAP
 	bool "Dummy TAP"
+
+config GHDLEX_DEFAULT
+	bool "GHDL simple test access port"
+	help
+	  This is a simplified access port to manipulate signals.
+	  If you enable this, a libghdlex-netpp.so is required, see
+	  $(GHDLEX) package
 	
 endchoice
 

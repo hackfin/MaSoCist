@@ -130,15 +130,12 @@ include $(TOPDIR)/ghdl.mk
 # Deprecated: no more vendor specific flags here. Move to
 # vendor/$(VENDOR)/Makefile
 
-GHDL_LDFLAGS += -Wl,-L.
-
 ifdef CROSS
 	LIBSLAVE_DIR ?= $(LIBSLAVE)/$(CROSS)-Debug
 else
 	# Make sure to link against a .so:
 	LIBSLAVE_DIR ?= $(LIBSLAVE)
 endif
-
 
 ifdef LIBGHDL
 GHDL_LIBFLAGS += -P$(LIBGHDL)/lattice/$(FPGA_ARCH)
@@ -168,15 +165,6 @@ endif
 
 ifdef MODULE_TAPLIB
 MY_DUTIES += $(LIBSIM)
-endif
-
-# Supported libraries:
-ifeq ($(SIM_LIBNAME),ghdlex-netpp)
-	REQUIRE_LIBSLAVE = y
-endif
-
-ifeq ($(SIM_LIBNAME),jtagsim)
-	REQUIRE_LIBSLAVE = y
 endif
 
 ifdef REQUIRE_LIBSLAVE

@@ -63,6 +63,7 @@ architecture behaviour of virtual_top is
 	signal core2tap      : tap_in_rec;
 
 	signal is_break      : std_logic;
+	signal tap_reset     : std_logic := '1';
 	signal irq_in        : std_logic := '0';
 
 	signal osc_clk       : std_logic;
@@ -101,7 +102,7 @@ begin
 
 	nreset <= reset_n;
 
-	is_break <= core2tap.exstat(B_ZPU_BREAK - 8);
+	is_break <= core2tap.break;
 
 ----------------------------------------------------------------------------
 -- SoC CPU
@@ -150,7 +151,7 @@ soc: entity work.SoC
 		-- Emulation pins:
 		tin          => tap2core,
 		tout         => core2tap,
-		tap_reset    => '0',
+		tap_reset    => tap_reset,
 
 		irq0       => irq_in,
 		-- gpio      => gpio,
@@ -167,6 +168,13 @@ soc: entity work.SoC
 		reset      => cpu_reset
 	);
 
+tap_gr:
+	process
+	begin
+		wait for 10 us;
+		tap_reset <= '0';
+		wait;
+	end process;
 
 
 rev_simulation:

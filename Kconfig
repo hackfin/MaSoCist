@@ -134,12 +134,6 @@ source sw/Kconfig
 
 menu "Simulation options"
 
-config GHDLEX_PATH
-	string "Path to GHDLEX"
-	default "../contrib/ghdlex"
-	help
-	  Path to the GHDLex distribution top directory
-
 choice
 	prompt "Simulation target architecture"
 	default NATIVE
@@ -176,6 +170,7 @@ config USE_PLATFORM_IP_LIBRARY
 
 config LIBSIM
 	string "Simulation library name"
+	depends on HAVE_VTAP
 	default "jtagsim"
 	help
 	  Name of the simulation library (ghdlex extension)

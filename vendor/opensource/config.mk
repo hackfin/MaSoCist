@@ -49,3 +49,16 @@ endif
 ifdef CONFIG_NEO430
 include $(TOPDIR)/hdl/neo430/neo430.mk
 endif
+
+ifdef CONFIG_GHDLEX_DEFAULT
+REQUIRE_LIBSLAVE = y
+CONFIG_LIBSIM = "ghdlex-netpp"
+CONFIG_NETPP = y
+endif
+
+ifdef CONFIG_DUMMYTAP
+CONFIG_LIBSIM = "ghdlex"
+endif
+
+# Look for libraries in GHDLEX dir:
+GHDL_LDFLAGS += -Wl,-L$(GHDLEX)/src

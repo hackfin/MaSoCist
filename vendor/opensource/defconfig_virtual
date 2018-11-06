@@ -21,10 +21,6 @@ CONFIG_virtual=y
 # CONFIG_xo2starter is not set
 
 #
-# NEO430 specific configuration
-#
-
-#
 # Common Address configuration
 #
 CONFIG_ADDR_WIDTH=17
@@ -91,7 +87,8 @@ CONFIG_VIRTUAL_RAM=y
 # TAP configuration
 #
 CONFIG_TAPCLK_PERIOD="50 ns"
-CONFIG_DUMMYTAP=y
+# CONFIG_DUMMYTAP is not set
+CONFIG_GHDLEX_DEFAULT=y
 
 #
 # Software options
@@ -112,9 +109,7 @@ CONFIG_OPT_SIZE=y
 #
 # Simulation options
 #
-CONFIG_GHDLEX_PATH="/home/strubi/src/vhdl/ghdlex"
 CONFIG_NATIVE=y
 # CONFIG_MINGW32 is not set
 # CONFIG_EMULATE_PLATFORM_IP is not set
 CONFIG_USE_PLATFORM_IP_LIBRARY=y
-CONFIG_LIBSIM="jtagsim"

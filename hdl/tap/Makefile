@@ -52,6 +52,7 @@ endif
 
 GENERATED_FILES-$(CONFIG_VTAP) += $(GENSOC_OUTPUT)/stdtap_iomap_pkg.vhdl
 SOC_SRCFILES-$(CONFIG_DUMMYTAP) += vtap_dummy.vhdl # Direct TAP
+SOC_SRCFILES-$(CONFIG_GHDLEX_DEFAULT) += vtap_ghdlex.vhdl
 SOC_SRCFILES-$(CONFIG_ZPUNG) += zputap_iomap_pkg.vhdl
 SOC_SRCFILES-$(CONFIG_ZEALOT) += zputap_iomap_pkg.vhdl
 

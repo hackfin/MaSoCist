@@ -16,10 +16,6 @@ ZPU_VHDL = $(ZPU_VHDL-y)
 $(ZPUNG)/ZPUng.vhd:
 	$(MAKE) -C $(ZPUNG)
 
-# Synthesis specific. Does not really belong here
-# FIXME: move to other library.
-# ZPU_VHDL += $(SRC)/plat/stackmem.vhd # XXX
-
 ZPUREPO = http://repo.or.cz/zpu.git
 
 $(SRC)/zpu/zpu.patched:
