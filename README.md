@@ -36,7 +36,7 @@ Build the container and run it:
 
     docker build -t masocist .
 
-    docker run -it -v/root:/usr/local/src
+    docker run -it -v/root:/usr/local/src masocist
 
 Copy masocist_sfx.sh to the Docker machine and run, inside the running
 container's home dir (/home/masocist):
