@@ -63,8 +63,14 @@ $(WORKDIR)/ghdlex-obj$(VHDL_STD_SUFFIX).cf: $(GHDLEX)
 		GHDL=$(GHDL) \
 		all
 
-$(SIM_TOP): $(WORKDIR) $(WORKDIR)/work-obj$(VHDL_STD_SUFFIX).cf $(LIBDEPS)
-	$(GHDL) -m $(GHDL_LDFLAGS) $(SIM_TOP)
+tb_$(SIM_TOP): $(WORKDIR) $(WORKDIR)/work-obj$(VHDL_STD_SUFFIX).cf $(LIBDEPS)
+	$(GHDL) -m --workdir=$(WORKDIR) $(GHDL_LDFLAGS) tb_$(SIM_TOP)
+
+net_$(SIM_TOP): tb_$(SIM_TOP)
+	$(GHDL) --bind --workdir=$(WORKDIR) $(GHDL_LDFLAGS) tb_$(SIM_TOP)
+	LINK_OBJS=`$(GHDL) --list-link $(GHDL_LDFLAGS) tb_$(SIM_TOP)`; \
+	$(CC) -o $@ main.c -I$(GHDLEX)/src $$LINK_OBJS
+	rm tb_$(SIM_TOP)
 
 gsim-%: $(WORKDIR) $(WORKDIR)/work-obj$(VHDL_STD_SUFFIX).cf $(PROJECTFILES) $(LIBDEPS)
 	$(GHDL) -m $(GHDL_LDFLAGS) $*

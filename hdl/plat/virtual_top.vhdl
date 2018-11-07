@@ -20,6 +20,9 @@ library work;
 	use work.system_map.all;
 	use work.zputap.all;
 
+library ghdlex;
+	use ghdlex.ghpi_netpp.all;
+
 entity virtual_top is
 	generic ( SIMULATION : boolean := true );
 	port (
@@ -168,9 +171,15 @@ soc: entity work.SoC
 		reset      => cpu_reset
 	);
 
-tap_gr:
+startup:
 	process
+		variable retval : integer;
 	begin
+		retval := netpp_init("VirtualBoard");
+		if retval < 0 then
+			assert false report "Failed to start server"
+				severity failure;
+		end if;
 		wait for 10 us;
 		tap_reset <= '0';
 		wait;

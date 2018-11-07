@@ -4,13 +4,22 @@
 include ../config.mk
 include $(TOPDIR)/vendor/$(VENDOR)/local_config.mk
 
+
+ifdef REQUIRE_LIBSLAVE
+SIM_PREFIX = net_
+else
+SIM_PREFIX = tb_
+endif
+
+SIM_TOP ?= $(PLATFORM)
+
 ifdef MINGW32
 LIBSLAVE = $(NETPP)/devices/libslave
 LIBEXTRA_FLAGS = -Wl,-lws2_32
-SIM_TOP_EXE = $(SIM_TOP).exe
+SIM_TOP_EXE = $(SIM_PREFIX)$(SIM_TOP).exe
 else
 LIBEXTRA_FLAGS = -Wl,-lpthread
-SIM_TOP_EXE = $(SIM_TOP)
+SIM_TOP_EXE = $(SIM_PREFIX)$(SIM_TOP)
 ifdef NETPP
 LIBSLAVE = $(NETPP)/devices/libslave
 else
@@ -24,8 +33,6 @@ LIBSLAVE = $(LOCAL_LIBS)
 endif
 endif
 
-
-SIM_TOP ?= tb_$(PLATFORM)
 
 SIM_LIBNAME = $(subst $\",,$(CONFIG_LIBSIM))
 
@@ -61,7 +68,7 @@ SIM_SRCFILES-$(CONFIG_VIRTUAL_I2CSLAVE) += hdl/i2c/i2c_slave.vhd
 SIM_SRCFILES-$(CONFIG_VIRTUAL_I2CSLAVE) += hdl/i2c/i2c_syn_pkg.vhd
 
 # Include Test bench and simulation specific files:
-PROJECTFILES += $(TOPDIR)/sim/$(SIM_TOP).vhdl $(SIM_SRCFILES-y)
+PROJECTFILES += $(TOPDIR)/sim/tb_$(SIM_TOP).vhdl $(SIM_SRCFILES-y)
 
 VIRTUAL_EXTENSIONS-$(CONFIG_NATIVE) += hdl/virtualuart.vhdl
 VIRTUAL_EXTENSIONS-$(CONFIG_MINGW32) += hdl/dummy-virtualuart.vhdl
@@ -79,6 +86,7 @@ show-duties:
 	@echo Files to generate:
 	@echo ROM file: $(ROMFILE)
 	@echo $(MY_DUTIES)
+	@echo Executable: $(SIM_TOP_EXE)
 	@echo $(SOC_SRCFILES-y)
 
 # Include these AFTER TCL rule:
@@ -176,13 +184,13 @@ $(LIBSIM):
 	GHDLEX=$(GHDLEX) show-duties
 
 
-ghw: $(SIM_TOP)
-	 ./$(SIM_TOP) --wave=/tmp/test.ghw --stop-time=3200us 2>run.log
+ghw: $(SIM_TOP_EXE)
+	 ./$< --wave=/tmp/test.ghw --stop-time=3200us 2>run.log
 	 # ./$(SIM_TOP) --vcd=/tmp/test.vcd --stop-time=6200us 2>run.log
 
 SAV_EXT = $(EXTENSION)$(TEST_EXTENSION)
 
-run: $(SIM_TOP)
+run: $(SIM_TOP_EXE)
 	./run.sh $(PLATFORM) $(SAV_EXT)
 
 view:

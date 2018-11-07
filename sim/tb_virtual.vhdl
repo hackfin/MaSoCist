@@ -6,11 +6,11 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
-library ghdlex;
-	use ghdlex.ghpi_netpp.all;
-
 library work;
 	use work.global_config.all;
+
+library ghdlex;
+	use ghdlex.ghpi_netpp.all;
 
 entity tb_virtual is
 end entity;
@@ -46,16 +46,6 @@ architecture sim of tb_virtual is
 	signal uart_rx       : std_logic;
 
 begin
-
-initialize:
-	process
-		variable retval : integer;
-	begin
-		retval := netpp_init("VirtualBoardSim");
-		wait;
-	end process;
-	
-
 
 uut: entity work.virtual_top
 	port map (
