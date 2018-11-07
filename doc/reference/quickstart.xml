@@ -5,61 +5,114 @@
   <title>Quickstart</title>
 
   <section>
-    <title>Prerequisites</title>
+    <title>Docker container</title>
 
     <para>You need a development environment which is typically supplied as a
     docker container. In this case you do not need to worry about the
-    prerequisites, because everything has been installed "ready to go". If you
-    have obtained the bare tar file distribution, you have to make sure that
-    the following tools are installed on your system in order to run the
-    simulation or generate code. The tools are typically found as a package
-    for Debian and other systems with their corresponding name.</para>
+    prerequisites, because everything has been installed "ready to go".</para>
 
-    <orderedlist>
-      <listitem>
-        <para>Linux kernel config 'kconfig'</para>
-      </listitem>
+    <para>The contrib/docker directory contains a Dockerfile that installs a
+    work environment from scratch. Tar-File-Distributions are no longer
+    supported.</para>
 
-      <listitem>
-        <para>GNU full native toolchain with make, gcc, cpp, etc.</para>
-      </listitem>
+    <section>
+      <title>Building the 'masocist' container</title>
 
-      <listitem>
-        <para>Target toolchain, zpu-elf-gcc, mips-elf-gcc, etc.</para>
-      </listitem>
+      <para>First, build the <filename>masocist_sfx.sh</filename> file by
+      running <command>make dist</command> inside
+      <filename>contrib/docker</filename>. Then, build the docker container
+      using:</para>
 
-      <listitem>
-        <para>python 2.x, IntelHex module</para>
-      </listitem>
+      <para><command>docker build -t masocist .</command></para>
 
-      <listitem>
-        <para>xsltproc</para>
-      </listitem>
-    </orderedlist>
+      <para>Run it with mounted local directory:</para>
 
-    <para>To compile and run the simulation, the following packages are
-    required:</para>
+      <para><command>docker run -it masocist
+      -v$LOCAL_MASOCIST:/usr/local/src/masocist</command></para>
 
-    <orderedlist>
-      <listitem>
-        <para>GHDL v0.30 or greater, GHDLex v0.051 or greater</para>
-      </listitem>
+      <para>Then, run the self extracting archive from inside the docker
+      container -- make sure you are in the home directory:</para>
 
-      <listitem>
-        <para>netpp (/usr/lib/libslave.so)</para>
-      </listitem>
+      <para><command>sh
+      /usr/local/src/masocist/contrib/docker/masocist_sfx.sh</command></para>
 
-      <listitem>
-        <para>gtkwave</para>
-      </listitem>
-    </orderedlist>
+      <para>This will unpack a Makefile plus the recipe folder in the current
+      directory (which should be the home directory).</para>
+
+      <para>Then build everything by using:</para>
+
+      <para><command>make all</command></para>
+
+      <para>This will pull all necessary sources and build them, therefore it
+      can take a while. Upon success, it may directly jump into a test bench,
+      depending on the distribution you have.</para>
+    </section>
+
+    <section id="sec_docker_adv">
+      <title>Advanced Docker usage</title>
+
+      <para>If you wish to use some extended functionality, such as the
+      gtkwave display, you'll have to run the docker container with some
+      extended privileges. For this case, it might help to create a script as
+      follows:</para>
+
+      <programlisting>#!/bin/bash
+docker run -ti -e DISPLAY=:0 --mac-address=00:de:ad:be:ef:aa \
+        -p 7208:7208/udp -p 2008:2008/tcp -p 2008:2008/udp \
+        -u masocist -w /home/masocist \
+        -v/dev/bus/usb/:/dev/bus/usb/ -v/tmp/.X11-unix/:/tmp/.X11-unix \
+        -v/home/me/src/masocist:/usr/local/src/masocist --privileged --ipc host masocist</programlisting>
+
+      <para>It may also be necessary to install additional packages. This
+      works using the console command:</para>
+
+      <para><command>sudo apt install &lt;package&gt;</command></para>
+
+      <para>A few extra packages that might be required:</para>
+
+      <variablelist>
+        <varlistentry>
+          <term>netpp-dev</term>
+
+          <listitem>
+            <para>Netpp development package for remote controlled
+            simulation</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>zpu-toolchain</term>
+
+          <listitem>
+            <para>Compiler support for ZPUng and Zealot cores</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>gtkwave</term>
+
+          <listitem>
+            <para>GTKwave wave display (see also <xref
+            linkend="sec_runsim"/>)</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>minicom</term>
+
+          <listitem>
+            <para>Terminal program to connect to virtual UART</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </section>
   </section>
 
   <section>
     <title>Quick board selection</title>
 
     <para>The supported board supply packages for your distribution are shown
-    by the top level command:</para>
+    by the top level (i.e. in the masocist source directory) command:</para>
 
     <para><command>make which</command></para>
 
@@ -73,7 +126,7 @@
     <para><command>make all</command></para>
 
     <para>For available custom or third party configurations, see also
-    vendor/$(VENDOR)/defconfig_* or check your custom SoC
+    <filename>vendor/$(VENDOR)/defconfig_*</filename> or check your custom SoC
     documentation.</para>
   </section>
 
@@ -95,12 +148,14 @@
     <section id="sec_runsim">
       <title>Running the simulation</title>
 
-      <para>Once the simulation was built correctly, the resulting
-      tb_&lt;platform&gt; will be created in the <filename>sim/</filename>
-      directory. Some configurations are based on a virtual UART instance, see
+      <para>Once the simulation was built correctly, a
+      <filename>tb_&lt;platform&gt;</filename> or
+      <filename>net_&lt;platform&gt;</filename> executable will be created in
+      the <filename>sim/</filename> directory, depending on the configuration.
+      Some configurations are based on a virtual UART instance, see
       <filename>sim/virtualuart.vhdl</filename>. This is started using the
-      init-pty.sh script. Then you can connect to the running simulation using
-      a terminal program, such as minicom:</para>
+      <filename>init-pty.sh</filename> script. Then you can connect to the
+      running simulation using a terminal program, such as minicom:</para>
 
       <programlisting>minicom -o -D /tmp/virtualcom</programlisting>
 
@@ -127,24 +182,32 @@
     <section>
       <title>Advanced interactive simulation</title>
 
+      <para>If an executable has the 'net_' prefix, it integrates a netpp
+      daemon to listen to external accesses. This allows interactive
+      stimulation of the test bench or data transfer with user
+      applications.</para>
+
       <para>Enter the sim/ directory and type "make run". You should see the
       GTKwave window popping up, showing a slowly progressing wave display due
       to the enabled throttle. To disable the throttle, run the following
-      command inside the virtual machine (or on your host)</para>
+      command inside the virtual machine (or on your host, when running the
+      default Docker container with networking as in <xref
+      linkend="sec_docker_adv"/>):</para>
 
-      <para><command>netpp localhost TapThrottle 0</command></para>
+      <para><command>netpp localhost SimThrottle 0</command></para>
 
       <para>If you run netpp from your host to access the Virtual Machine or
       LXC (Linux Container), you need to determine the IP address of its
       virtual bridge interface (or what you have configured your VM with). For
-      example, <command>ifconfig</command> on Linux may display:</para>
+      example, <command>ifconfig</command> on Linux may display a VirtualBox
+      specific network interface:</para>
 
       <screen>vboxnet0  Link encap:Ethernet  HWaddr 0a:00:27:00:00:00  
           inet addr:192.168.56.1  Bcast:192.168.56.255  Mask:255.255.255.0</screen>
 
       <para>Then you simply access the simulation via</para>
 
-      <para><command>netpp 192.168.56.1 TapThrottle 0</command></para>
+      <para><command>netpp 192.168.56.1 SimThrottle 0</command></para>
 
       <para><note>
           <para>This option only applies when the simulation is configured

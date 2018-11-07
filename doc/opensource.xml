@@ -276,8 +276,8 @@
     <section>
       <title>Board supply packages</title>
 
-      <para>The following boards are supported by this MaSoCist
-      edition:</para>
+      <para>The following boards are supported by this MaSoCist edition 'AS
+      IS':</para>
 
       <section>
         <title>netpp node</title>
@@ -439,8 +439,11 @@
         <term>/usr/bin/ld: cannot find -lslave</term>
 
         <listitem>
-          <para>You need to install a netpp slave package or the full netpp
-          source and set the NETPP environment variable to it</para>
+          <para>You need to install the <package>netpp-dev</package> package
+          or the full netpp source and set the <varname>NETPP</varname>
+          environment variable to it. Possibly you might have to set
+          <varname>LD_LIBRARY_PATH</varname>, if you have a custom
+          installation.</para>
         </listitem>
       </varlistentry>
 
@@ -449,8 +452,9 @@
         PTY pipe</term>
 
         <listitem>
-          <para>The virtual UART is not running. Start sim/init-pty.sh first,
-          see <xref linkend="sec_runsim"/>.</para>
+          <para>The virtual UART is not running. Start
+          <filename>sim/init-pty.sh</filename> first, see <xref
+          linkend="sec_runsim"/>.</para>
         </listitem>
       </varlistentry>
 
