@@ -1,22 +1,22 @@
 [*]
 [*] GTKWave Analyzer v3.3.70 (w)1999-2016 BSI
-[*] Wed Nov  7 10:48:17 2018
+[*] Wed Nov  7 11:27:28 2018
 [*]
 [dumpfile] "(null)"
-[savefile] "/home/strubi/src/vhdl/masocist-work/sim/virtual-main.sav"
-[timestart] 52000000000
-[size] 1018 446
-[pos] 502 296
-*-39.386486 2776020000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[savefile] "/home/strubi/src/vhdl/masocist-work/sim/virtual-demo.sav"
+[timestart] 883500000000
+[size] 1000 445
+[pos] 149 1398
+*-35.772217 1100940000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] uut.
 [treeopen] uut.soc.
 [treeopen] uut.soc.perio.
 [treeopen] uut.soc.perio.inst_dev_spi.
 [treeopen] uut.soc.zpucore.
-[sst_width] 38
+[sst_width] 37
 [signals_width] 174
 [sst_expanded] 0
-[sst_vpaned_height] 188
+[sst_vpaned_height] 181
 @c08022
 uut.soc.zpucore.pc[14:0]
 @28
@@ -56,9 +56,8 @@ uut.soc.perio.data_out_sys[31:0]
 uut.soc.zpucore.mmr_re
 @200
 -Peripheral
-@29
-user_reset
 @28
+user_reset
 [color] 7
 uart_rx
 uart_tx

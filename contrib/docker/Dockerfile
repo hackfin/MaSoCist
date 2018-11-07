@@ -15,7 +15,8 @@ RUN wget -qO - https://section5.ch/section5-apt.key | apt-key add -
 RUN echo "deb http://section5.ch/debian buster non-free" > /etc/apt/sources.list.d/section5.list
 
 RUN apt-get update ; \
-	apt-get install -y gensoc binutils-msp430 gcc-msp430 msp430-libc
+	apt-get install -y gensoc binutils-msp430 gcc-msp430 msp430-libc \
+		zpu-toolchain netpp-dev
 
 # Install some python modules:
 RUN pip install intelhex numpy

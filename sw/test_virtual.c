@@ -160,21 +160,6 @@ int run_selftest(int is_sim)
 	// if (val != 0x55) BREAK;
 #endif
 
-#ifdef CONFIG_UART
-	int c;
-	// Clear spurious ones:
-	
-	uart_init(0, 8);  // Fastest speed possible
-
-	g_wait = 1;
-	uart_putc(0, 0xaa);
-	while (g_wait); // wait until handler signals read byte
-
-	uart_putc(0, 0x55);
-	uart_putc(0, 0x0f);
-	c = uart_getc(0);
-#endif
-
 	return 0;
 }
 
@@ -182,6 +167,10 @@ int run_selftest(int is_sim)
 int board_init(void)
 {
 	int c;
+
+#ifdef CONFIG_UART
+	uart_init(0, CONFIG_SYSCLK / 16 / CONFIG_DEFAULT_UART_BAUDRATE);
+#endif
 
 #ifdef CONFIG_TIMER
 	struct timer_t systimer;
@@ -228,6 +217,8 @@ int exec_cmd(int argc, char **argv)
 				default:
 					write_string("Usage: l <hexvalue>\n");
 			}
+		case 'b':
+			BREAK;
 			break;
 		default:
 			return ERR_CMD;

@@ -62,3 +62,8 @@ endif
 
 # Look for libraries in GHDLEX dir:
 GHDL_LDFLAGS += -Wl,-L$(GHDLEX)/src
+
+# Use this path to look for libraries:
+OLD_LD_LIBRARY_PATH=$(shell echo $$LD_LIBRARY_PATH)
+LD_LIBRARY_PATH=$(OLD_LD_LIBRARY_PATH):$(HOME)/lib:$(GHDLEX)/src
+export LD_LIBRARY_PATH

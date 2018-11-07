@@ -1,0 +1,57 @@
+[*]
+[*] GTKWave Analyzer v3.3.70 (w)1999-2016 BSI
+[*] Tue Nov  6 13:51:27 2018
+[*]
+[dumpfile] "(null)"
+[savefile] "/home/strubi/src/vhdl/masocist-work/sim/virtual-zealot.sav"
+[timestart] 9667000000
+[size] 1000 798
+[pos] 513 122
+*-28.565903 10217000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] uut.
+[treeopen] uut.soc.
+[treeopen] uut.swtap.
+[sst_width] 196
+[signals_width] 222
+[sst_expanded] 1
+[sst_vpaned_height] 276
+@8022
+uut.soc.zpucore.pc_r[15:0]
+@20000
+-
+@8022
+[color] 5
+uut.soc.zpucore.sp_r[15:2]
+@20000
+-
+@28
+[color] 1
+uut.soc.zpucore.reset_i
+@200
+-SOFTWARE BREAK
+@28
+[color] 2
+uut.soc.zpucore.break_o
+@200
+-PERIPHERALS
+@28
+uut.soc.uart_rx
+uut.soc.uart_tx
+uut.soc.spi_cs
+uut.soc.spi_miso
+uut.soc.spi_mosi
+uut.soc.spi_sclk
+uut.soc.twi_scl
+uut.soc.twi_sda
+uut.soc.zpucore.emuexec_i
+uut.swtap.registers.bit_resume
+uut.soc.exec_pulse.clki
+uut.soc.exec_pulse.clko
+uut.soc.exec_pulse.datai
+uut.soc.exec_pulse.datao
+uut.soc.exec_pulse.inst_flagx_syncpipe[2:0]
+uut.soc.exec_pulse.inst_flagx_toggle
+uut.soc.exec_pulse.isig_d
+uut.soc.exec_pulse.reset
+[pattern_trace] 1
+[pattern_trace] 0

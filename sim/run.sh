@@ -7,5 +7,10 @@ echo Running for platform $1
 [ -e $1$2.sav ] || cp $1.sav $1$2.sav
 shmidcat $WAVEFILE | gtkwave -g -v -I $1$2.sav &
 ID_WAVE=$!
-./tb_$1 --vcd=$WAVEFILE  2> /tmp/log
+if [ -e tb_$1 ]; then
+	./tb_$1 --vcd=$WAVEFILE  2> /tmp/log
+else
+	./net_$1 --vcd=$WAVEFILE  2> /tmp/log
+fi;
+
 kill $ID_WAVE
