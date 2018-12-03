@@ -3,7 +3,7 @@
 # Don't run regtest, just fire up test bench and minicom
 # to virtual COM port
 #
-MASOCIST=src/vhdl/masocist-opensource
+MASOCIST=$HOME/src/vhdl/masocist-opensource
 
 cd $MASOCIST/sim
 ./tb_$1 >/dev/null &

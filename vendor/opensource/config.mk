@@ -41,7 +41,7 @@ DISTFILES += $(TOPDIR)/syn/xilinx/papilio/beatrix.bmm
 #
 ifdef CONFIG_virtual_neo430
 PLATFORM = virtual_neo430
-DEVICENAME = nep430
+DEVICENAME = neo430
 endif
 
 # New style default rules file:

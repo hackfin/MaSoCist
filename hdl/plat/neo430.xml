@@ -124,7 +124,7 @@ use work.periotypes.all;</header>
     </registermap>
 
     <registermap endian="LITTLE" hidden="false" id="soc_mmr" name="MMR"
-                 nodecode="true" offset="0x78000" size="32">
+                 nodecode="true" offset="0x8000" size="16">
       <info>This address map contains definitions for the address bit decoding only</info>
 
       <register addr="0x00" id="adec_common" size="2">
@@ -147,7 +147,7 @@ use work.periotypes.all;</header>
         <!--Reserved bitfield names: Those are the fields specifying the unit number and bus number-->
 
         <bitfield lsb="12" msb="14" name="MMR_SELECT_perio">
-          <info>The select bit for the perio unit (max. 16 units)</info>
+          <info>The select bit for the perio unit (max. 4 units)</info>
         </bitfield>
 
         <bitfield lsb="10" msb="11" name="MMR_SELECT_DEVINDEX_SPAD">
