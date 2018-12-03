@@ -28,7 +28,7 @@ Just register yourself a Docker account, login and start playing in your
 online sandbox. You'll need to build and copy some files from contrib/docker
 to the remote Docker machine instance.
 
-Run 'make dist' inside contrib/docker, this will create a file masocist_sfx.sh
+Run 'make dist' inside contrib/docker, this will create a file `masocist_sfx.sh`
 Copy Dockerfile and init-pty.sh to the Docker playground by dragging the files onto
 the Playground browser shell window.
 
@@ -38,7 +38,7 @@ Build the container and run it:
 
     docker run -it -v/root:/usr/local/src masocist
 
-Copy masocist_sfx.sh to the Docker machine and run, inside the running
+Copy `masocist_sfx.sh` to the Docker machine and run, inside the running
 container's home dir (/home/masocist):
 
     sudo sh /usr/local/src/masocist_sfx.sh
@@ -46,6 +46,10 @@ container's home dir (/home/masocist):
 Now pull and build all necessary packages:
 
     make all
+
+Run the neo430 demo:
+
+    make run
 
 If nothing went wrong, the simulation for the neo430 CPU will be built
 and started with a virtual UART and SPI simulation. A minicom terminal will
@@ -60,34 +64,36 @@ terminated.
 Quick start
 ------------
 
+Enter the masocist source directory, typically in $HOME/src/vhdl/masocist.
+
 1. Choose a configuration from an available set:
 
-> make which
+    make which
 
-  (select a configuration, e.g. 'virtualboard')
+2. select a configuration, e.g. 'virtualboard':
 
-> make virtualboard
+    make virtualboard
 
 This would build all `$(BUILD_DUTIES)`, which are typically 'sim' for
 Simulation:
 
-> make all
+    make all
 
 If you change the configuration, you may have to clean the simulation (in
 worst case twice, if the kconfig tool decides to reconfigure):
 
-> make clean all
+    make clean all
 
-2.  Build files for synthesis:
+3.  Build files for synthesis:
 
-> make -C syn clean all
+    make -C syn clean all
 
-3. Open the project in syn/<FPGA_VENDOR>/<PLATFORM>
+4. Open the project in syn/<FPGA_VENDOR>/<PLATFORM>
 
 If files need to be added, you may use the TCL scripts that are generated
 when running 'make' for synthesis.
 
-4. Synthesize and hope for success :-)
+5. Synthesize and hope for success :-)
 
 Important: The build procedure for simulation builds the source differently
 than for synthesis (-DSIMULATION flag). Make sure to rebuild explicitely

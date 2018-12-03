@@ -4,14 +4,20 @@ INSTALL_PACKAGES = $(RECIPES:recipes/%.mk=install-%)
 
 RUN_RECIPES = neo430
 
-RUN_PACKAGES = $(RUN_RECIPES:%=test-%)
+TEST_PACKAGES = $(RUN_RECIPES:%=test-%)
+RUN_PACKAGES = $(RUN_RECIPES:%=run-%)
 
 all: $(INSTALL_PACKAGES)
 
-test: $(RUN_PACKAGES)
+test: $(TEST_PACKAGES)
+
+run: $(RUN_PACKAGES)
 
 test-%:
 	$(MAKE) -f recipes/$*.mk test INSTALL_PREFIX=$(INSTALL_PREFIX)
+
+run-%:
+	$(MAKE) -f recipes/$*.mk run INSTALL_PREFIX=$(INSTALL_PREFIX)
 
 install-%:
 	$(MAKE) -f recipes/$*.mk all INSTALL_PREFIX=$(INSTALL_PREFIX)
