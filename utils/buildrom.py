@@ -11,7 +11,7 @@ DEFAULT_DSIZE = 0x2000
 import intelhex
 import elf
 import sys
-from romgen import Romgen_MIPS, Romgen_ZPU, Romgen_MSP430
+from romgen import Romgen_MIPS, Romgen_RISCV, Romgen_ZPU, Romgen_MSP430
 
 
 def align4(data):
@@ -73,6 +73,7 @@ def gen_hex(e, isize = DEFAULT_ISIZE, dsize = DEFAULT_DSIZE):
 KNOWN_ARCHITECTURES = {
 	0x08 : (Romgen_MIPS, "MIPS"),
 	0x6a : (Romgen_ZPU, "ZPU"),
+	0xf3 : (Romgen_RISCV, "RISCV"),
 	0x69 : (Romgen_MSP430, "NEO430"),
 }
 

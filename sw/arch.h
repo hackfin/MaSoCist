@@ -3,6 +3,9 @@
 
 #if defined(CONFIG_ZEALOT) || defined(CONFIG_ZPUNG)
 #define ARCH_ZPU
+#elif defined(CONFIG_RISCV_POTATO)
+#define HAVE_STRLEN
+#define ARCH_RISCV
 #elif defined(CONFIG_NEO430)
 #warning "Experimental neo430 support"
 #define HAVE_STRLEN
@@ -35,11 +38,13 @@
 #		define EXTERN_PROG
 #	endif
 #endif
-#elif defined(ARCH_MSP430)
+#elif defined(ARCH_MSP430) || defined(ARCH_RISCV)
 #ifndef __VHDL__
 #include <stdint.h>
 #endif
-#define BREAK 
+#define BREAK
+// Currently not breaking:
+// #define BREAK asm("ebreak");
 #endif
 
 // Aux decorators for functions to be placed in outer space:

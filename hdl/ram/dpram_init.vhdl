@@ -12,7 +12,7 @@ library ieee;
 library work;
 	use work.ram.all;
 
-entity DPRAM_init is
+entity DPRAM16_init is
 	generic (
 		ADDR_W      : natural := 6;
 		DATA_W      : natural := 16;
@@ -32,9 +32,9 @@ entity DPRAM_init is
 		b_write : in  unsigned(DATA_W-1 downto 0);
 		b_read  : out unsigned(DATA_W-1 downto 0)
 	);
-end entity DPRAM_init;
+end entity DPRAM16_init;
 
-architecture behaviour of DPRAM_init is
+architecture behaviour of DPRAM16_init is
 	type dpram_t is array (integer range 0 to 2**ADDR_W-1) of
 		unsigned(DATA_W-1 downto 0);
 

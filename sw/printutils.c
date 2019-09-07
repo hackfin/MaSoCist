@@ -26,7 +26,7 @@
 })
 
 
-unsigned long strnlen(const char *c, size_t maxlen)
+size_t strnlen(const char *c, size_t maxlen)
 {
 	unsigned long i = 0;
 	const char *end = &c[maxlen];

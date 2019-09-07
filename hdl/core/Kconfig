@@ -1,6 +1,6 @@
 
 menu "Common Address configuration"
-	visible if ZEALOT || ZPUNG || ZPUNGV2 || NEO430 || NETPP_CPU
+	visible if ZEALOT || ZPUNG || ZPUNGV2 || NEO430 || NETPP_CPU || RISCV_POTATO
 
 config ADDR_WIDTH
 	int "I/O address width (range)"

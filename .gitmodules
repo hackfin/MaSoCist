@@ -4,3 +4,6 @@
 [submodule "hdl/neo430/neo430"]
 	path = hdl/neo430/neo430
 	url = https://github.com/stnolting/neo430.git
+[submodule "hdl/riscv/potato"]
+	path = hdl/riscv/potato
+	url = https://github.com/skordal/potato.git

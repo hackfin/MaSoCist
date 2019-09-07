@@ -22,9 +22,7 @@ struct shell_context {
 	char word[16];
 } g_shell;
 
-
 uint32_t g_hwrev;
-
 
 __attribute__((weak))
 int default_exec_abort(void)

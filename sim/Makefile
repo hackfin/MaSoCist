@@ -191,7 +191,7 @@ ghw: $(SIM_TOP_EXE)
 SAV_EXT = $(EXTENSION)$(TEST_EXTENSION)
 
 run: $(SIM_TOP_EXE)
-	./run.sh $(PLATFORM) $(SAV_EXT)
+	./run.sh $(PLATFORM) $(SAV_EXT) "$(SIM_OPTIONS)" 
 
 view:
 	gtkwave /tmp/test.ghw view.sav
@@ -214,7 +214,7 @@ endif
 DIFF ?= diff
 
 defconfig:
-	$(MAKE) -.. sim defconfig
+	$(MAKE) -C .. defconfig
 
 clean::
 	-$(MAKE) -f libsim.mk clean

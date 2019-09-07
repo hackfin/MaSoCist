@@ -63,6 +63,7 @@ LD      = $(CROSS_COMPILE)ld
 CFLAGS-$(CONFIG_OPT_SIZE)  += -Os
 CFLAGS-$(CONFIG_OPT_SPEED) += -O3
 CFLAGS-$(CONFIG_DEBUG_SYM) += -DDEBUG
+CFLAGS-$(CONFIG_RISCV_POTATO) += -march=rv32i -mabi=ilp32
 # CFLAGS-y += -DCONFIG_GLOBAL_MMRPTR
 
 CFLAGS = -g -Wall $(PLATFORM_CFLAGS)
@@ -154,11 +155,11 @@ else
 BUILD = $(CC) -o $@ $(OBJS)
 endif
 
-LDFLAGS += -Wl,--cref
+# LDFLAGS += -Wl,--cref
 
 main.elf: $(OBJS) lib $(CUSTOM_LINKERSCRIPT) $(DUTIES-y)
 	-cp $(PLATFORM).map $(PLATFORM)-old.map
-	$(BUILD) -L. -lbsp-$(PLATFORM) $(LDFLAGS) -lgcc
+	$(BUILD) -L. -lbsp-$(PLATFORM) $(LDFLAGS)
 
 showchanges:
 	$(DIFF) $(PLATFORM).map $(PLATFORM)-old.map
@@ -274,7 +275,7 @@ flashdata.bin: main.elf
 	$(FWGEN) $< $@
 
 crt%.o: arch/$(ARCH)/crt%.s
-	$(AS) -o $@ $<
+	$(CC) -c $(ASMFLAGS) -o $@ $<
 
 crt%.elf: arch/neo430/crt%.asm
 	$(AS) -o $@ $< -mY 
@@ -312,6 +313,7 @@ mmr.gdb: $(DEVICEFILE) gdbscript-$(ARCH).xsl
 	$(CC) -o $@ -S $(CFLAGS) $< # \
 
 show:
+	@echo LDFLAGS = $(LDFLAGS)
 	@echo $(DUTIES-y)
 
 ABS_DISTFILES = $(patsubst $(TOPDIR)/%, %,$(DISTFILES))

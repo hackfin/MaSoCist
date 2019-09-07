@@ -61,6 +61,10 @@ DATA_WIDTH = 16
 BINFMT = -
 endif
 
+ifdef CONFIG_RISCV_POTATO
+ARCH = riscv
+endif
+
 ifdef CONFIG_ZPUNG
 ARCH = zpu
 
@@ -82,6 +86,13 @@ ifeq ($(ARCH),zpu)
 	LDFLAGS = -Wl,--relax -Wl,--gc-sections -Wl,-Map -Wl,$(MAPFILE)
 	LDFLAGS += -Wl,-T -Wl,$(CUSTOM_LINKERSCRIPT) -nostdlib -lgcc
 	LDFLAGS += -Wl,--defsym -Wl,ZPU_ID=0x$(TAP_ID)
+endif
+
+ifeq ($(ARCH),riscv)
+	CUSTOM_LINKERSCRIPT = ldscripts/riscv/potato_linker_script.x
+	LDFLAGS += -Wl,-T -Wl,$(CUSTOM_LINKERSCRIPT) -nostdlib -lgcc
+	LDFLAGS += -Wl,-Map -Wl,$(MAPFILE)
+	ASMFLAGS = -x assembler-with-cpp
 endif
 
 ifeq ($(ARCH),msp430)
@@ -136,4 +147,4 @@ PLATFORM ?= unknown
 ARCH ?= UNKNOWN
 BINFMT ?= -elf-
 
-CROSS_COMPILE = $(ARCH)$(BINFMT)
+CROSS_COMPILE ?= $(ARCH)$(BINFMT)

@@ -5,6 +5,6 @@ LIBGHDL = $(HOME)/src/vhdl/lib-devel/work
 GHDLEX = $(HOME)/src/vhdl/ghdlex
 GENSOC = gensoc
 
-# Include neo430 works:
-# No longer: now checked out by hdl/neo430/neo430.mk
-# GHDL_LIBFLAGS += -P$(HOME)/src/vhdl/EXTERN/neo430/sim/ghdl/work
+SIM_OPTIONS = --max-stack-alloc=256 --assert-level=error \
+	--ieee-asserts=disable
+

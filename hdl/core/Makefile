@@ -41,6 +41,8 @@ SOC_MODULE-$(CONFIG_ZEALOT) = $(SRC)/zpu/zpu_soc.chdl
 SOC_MODULE-$(CONFIG_NEO430) = $(SRC)/neo430/neo430_soc.chdl
 SOC_MODULE-$(CONFIG_NEO430_NATIVE) = $(SRC)/neo430/neo430_soc_native.chdl
 
+SOC_MODULE-$(CONFIG_RISCV_POTATO) = $(SRC)/riscv/potato_soc.chdl
+
 # Wishbone bridge:
 SRCFILES-$(CONFIG_ZPUNG)  += core/wb2zpu.vhdl
 SRCFILES-$(CONFIG_ZEALOT) += core/wb2zpu.vhdl

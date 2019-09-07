@@ -10,12 +10,12 @@ use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
 library work;
-use work.memmap.all;
+use work.global_config.all;
 
 package memory is
 	-- For the 32 bit wide memory, we use:
-	constant ADDR_W_16 : integer := ADDR_W_iram-1; -- two of them
-	constant ADDR_W_8  : integer := ADDR_W_l1ram_a-2;  -- four of them
+	constant ADDR_W_16 : integer := CONFIG_BRAM_ADDR_WIDTH-1; -- two of them
+	constant ADDR_W_8  : integer := CONFIG_BRAM_ADDR_WIDTH-2;  -- four of them
 	-- For encoding of endianness:
 	subtype UPPER_WORD is integer range 31 downto 16;
 	subtype LOWER_WORD is integer range 15 downto 0;

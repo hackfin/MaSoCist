@@ -186,7 +186,7 @@ void put_shortval(uint16_t val);
 char *to_dec(unsigned short val, char *buf);
 void put_decval_s(unsigned short val);
 #ifndef HAVE_STRLEN
-unsigned long strlen(const char *s);
+size_t strlen(const char *s);
 #endif
 
 void write_string(const char *s);

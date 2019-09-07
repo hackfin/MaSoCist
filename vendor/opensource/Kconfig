@@ -29,6 +29,13 @@ config NEO430
 	  NEO430 architecture designed by Stephan Nolting
 	  Support for this configuration is still experimental
 
+config RISCV_POTATO
+	bool "RISCV potato"
+	depends on OPENSOURCE
+	help
+	  RISCV potato architecture (https://github.com/skordal/potato.git)
+	  Support for this configuration is still experimental
+
 config ZPUNG
 	bool "ZPUng (ZPU next gen)"
 	depends on !OPENSOURCE
@@ -49,12 +56,18 @@ choice
 
 config virtual
 	bool "Virtual ZPUng board"
-	depends on ZEALOT || ZPUNG
+	depends on ZEALOT || ZPUNG || RISCV_POTATO
 	help
 	  Virtual board, no hardware implementation
 
 config virtual_neo430
 	bool "Virtual NEO430 board"
+	select VIRTUAL_SILICON
+	help
+	  Virtual board, no hardware implementation
+
+config virtual_potato
+	bool "Virtual RISCV potato board"
 	select VIRTUAL_SILICON
 	help
 	  Virtual board, no hardware implementation

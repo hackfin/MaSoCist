@@ -181,7 +181,7 @@
       <varname>DIST_TAG="opensource"</varname>.</para>
 
       <para>When it comes to hardware designs, licenses such as the GPL (Gnu
-      Public License) are hardly applicaple, in particular because it would
+      Public License) are hardly applicable, in particular because it would
       complicate development under a dual licensing scheme. Since, by
       experience, complicated license schemes are seldom respected by hardware
       developers, an attempt is made to phrase a few rules as follows.</para>

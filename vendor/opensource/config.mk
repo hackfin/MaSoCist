@@ -44,10 +44,18 @@ PLATFORM = virtual_neo430
 DEVICENAME = neo430
 endif
 
+ifdef CONFIG_virtual_potato
+PLATFORM = virtual_potato
+endif
+
 # New style default rules file:
 # We no longer mess with variables, we define defaults:
 ifdef CONFIG_NEO430
 include $(TOPDIR)/hdl/neo430/neo430.mk
+endif
+
+ifdef CONFIG_RISCV_POTATO
+include $(TOPDIR)/hdl/riscv/potato.mk
 endif
 
 ifdef CONFIG_GHDLEX_DEFAULT

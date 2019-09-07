@@ -31,13 +31,12 @@
 // Default access is 16 bit wide
 #define MMR MMR16
 #else
-#warning "Generic architecture no longer maintained"
 
 #define MMR8_PTR  volatile uint8_t *
 #define MMR16_PTR volatile uint16_t *
 #define MMR32_PTR volatile uint32_t *
 
-#ifdef ARCH_MIPS32
+#if defined(ARCH_MIPS32) || defined(ARCH_RISCV)
 #define MMR MMR32
 #endif
 

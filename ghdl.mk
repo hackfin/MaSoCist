@@ -48,6 +48,8 @@ $(SIM_TOP).exe: $(SIM_TOP)
 
 # .PHONY: import
 
+GHDL_FLAGS += -frelaxed-rules
+
 GHDL_FLAGS += --workdir=$(WORKDIR)
 GHDL_FLAGS += --std=$(VHDL_STD)
 

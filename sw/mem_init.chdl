@@ -18,7 +18,7 @@ library IEEE;
 
 library work;
 	use work.ram.all;
-#ifdef ARCH_MIPS32
+#if defined(ARCH_MIPS32) || defined(ARCH_RISCV)
 	use work.memory.all;
 #endif
 
@@ -41,6 +41,42 @@ package memory_initialization is
 	);
 
 end package;
+
+#elif defined(ARCH_RISCV)
+
+package memory_initialization is
+
+	constant BOOTROM_DATA_A_INIT : dram_bank_t := (
+#include "riscv_dram_a.tmp"
+	);
+
+	constant BOOTROM_DATA_B_INIT : dram_bank_t := (
+#include "riscv_dram_b.tmp"
+	);
+
+	constant BOOTROM_PROG_INIT: iram_bank_t := (
+	(
+#include "riscv_iram_h.tmp"
+	),
+	(
+#include "riscv_iram_l.tmp"
+	)
+	);
+
+	constant IRAM_INIT_NONE : iram_bank_t := (
+		( others => x"0000" ),
+		( others => x"0000" )
+	);
+
+	constant DRAM_INIT_NONE : dram_bank_t := (
+		( others => x"0000" ),
+		( others => x"0000" ),
+		( others => x"0000" ),
+		( others => x"0000" )
+	);
+
+end package;
+
 
 #elif defined(ARCH_MIPS32)
 

@@ -130,6 +130,11 @@ ifdef CONFIG_NEO430
 CPU_TYPE = 3
 endif
 
+ifdef CONFIG_RISCV_POTATO
+CPU_TYPE = 4
+endif
+
+
 # Move all vendor specific configs here:
 -include $(TOPDIR)/vendor/$(VENDOR)/vhdlconfig.mk
 

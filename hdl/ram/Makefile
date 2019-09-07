@@ -19,5 +19,11 @@ SRCFILES-$(CONFIG_PYPS) += ram/pkg_ram.vhdl
 SRCFILES-$(CONFIG_PYPS) += ram/dpram_init.vhdl
 SRCFILES-$(CONFIG_PYPS) += ram/dpramc2_init.vhdl
 
+SRCFILES-$(CONFIG_RISCV_POTATO) += ram/bram.vhdl
+SRCFILES-$(CONFIG_RISCV_POTATO) += ram/pkg_ram.vhdl
+SRCFILES-$(CONFIG_RISCV_POTATO) += ram/dpram_init.vhdl
+SRCFILES-$(CONFIG_RISCV_POTATO) += ram/dpramc2_init.vhdl
+SRCFILES-$(CONFIG_RISCV_POTATO) += ram/memmap_data.vhdl
+
 ram:
 	echo $(SRCFILES-y)

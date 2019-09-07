@@ -260,6 +260,13 @@ class Romgen_imem_dmem:
 		self.datafile.close()
 		self.textfile.close()
 
+def pad(data, n):
+	m = len(data) % n
+	if m != 0:
+		n -= m
+		print "Warning: padding with %d bytes" % n
+		data += n * b'\0'
+	return data
 
 class Romgen_Mem2x16i_4x8d:
 	def __init__(self, template):
@@ -270,6 +277,7 @@ class Romgen_Mem2x16i_4x8d:
 		self.text = intelhex.IntelHex()
 		self.data_a = intelhex.IntelHex()
 		self.data_b = intelhex.IntelHex()
+		self.endian = ">"
 
 	def write_data(self, fdata, data):
 		ds = ">BBBB"
@@ -312,7 +320,7 @@ class Romgen_Mem2x16i_4x8d:
 		return l
 
 	def write_text(self, data):
-		ds = ">HH"
+		ds = self.endian + "HH"
 		l = len(data)
 		i = 0
 		c = 0
@@ -336,10 +344,14 @@ class Romgen_Mem2x16i_4x8d:
 
 	def finish(self):
 		data = self.text.tobinstr()
+		data = pad(data, 4)
 		self.write_text(data)
 		data = self.data_a.tobinstr()
+
+		data = pad(data, 4)
 		self.write_data(self.fda, data)
 		data = self.data_b.tobinstr()
+		data = pad(data, 4)
 		self.write_data(self.fdb, data)
 
 		self.fh.write('others => x"0000"\n')
@@ -358,6 +370,7 @@ class Romgen_MIPS(Romgen_Mem2x16i_4x8d):
 
 	def __init__(self, prefix):
 		Romgen_Mem2x16i_4x8d.__init__(self, prefix)
+		self.endian = ">"
 
 	def handle(self, p):
 		l = len(p.data)
@@ -372,6 +385,16 @@ class Romgen_MIPS(Romgen_Mem2x16i_4x8d):
 			print LOADTXT % (p.name, p.sh_addr, l)
 		else:
 			print SKIPTXT % (p.name, p.sh_addr, len(p.data))
+
+class Romgen_RISCV(Romgen_MIPS):
+	"MIPS/RISCV style memory layout"
+	PROG_SECTIONS = [".text", ".init", ".fixed_vectors" ]
+	DATA_SECTIONS_A = [ ".l1data", ".l1data.a", '.rodata', '.sdata', '.srodata' ]
+	DATA_SECTIONS_B = [ ".l1data.b", ".scratchpad" ]
+
+	def __init__(self, prefix):
+		Romgen_Mem2x16i_4x8d.__init__(self, prefix)
+		self.endian = "<"
 
 
 class Romgen_MSP430(Romgen_imem_dmem):
