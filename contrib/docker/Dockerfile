@@ -1,6 +1,6 @@
 FROM ghdl/ghdl:buster-gcc-7.2.0
 
-RUN apt-get update ; \
+RUN apt-get update --allow-releaseinfo-change ; \
 	apt-get install -y xsltproc make git flex bison gperf wget bzip2 \
 	libncurses-dev \
 	python python-pip \
