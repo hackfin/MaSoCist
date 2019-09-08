@@ -389,7 +389,8 @@ class Romgen_MIPS(Romgen_Mem2x16i_4x8d):
 class Romgen_RISCV(Romgen_MIPS):
 	"MIPS/RISCV style memory layout"
 	PROG_SECTIONS = [".text", ".init", ".fixed_vectors" ]
-	DATA_SECTIONS_A = [ ".l1data", ".l1data.a", '.rodata', '.sdata', '.srodata' ]
+	DATA_SECTIONS_A = [ ".l1data", ".l1data.a", '.rodata',
+	'.data', '.sdata', '.srodata' ]
 	DATA_SECTIONS_B = [ ".l1data.b", ".scratchpad" ]
 
 	def __init__(self, prefix):

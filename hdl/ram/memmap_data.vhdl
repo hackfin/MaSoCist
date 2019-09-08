@@ -174,76 +174,75 @@ dram_access_control:
 				dram_data8_wr <= (others => (others => 'X'));
 				dram_we <= "0000";
 			end case;
-			lb_data_out <= (others => 'X');
 		else
 			dram_data8_wr <= (others => (others => 'X'));
 			dram_we <= "0000";
 
 -- READING
-
-			case addr_d is
-			when "00" =>
-				case size_d is
-				when "01" => -- 8bit
-					lb_data_out <=  UNDEFINED_8 &
-									UNDEFINED_8 &
-									UNDEFINED_8 &
-									dram_data8_rd(0);
-				when "10" => -- 16bit
-					lb_data_out <=  UNDEFINED_8 &
-									UNDEFINED_8 &
-									dram_data8_rd(1) &
-									dram_data8_rd(0);
-				when "00" => -- 32bit
-					lb_data_out <=  dram_data8_rd(3) &
-									dram_data8_rd(2) &
-									dram_data8_rd(1) &
-									dram_data8_rd(0);
-				when others =>
-					lb_data_out <=  (others => 'X');
-				end case;
-			when "01" =>
-				case size_d is
-				when "01" => -- 8bit
-					lb_data_out <=  UNDEFINED_8 &
-									UNDEFINED_8 &
-									UNDEFINED_8 &
-									dram_data8_rd(1);
-				when others =>
-					lb_data_out <=  (others => 'X');
-				end case;
-
-			when "10" =>
-				case size_d is
-				when "01" => -- 8bit
-					lb_data_out <=  UNDEFINED_8 &
-									UNDEFINED_8 &
-									UNDEFINED_8 &
-									dram_data8_rd(2);
-				when "10" => -- 16bit
-					lb_data_out <=  UNDEFINED_8 &
-									UNDEFINED_8 &
-									dram_data8_rd(3) &
-									dram_data8_rd(2);
-				when others =>
-					lb_data_out <=  (others => 'X');
-				end case;
-
-			when others =>
-				case size_d is
-				when "01" => -- 8bit
-					lb_data_out <=  UNDEFINED_8 &
-									UNDEFINED_8 &
-									UNDEFINED_8 &
-									dram_data8_rd(3);
-				when others =>
-					lb_data_out <=  (others => 'X');
-				end case;
-
-
-
-			end case;
 		end if;
+
+		case addr_d is
+		when "00" =>
+			case size_d is
+			when "01" => -- 8bit
+				lb_data_out <=  UNDEFINED_8 &
+								UNDEFINED_8 &
+								UNDEFINED_8 &
+								dram_data8_rd(0);
+			when "10" => -- 16bit
+				lb_data_out <=  UNDEFINED_8 &
+								UNDEFINED_8 &
+								dram_data8_rd(1) &
+								dram_data8_rd(0);
+			when "00" => -- 32bit
+				lb_data_out <=  dram_data8_rd(3) &
+								dram_data8_rd(2) &
+								dram_data8_rd(1) &
+								dram_data8_rd(0);
+			when others =>
+				lb_data_out <=  (others => 'X');
+			end case;
+		when "01" =>
+			case size_d is
+			when "01" => -- 8bit
+				lb_data_out <=  UNDEFINED_8 &
+								UNDEFINED_8 &
+								UNDEFINED_8 &
+								dram_data8_rd(1);
+			when others =>
+				lb_data_out <=  (others => 'X');
+			end case;
+
+		when "10" =>
+			case size_d is
+			when "01" => -- 8bit
+				lb_data_out <=  UNDEFINED_8 &
+								UNDEFINED_8 &
+								UNDEFINED_8 &
+								dram_data8_rd(2);
+			when "10" => -- 16bit
+				lb_data_out <=  UNDEFINED_8 &
+								UNDEFINED_8 &
+								dram_data8_rd(3) &
+								dram_data8_rd(2);
+			when others =>
+				lb_data_out <=  (others => 'X');
+			end case;
+
+		when others =>
+			case size_d is
+			when "01" => -- 8bit
+				lb_data_out <=  UNDEFINED_8 &
+								UNDEFINED_8 &
+								UNDEFINED_8 &
+								dram_data8_rd(3);
+			when others =>
+				lb_data_out <=  (others => 'X');
+			end case;
+
+
+
+		end case;
 	end process; 
 
 end behaviour;

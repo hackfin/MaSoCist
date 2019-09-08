@@ -1,13 +1,13 @@
 [*]
 [*] GTKWave Analyzer v3.3.70 (w)1999-2016 BSI
-[*] Wed Sep  4 10:36:07 2019
+[*] Sat Sep  7 19:38:24 2019
 [*]
 [dumpfile] "(null)"
 [savefile] "/home/strubi/src/vhdl/masocist-work/sim/virtual_potato-main.sav"
-[timestart] 1267164000000
-[size] 1497 960
-[pos] 391 1050
-*-27.755400 1267649000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[timestart] 6012000000000
+[size] 1274 960
+[pos] 414 1053
+*-38.755402 7482950000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tb_virtual_potato.
 [treeopen] tb_virtual_potato.uut.
 [treeopen] tb_virtual_potato.uut.soc.
@@ -77,10 +77,10 @@ tb_virtual_potato.uut.soc.perio_ce_d
 @800023
 tb_virtual_potato.uut.soc.data_memory_bank_a.dram_we[0:3]
 @29
-(0)tb_virtual_potato.uut.soc.data_memory_bank_a.dram_we[0:3]
-(1)tb_virtual_potato.uut.soc.data_memory_bank_a.dram_we[0:3]
-(2)tb_virtual_potato.uut.soc.data_memory_bank_a.dram_we[0:3]
-(3)tb_virtual_potato.uut.soc.data_memory_bank_a.dram_we[0:3]
++{tb_virtual_potato.uut.soc.data_memory_bank_a.dram_we[0]} (0)tb_virtual_potato.uut.soc.data_memory_bank_a.dram_we[0:3]
++{tb_virtual_potato.uut.soc.data_memory_bank_a.dram_we[1]} (1)tb_virtual_potato.uut.soc.data_memory_bank_a.dram_we[0:3]
++{tb_virtual_potato.uut.soc.data_memory_bank_a.dram_we[2]} (2)tb_virtual_potato.uut.soc.data_memory_bank_a.dram_we[0:3]
++{tb_virtual_potato.uut.soc.data_memory_bank_a.dram_we[3]} (3)tb_virtual_potato.uut.soc.data_memory_bank_a.dram_we[0:3]
 @1001201
 -group_end
 @22
@@ -111,9 +111,4 @@ tb_virtual_potato.uut.soc.potato_cpu_inst.regfile.rs1_data[31:0]
 tb_virtual_potato.uut.soc.potato_cpu_inst.regfile.rs2_addr[4:0]
 tb_virtual_potato.uut.soc.potato_cpu_inst.regfile.rs2_data[31:0]
 [pattern_trace] 1
-!100000@@
-?"00D5
-@23
-tb_virtual_potato.uut.soc.data_memory_bank_a.loop_bram(0).bram.a_addr[12:0]
-!!
 [pattern_trace] 0
