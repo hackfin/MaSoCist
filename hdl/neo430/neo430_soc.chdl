@@ -184,7 +184,7 @@ begin
 		irq_ack_o  => irq_ack						-- IRQ acknowledge
 	);
 
-imem: entity work.DPRAM_init
+imem: entity work.DPRAM16_init
 	generic map (
 		ADDR_W => CONFIG_BRAM_ADDR_WIDTH-2,
 		INIT_DATA => ram16_init_t(BOOTROM_INIT)

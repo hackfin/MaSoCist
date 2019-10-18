@@ -15,3 +15,5 @@ run: $(MASOCIST)/sim/tb_virtual_neo430
 test: $(MASOCIST)/sim/tb_virtual_neo430
 	sh recipes/scripts/test-neo430.sh virtual_neo430
 
+clean:
+	rm -f $(MASOCIST)/.config

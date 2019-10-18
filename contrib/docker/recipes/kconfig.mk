@@ -1,6 +1,6 @@
 KCONFIG_VER = 4.11.0.0
 
-KCONFIG_URL = http://ymorin.is-a-geek.org/git/kconfig-frontends/
+KCONFIG_URL = https://github.com/movidius/kconfig-frontends 
 
 # If you want to be on the safe side, choose this commit:
 include config.mk
@@ -36,7 +36,7 @@ src/kconfig-frontends:
  	git clone $(KCONFIG_URL)
 
 src/kconfig-frontends/configure: | src/kconfig-frontends
-	cd $(dir $@) && git checkout $(COMMIT)
+	# cd $(dir $@) && git checkout $(COMMIT)
 	cd $(dir $@) && \
 	aclocal && libtoolize && autoconf ; automake --add-missing ; autoreconf
 

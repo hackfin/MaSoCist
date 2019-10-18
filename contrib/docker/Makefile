@@ -6,6 +6,7 @@ RUN_RECIPES = neo430
 
 TEST_PACKAGES = $(RUN_RECIPES:%=test-%)
 RUN_PACKAGES = $(RUN_RECIPES:%=run-%)
+CLEAN_PACKAGES = $(RUN_RECIPES:%=clean-%)
 
 all: $(INSTALL_PACKAGES)
 
@@ -22,11 +23,15 @@ run-%:
 install-%:
 	$(MAKE) -f recipes/$*.mk all INSTALL_PREFIX=$(INSTALL_PREFIX)
 
+clean-%:
+	$(MAKE) -f recipes/$*.mk clean
+
 dry-run: 
 	@for i in $(RECIPES); do \
 	echo -------------------------- $$i ------------------------------; \
 	$(MAKE) -f $$i dry-run; done
 
+clean: $(CLEAN_PACKAGES)
 
 DISTFILES = Makefile config.mk recipes
 
