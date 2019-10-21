@@ -7,12 +7,12 @@ $(MASOCIST)/.config:
 $(MASOCIST)/sim/tb_virtual_neo430: $(MASOCIST)/.config
 	$(MAKE) -C $(MASOCIST)/sim all
 
-all: $(MASOCIST)/sim/tb_virtual_neo430
+all: $(MASOCIST)/sim/net_virtual_neo430
 
-run: $(MASOCIST)/sim/tb_virtual_neo430
+run: $(MASOCIST)/sim/net_virtual_neo430
 	sh recipes/scripts/run-neo430.sh virtual_neo430
 
-test: $(MASOCIST)/sim/tb_virtual_neo430
+test: $(MASOCIST)/sim/net_virtual_neo430
 	sh recipes/scripts/test-neo430.sh virtual_neo430
 
 clean:

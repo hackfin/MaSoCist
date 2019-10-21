@@ -224,8 +224,6 @@ class ELFObject:
 			self.e_flags, self.e_ehsize, self.e_phentsize, self.e_phnum,
 			self.e_shentsize, self.e_shnum, self.e_shstrndx) = h
 
-			print h
-
 		except struct.error:
 			# e.g. if file was too short struct size wont match
 			raise ELFException("Not a valid ELF file")
@@ -320,6 +318,39 @@ class ELFObject:
 				res.append(section)
 		return res
 
+	def parseSymbols(self):
+		"Parse symbols from elf object into dictionary"
+		m = struct.calcsize(Elf32_Sym.structformat)
+
+		symtab, strtab = None, None
+
+		for section in self.sections:
+			if section.sh_type == ELFSection.SHT_SYMTAB:
+				print "Got sym section %s" % section.name
+				symtab = section
+			elif section.sh_type == ELFSection.SHT_STRTAB and section.name == ".strtab":
+				print "Got str section %s" % section.name
+				strtab = section
+
+		if symtab and strtab:
+			n = len(symtab.data) / m
+
+			lookupdict = {}
+			s0 = 0
+			s1 = m
+			for i in range(n):
+				s = Elf32_Sym()
+				s.fromString(symtab.data[s0:s1])
+				i = strtab.data.find('\0', s.st_name)
+				s.name = strtab.data[s.st_name : i]
+				s0 += m
+				s1 += m
+				lookupdict[s.name] = s
+		else:
+			raise ValueError, "No symbols and strings in executable"
+		
+		return lookupdict
+
 	def __str__(self):
 		"""pretty print for debug..."""
 		return "%s(self.e_type=%r, self.e_machine=%r, self.e_version=%r, sections=%r)" % (
@@ -327,6 +358,33 @@ class ELFObject:
 			self.e_type, self.e_machine, self.e_version,
 			[section.name for section in self.sections])
 
+class Elf32_Sym:
+	"""Elf32 Symbol class"""
+
+	structformat = "<IIIBBH"
+	
+	def __init__(self):
+		self.name = ""
+		self.st_name = 0
+		self.st_value = 0x00000000
+		self.st_info = 0
+		self.st_other = 0
+		self.st_shndx = 0
+
+	def fromString(self, s):
+		(self.st_name, self.st_value, self.st_size, self.st_info,
+		self.st_other, self.st_shndx) = struct.unpack(self.structformat, s)
+
+	def __repr__(self):
+		return "<'%s' nm: %d val:0x%x sz:%d info:%d other:%d shndx:%d>" % (self.name, self.st_name, self.st_value, self.st_size, self.st_info, self.st_other, self.st_shndx)	
+
+class ElfProgram:
+	def __init__(self, elf, symbols):
+		self.elf = elf
+		self.sym = symbols
+	def lookup(self, name):
+		"Look up the symbol with 'name' and return the associated address"
+		return self.sym[name].st_value
 
 if __name__ == '__main__':
 	print "This is only a module test!"

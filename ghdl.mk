@@ -9,7 +9,7 @@ else
 	VHDL_STD_SUFFIX = $(VHDL_STD)
 endif
 
-ifdef MINGW32
+ifdef CONFIG_MINGW32
 include $(TOPDIR)/vendor/default/mingw32_config.mk
 else
 	DLLEXT = so
@@ -17,7 +17,7 @@ else
 endif
 
 # The GHDL object library (locally built)
-GHDLTARGET = $(notdir $(GHDL))
+GHDLTARGET ?= $(notdir $(GHDL))
 LIBGHDL ?= $(VHDL)/lib/$(GHDLTARGET)
 
 ifndef WORKDIR
@@ -38,6 +38,14 @@ endif
 
 GHDL ?= ghdl
 
+dbg:
+	echo $(GHDL_FLAGS)
+	echo $(GHDL_LIBFLAGS)
+	@echo --------------------
+	@echo $(GHDL_LDFLAGS)
+	@echo --------------------
+
+
 .PHONY: gsim gshow xref $(SIM_TOP)
 
 gsim: $(SIM_TOP)
@@ -53,7 +61,9 @@ GHDL_FLAGS += -frelaxed-rules
 GHDL_FLAGS += --workdir=$(WORKDIR)
 GHDL_FLAGS += --std=$(VHDL_STD)
 
-$(WORKDIR)/work-obj$(VHDL_STD_SUFFIX).cf: $(GHDL_IMPORT_DEPENDENCIES)
+WORK_DEPS = $(GHDL_IMPORT_DEPENDENCIES) | $(PROJECTFILES) $(WORKDIR)
+
+$(WORKDIR)/work-obj$(VHDL_STD_SUFFIX).cf: $(WORK_DEPS)
 	$(GHDL) -i $(GHDL_FLAGS) $(PROJECTFILES)
 
 $(WORKDIR)/zpu-obj$(VHDL_STD_SUFFIX).cf: $(ZPU_VHDL)
@@ -65,13 +75,21 @@ $(WORKDIR)/ghdlex-obj$(VHDL_STD_SUFFIX).cf: $(GHDLEX)
 		GHDL=$(GHDL) \
 		all
 
-tb_$(SIM_TOP): $(WORKDIR) $(WORKDIR)/work-obj$(VHDL_STD_SUFFIX).cf $(LIBDEPS)
+WORK = $(WORKDIR)/work-obj$(VHDL_STD_SUFFIX).cf
+
+tb_$(SIM_TOP): $(WORK) $(LIBDEPS) $(PROJECTFILES)
 	$(GHDL) -m --workdir=$(WORKDIR) $(GHDL_LDFLAGS) tb_$(SIM_TOP)
 
 net_$(SIM_TOP): tb_$(SIM_TOP)
 	$(GHDL) --bind --workdir=$(WORKDIR) $(GHDL_LDFLAGS) tb_$(SIM_TOP)
 	LINK_OBJS=`$(GHDL) --list-link $(GHDL_LDFLAGS) tb_$(SIM_TOP)`; \
 	$(CC) -o $@ main.c -I$(GHDLEX)/src $$LINK_OBJS
+	rm tb_$(SIM_TOP)
+
+net_$(SIM_TOP).exe: tb_$(SIM_TOP)
+	$(GHDL) --bind --workdir=$(WORKDIR) $(GHDL_LDFLAGS) tb_$(SIM_TOP)
+	LINK_OBJS=`$(GHDL) --list-link $(GHDL_LDFLAGS) tb_$(SIM_TOP)`; \
+	$(CROSS_CC) -o $@ main.c -I$(GHDLEX)/src $$LINK_OBJS
 	rm tb_$(SIM_TOP)
 
 gsim-%: $(WORKDIR) $(WORKDIR)/work-obj$(VHDL_STD_SUFFIX).cf $(PROJECTFILES) $(LIBDEPS)

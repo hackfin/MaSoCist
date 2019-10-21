@@ -1,0 +1,128 @@
+// SoC common signal definitions
+//
+// These are the common signals for a 32 bit SoC, independent of the core
+
+	constant WORD_SIZE     : natural := 32;
+	 -- # of bits in a word that addresses bytes:
+	constant BYTE_BITS     : integer := WORD_SIZE / 16;
+
+
+	subtype ramaddr8_t is
+		unsigned(CONFIG_BRAM_ADDR_WIDTH-1 downto 0);
+	subtype ramaddr32_t is
+		unsigned(CONFIG_BRAM_ADDR_WIDTH-1 downto BYTE_BITS);
+	subtype ramaddr16_t is 
+		unsigned(CONFIG_BRAM_ADDR_WIDTH-1 downto BYTE_BITS-1);
+
+#ifdef CONFIG_SCACHE
+	subtype vramaddr32_t is unsigned(CONFIG_ADDR_WIDTH-1 downto BYTE_BITS);
+#endif
+
+	 -- Address bit to determine this is an I/O
+	constant IO_BIT     : integer := CONFIG_MMR_ADDR_BIT;
+
+#ifdef CONFIG_UART
+	signal uart_rxirq   :  std_logic;  -- UART Rx IRQ
+#endif
+
+#if defined(CONFIG_GPIO) && !defined(HAVE_EXTENDED_SYSIO)
+	signal gpio_in      : std_logic_vector(16*CONFIG_NUM_GPIO-1 downto 0);
+	signal gpio_out     : std_logic_vector(16*CONFIG_NUM_GPIO-1 downto 0);
+	signal gpio_dir     : std_logic_vector(16*CONFIG_NUM_GPIO-1 downto 0);
+#endif
+
+
+#if defined(HAVE_DIPSWITCH) && !defined(CONFIG_xo3starter)
+	signal dip_sw      : unsigned(3 downto 0);
+#endif
+
+#ifdef CONFIG_MAC
+	signal phy_reset    :  std_logic;
+	signal int_phy_speed  : unsigned(1 downto 0);
+
+	-- Internal MII bus for I/O bridge
+	signal int_mii_txclk : std_ulogic;
+	signal int_mii_rxclk : std_ulogic;
+	signal int_mii_tx_en : std_ulogic;
+	signal int_mii_txd   : unsigned(7 downto 0);
+	signal int_mii_rxd   : unsigned(7 downto 0);
+	signal int_mii_rx_er : std_ulogic;
+	signal int_mii_rx_dv : std_ulogic;
+
+	signal int_mii_rxd_ulogic : std_ulogic_vector(7 downto 0);
+	
+#endif
+
+#ifdef CONFIG_JPEG
+	signal jpeg_din_valid : std_logic;
+	signal jpeg_din_a : unsigned(7 downto 0);
+	signal jpeg_din_b : unsigned(7 downto 0);
+#endif
+
+#ifdef HAVE_DMA
+	signal dma_irq        : unsigned(1 downto 0);
+#endif
+#ifdef CONFIG_JPEG
+	signal jpeg_irq       : std_ulogic;
+#endif
+
+#ifdef HAVE_EXTENDED_SYSIO
+	signal gpio_irq       : std_ulogic;
+	signal test_enable    : std_logic;
+	signal led_status_int : unsigned(7 downto 0);
+
+#endif
+	-- Extended System I/O exception
+	signal sysio_exc  : std_logic := '0';
+
+	signal dbg_emudata_o : unsigned(31 downto 0);
+	signal dbg_emudata_i : unsigned(31 downto 0);
+	signal dbg_curpc     : unsigned(31 downto 0);
+	signal dbg_exstat    : unsigned(7 downto 0);
+
+#if defined(HAVE_EXTENDED_SYSIO) || defined (CONFIG_versa_ecp5)
+	signal led_cpustat    : unsigned(7 downto 0);
+#endif
+
+#ifdef CONFIG_SCACHE
+	signal scache_sel   :  unsigned(1 downto 0);
+	signal scache_irq   :  std_logic;  -- SCache IRQ
+#endif
+
+#ifdef CONFIG_SIC
+	signal nmi        : std_logic;
+	signal exc        : std_logic;
+	signal irq_evt    : std_logic;
+	signal irq_input  : unsigned(CONFIG_NUM_IRQSRC-1 downto 0) :=
+		(others => '0');
+	signal irq_override : std_logic;
+	signal ivaddr   : ramaddr8_t;
+
+#endif
+
+-- TAP signals:
+	signal emuack, emurdy : std_logic;
+
+
+	signal strobe        : std_logic;
+	signal exec          : std_logic;
+	signal emuexec_d     : std_logic;
+
+#ifdef CONFIG_TIMER
+	constant LAST_TMR_INDEX : natural := CONFIG_NUM_TMR-1;
+
+	signal pwm_enable_register : unsigned(CONFIG_NUM_TMR-1 downto 0);
+	signal clken      : std_logic;
+	signal pwm_clken  : std_logic_vector(CONFIG_NUM_TMR-1 downto 0);
+	signal pwm_enable : std_logic_vector(CONFIG_NUM_TMR-1 downto 0);
+	signal pwm_irq    : std_logic_vector(CONFIG_NUM_TMR-1 downto 0);
+	signal pwm_clks   : std_logic_vector(CONFIG_NUM_TMR-1 downto 0);
+
+	signal pwmout     :    std_logic_vector(CONFIG_NUM_TMR-1 downto 0);
+
+#endif
+
+	-- Access control signals:
+	signal xs_ucode     : std_logic; -- Access to ucode area
+	signal xs_unaligned : std_logic; -- Unaligned access
+

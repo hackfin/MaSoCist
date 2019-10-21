@@ -1,0 +1,136 @@
+entity SoC is
+	port (
+		clk        : in  std_logic;  -- CPU clock
+		nmi_i      : in  std_logic;  -- Interrupt request
+
+		perio_rst  : in  std_logic;  -- Peripheral Reset (User reset)
+
+		tout       : out tap_in_rec;
+		tin        : in  tap_out_rec;
+
+		irq0      : in std_logic; -- External user IRQ
+
+#ifdef CONFIG_GPIO
+		gpio      : inout unsigned(16*CONFIG_NUM_GPIO-1 downto 0);
+#endif
+
+#ifdef CONFIG_papilio
+// Legacy papilio I/O
+#ifdef CONFIG_LCDIO
+		lcdio_a0    : out std_logic;
+		lcdio_cs    : out std_logic;
+		lcdio_bgled : out std_logic;
+		lcdio_rst   : out std_logic;
+		lcdio_wr    : out std_logic;
+		lcdio_rd    : out std_logic;
+		lcdio_idata  : in unsigned(7 downto 0);
+		lcdio_odata  : out unsigned(7 downto 0);
+#endif
+#endif
+
+#if defined(HAVE_DIPSWITCH) && defined(CONFIG_xo3starter)
+		dip_sw      : in unsigned(3 downto 0);
+#endif
+
+#if defined(CONFIG_MACHXO_EFB_SPI)
+#include "perio/efb_decl.vhdi"
+#elif defined(CONFIG_SPI)
+		spi_sclk    : out std_logic;
+		spi_cs      : out std_logic;
+		spi_miso    : in  std_logic;
+		spi_mosi    : out std_logic;
+#endif
+
+#if defined(CONFIG_versa_ecp5) || defined(CONFIG_hdr60) \
+	|| defined(CONFIG_virtual)
+
+		video_resetn : out std_logic;
+		twi_sda      : inout std_logic;
+		twi_scl      : inout std_logic;
+		pclk         : in  std_logic;
+#elif defined(CONFIG_scache)
+		pclk         : in  std_logic;
+#elif defined(CONFIG_netpp_node)
+		twi_sda      : inout std_logic;
+		twi_scl      : inout std_logic;
+#endif
+
+#ifdef HAVE_MAC
+#if defined(CONFIG_MAC_RGMII) || defined(CONFIG_MAC_GMII)
+		mac_mclk         : in     std_logic; --! 25/50 MHz MII/RMII clk
+		mac_clk125       : in     std_logic; --! 125 MHz input clock
+		mac_gbit_en      : out    std_logic; --! Gigabit enable signal
+#elif defined(CONFIG_MAC_RMII)
+		mac_mclk         : in     std_logic; --! 25/50 MHz MII/RMII clk
+		mac_mii_clk      : out    std_logic; --! 25 MHz out clock
+
+		macio_rmii_rxd       : in std_logic_vector(1 downto 0);
+		macio_rmii_txd       : out std_logic_vector(1 downto 0);
+		macio_rmii_txen           : out std_logic;
+		macio_rmii_rxer           : in std_logic;
+		macio_rmii_crs_rxdv       : in std_logic;
+
+
+#endif
+
+#if defined(CONFIG_hdr60)
+		pvi_data           : in std_logic_vector(15 downto 0);
+		pvi_lv             : in std_logic;
+		pvi_fv             : in std_logic;
+#endif
+
+#if defined(CONFIG_MAC_RGMII)
+		macio_rgmii_txclk  : out std_logic;
+		macio_rgmii_txd    : out std_logic_vector(3 downto 0);
+		macio_rgmii_tc     : out std_logic; --! RGMII TX ctr pin
+
+		macio_rgmii_rxclk  : in std_logic; --! 
+		macio_rgmii_rxd    : in std_logic_vector(3 downto 0);
+		macio_rgmii_rc     : in std_logic; --! 
+
+#elif defined(CONFIG_MAC_GMII) || defined (CONFIG_MAC_MII)
+#if defined(CONFIG_MAC_GMII)
+		mii_gtx_clk_o      : out std_ulogic;
+		mii_txd_o          : out std_logic_vector(7 downto 0);
+		mii_rxd_i          : in  std_logic_vector(7 downto 0);
+		mii_tx_er_i        : in  std_ulogic;
+#else
+		mii_txd_o          : out std_logic_vector(3 downto 0);
+		mii_rxd_i          : in  std_logic_vector(3 downto 0);
+#endif
+		mii_tx_clk_i       : in  std_ulogic;
+		mii_tx_en_o        : out std_ulogic;
+		mii_rx_clk_i       : in  std_ulogic;
+		mii_rx_er_i        : in  std_ulogic;
+		mii_rx_dv_i        : in  std_ulogic;
+#endif
+		macio_mdc        : out    std_logic; --! 
+		macio_mdio       : inout  std_logic; --! 
+
+		macio_phyrst       : out std_logic;
+		macio_phy_lowpwr   : out std_logic;
+
+		mii_col      : in  std_logic;
+		mii_crs      : in  std_logic;
+
+#endif // HAVE_MAC
+
+#ifdef HAVE_EXTENDED_SYSIO
+		sysconfig  : in std_logic_vector(7 downto 0);
+#else
+#ifdef CONFIG_TIMER
+		pwm       : out std_logic_vector(CONFIG_NUM_TMR-1 downto 0);
+#endif
+#endif
+#if defined(CONFIG_versa_ecp5) || defined (CONFIG_netpp_node)
+		led_status : out unsigned(7 downto 0);
+#endif
+
+		uart_tx    : out std_logic;  -- UART Tx
+		uart_rx    : in  std_logic;  -- UART Rx
+		uart_iosel : out std_logic;  -- UART I/O select
+		tap_reset  : in  std_logic;  -- TAP Reset
+		reset      : in  std_logic   -- Core Reset
+	);
+end entity SoC;
+

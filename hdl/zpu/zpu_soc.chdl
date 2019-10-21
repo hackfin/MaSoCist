@@ -44,219 +44,13 @@ library work;
 
 -- use work.zpu_memory.all;
 
-entity SoC is
-	port (
-		clk        : in  std_logic;  -- CPU clock
-		nmi_i      : in  std_logic;  -- Interrupt request
-
-		perio_rst  : in  std_logic;  -- Peripheral Reset (User reset)
-
-		tout       : out tap_in_rec;
-		tin        : in  tap_out_rec;
-
-		irq0      : in std_logic; -- External user IRQ
-
-#ifdef CONFIG_GPIO
-		gpio      : inout unsigned(16*CONFIG_NUM_GPIO-1 downto 0);
-#endif
-
-#ifdef CONFIG_papilio
-// Legacy papilio I/O
-#ifdef CONFIG_LCDIO
-		lcdio_a0    : out std_logic;
-		lcdio_cs    : out std_logic;
-		lcdio_bgled : out std_logic;
-		lcdio_rst   : out std_logic;
-		lcdio_wr    : out std_logic;
-		lcdio_rd    : out std_logic;
-		lcdio_idata  : in unsigned(7 downto 0);
-		lcdio_odata  : out unsigned(7 downto 0);
-#endif
-#endif
-
-#if defined(HAVE_DIPSWITCH) && defined(CONFIG_xo3starter)
-		dip_sw      : in unsigned(3 downto 0);
-#endif
-
-#if defined(CONFIG_MACHXO_EFB_SPI)
-#include "perio/efb_decl.vhdi"
-#elif defined(CONFIG_SPI)
-		spi_sclk    : out std_logic;
-		spi_cs      : out std_logic;
-		spi_miso    : in  std_logic;
-		spi_mosi    : out std_logic;
-#endif
-
-#if defined(CONFIG_versa_ecp5) || defined(CONFIG_hdr60) \
-	|| defined(CONFIG_virtual)
-
-		video_resetn : out std_logic;
-		twi_sda      : inout std_logic;
-		twi_scl      : inout std_logic;
-		pclk         : in  std_logic;
-#elif defined(CONFIG_netpp_node)
-		twi_sda      : inout std_logic;
-		twi_scl      : inout std_logic;
-#endif
-
-#ifdef HAVE_MAC
-#if defined(CONFIG_MAC_RGMII) || defined(CONFIG_MAC_GMII)
-		mac_mclk         : in     std_logic; --! 25/50 MHz MII/RMII clk
-		mac_clk125       : in     std_logic; --! 125 MHz input clock
-		mac_gbit_en      : out    std_logic; --! Gigabit enable signal
-#elif defined(CONFIG_MAC_RMII)
-		mac_mclk         : in     std_logic; --! 25/50 MHz MII/RMII clk
-		mac_mii_clk      : out    std_logic; --! 25 MHz out clock
-
-		macio_rmii_rxd       : in std_logic_vector(1 downto 0);
-		macio_rmii_txd       : out std_logic_vector(1 downto 0);
-		macio_rmii_txen           : out std_logic;
-		macio_rmii_rxer           : in std_logic;
-		macio_rmii_crs_rxdv       : in std_logic;
-
-
-#endif
-
-#if defined(CONFIG_hdr60)
-		pvi_data           : in std_logic_vector(15 downto 0);
-		pvi_lv             : in std_logic;
-		pvi_fv             : in std_logic;
-#endif
-
-#if defined(CONFIG_MAC_RGMII)
-		macio_rgmii_txclk  : out std_logic;
-		macio_rgmii_txd    : out std_logic_vector(3 downto 0);
-		macio_rgmii_tc     : out std_logic; --! RGMII TX ctr pin
-
-		macio_rgmii_rxclk  : in std_logic; --! 
-		macio_rgmii_rxd    : in std_logic_vector(3 downto 0);
-		macio_rgmii_rc     : in std_logic; --! 
-
-#elif defined(CONFIG_MAC_GMII) || defined (CONFIG_MAC_MII)
-#if defined(CONFIG_MAC_GMII)
-		mii_gtx_clk_o      : out std_ulogic;
-		mii_txd_o          : out std_logic_vector(7 downto 0);
-		mii_rxd_i          : in  std_logic_vector(7 downto 0);
-		mii_tx_er_i        : in  std_ulogic;
-#else
-		mii_txd_o          : out std_logic_vector(3 downto 0);
-		mii_rxd_i          : in  std_logic_vector(3 downto 0);
-#endif
-		mii_tx_clk_i       : in  std_ulogic;
-		mii_tx_en_o        : out std_ulogic;
-		mii_rx_clk_i       : in  std_ulogic;
-		mii_rx_er_i        : in  std_ulogic;
-		mii_rx_dv_i        : in  std_ulogic;
-#endif
-		macio_mdc        : out    std_logic; --! 
-		macio_mdio       : inout  std_logic; --! 
-
-		macio_phyrst       : out std_logic;
-		macio_phy_lowpwr   : out std_logic;
-
-		mii_col      : in  std_logic;
-		mii_crs      : in  std_logic;
-
-#endif
-
-#ifdef HAVE_EXTENDED_SYSIO
-		sysconfig  : in std_logic_vector(7 downto 0);
-#else
-#ifdef CONFIG_TIMER
-		pwm       : out std_logic_vector(CONFIG_NUM_TMR-1 downto 0);
-#endif
-#endif
-#if defined(CONFIG_versa_ecp5) || defined (CONFIG_netpp_node)
-		led_status : out unsigned(7 downto 0);
-#endif
-
-		uart_tx    : out std_logic;  -- UART Tx
-		uart_rx    : in  std_logic;  -- UART Rx
-		uart_iosel : out std_logic;  -- UART I/O select
-		tap_reset  : in  std_logic;  -- TAP Reset
-		reset      : in  std_logic   -- Core Reset
-	);
-end entity SoC;
+#include "../core/common/soc_ports.chdl"
 
 architecture behaviour of SoC is
-	constant WORD_SIZE     : natural := 32;
-	 -- # of bits in a word that addresses bytes:
-	constant BYTE_BITS     : integer := WORD_SIZE / 16;
 
-	subtype ramaddr8_t is unsigned(CONFIG_BRAM_ADDR_WIDTH-1 downto 0);
-	subtype ramaddr32_t is unsigned(CONFIG_BRAM_ADDR_WIDTH-1 downto BYTE_BITS);
-
-#ifdef CONFIG_SCACHE
-	subtype vramaddr32_t is unsigned(CONFIG_ADDR_WIDTH-1 downto BYTE_BITS);
-#endif
-
-	 -- Address bit to determine this is an I/O
-	constant IO_BIT     : integer := CONFIG_MMR_ADDR_BIT;
-
-#ifdef CONFIG_UART
-	signal uart_rxirq   :  std_logic;  -- UART Rx IRQ
-#endif
-
-#if defined(CONFIG_GPIO) && !defined(HAVE_EXTENDED_SYSIO)
-	signal gpio_in      : std_logic_vector(16*CONFIG_NUM_GPIO-1 downto 0);
-	signal gpio_out     : std_logic_vector(16*CONFIG_NUM_GPIO-1 downto 0);
-	signal gpio_dir     : std_logic_vector(16*CONFIG_NUM_GPIO-1 downto 0);
-#endif
+#include "../core/common/soc_signals.chdl"
 
 
-#if defined(HAVE_DIPSWITCH) && !defined(CONFIG_xo3starter)
-	signal dip_sw      : unsigned(3 downto 0);
-#endif
-
-#ifdef CONFIG_MAC
-	signal phy_reset    :  std_logic;
-	signal int_phy_speed  : unsigned(1 downto 0);
-
-	-- Internal MII bus for I/O bridge
-	signal int_mii_txclk : std_ulogic;
-	signal int_mii_rxclk : std_ulogic;
-	signal int_mii_tx_en : std_ulogic;
-	signal int_mii_txd   : unsigned(7 downto 0);
-	signal int_mii_rxd   : unsigned(7 downto 0);
-	signal int_mii_rx_er : std_ulogic;
-	signal int_mii_rx_dv : std_ulogic;
-
-	signal int_mii_rxd_ulogic : std_ulogic_vector(7 downto 0);
-	
-#endif
-
-#ifdef CONFIG_JPEG
-	signal jpeg_din_valid : std_logic;
-	signal jpeg_din_a : unsigned(7 downto 0);
-	signal jpeg_din_b : unsigned(7 downto 0);
-#endif
-
-#ifdef HAVE_DMA
-	signal dma_irq        : unsigned(1 downto 0);
-#endif
-#ifdef CONFIG_JPEG
-	signal jpeg_irq       : std_ulogic;
-#endif
-
-#ifdef HAVE_EXTENDED_SYSIO
-	signal gpio_irq       : std_ulogic;
-	signal test_enable    : std_logic;
-	signal led_status_int : unsigned(7 downto 0);
-#endif
-
-#if defined(HAVE_EXTENDED_SYSIO) || defined (CONFIG_versa_ecp5)
-	signal led_cpustat    : unsigned(7 downto 0);
-#endif
-
-#ifdef CONFIG_SCACHE
-	signal scache_sel   :  unsigned(1 downto 0);
-	signal scache_irq   :  std_logic;  -- SCache IRQ
-#endif
-
-
-	signal strobe        : std_logic;
-	signal exec          : std_logic;
-	signal emuexec_d     : std_logic;
 #ifdef CONFIG_ZEALOT
 	signal break         : std_logic;
 #endif
@@ -309,46 +103,15 @@ architecture behaviour of SoC is
 
 	signal perio_ce : std_logic;
 	signal irq      : std_logic;
-	signal irq_override : std_logic;
-	signal exc      : std_logic := '0';  -- exception signal
-
-	-- Access control signals:
-	signal xs_ucode     : std_logic; -- Access to ucode area
-	signal xs_unaligned : std_logic; -- Unaligned access
 
 	signal cache_wait  : std_logic := '0';
-	signal ivaddr   : ramaddr8_t;
 
 #ifdef CONFIG_SCACHE
 	signal perio_ce_d : std_logic;
 #endif
 
-	signal irq_input  : unsigned(CONFIG_NUM_IRQSRC-1 downto 0) :=
-		(others => '0');
-	-- Non maskable interrupt:
-	signal nmi        : std_logic;
-	-- Extended System I/O exception
-	signal sysio_exc  : std_logic := '0';
 
-#ifdef CONFIG_TIMER
-	signal pwm_enable_register : unsigned(CONFIG_NUM_TMR-1 downto 0);
-	signal clken      : std_logic;
-	signal pwm_clken  : std_logic_vector(CONFIG_NUM_TMR-1 downto 0);
-	signal pwm_enable : std_logic_vector(CONFIG_NUM_TMR-1 downto 0);
-	signal pwm_irq    : std_logic_vector(CONFIG_NUM_TMR-1 downto 0);
-	signal pwm_clks   : std_logic_vector(CONFIG_NUM_TMR-1 downto 0);
-
-	signal pwmout     :    std_logic_vector(CONFIG_NUM_TMR-1 downto 0);
-
-#endif
-
-	signal emuack, emurdy : std_logic;
-
-#ifdef CONFIG_ZPUNG
-	signal dbg_emudata : unsigned(31 downto 0);
-	signal dbg_curpc   : unsigned(31 downto 0);
-	signal dbg_exstat  : unsigned(7 downto 0);
-#else
+#ifdef CONFIG_ZEALOT
 	signal dbg: zpu_dbgo_t;
 #endif
 
@@ -459,14 +222,6 @@ busy_check:
 	io_busy <= not wb_perio_rd.ack;
 #endif
 
-#ifdef CONFIG_TIMER
-pwm_clocks:
-for i in 0 to CONFIG_NUM_TMR-1 generate
-	pwm_clks(i) <= clk;
-	pwm_clken(i) <= clken;
-end generate;
-#endif
-
 -- IRQ mapping 
 -- FIXME: Use HAVE-defines in vendor/<vendor>/config.mk
 #if defined(HAVE_UARTIRQ)
@@ -493,7 +248,6 @@ end generate;
 	|| defined(CONFIG_hdr60) || defined(CONFIG_virtual)
 #	ifdef CONFIG_TIMER
 		irq_input(B_PINMAP_IRQ_TIMER0) <= pwm_irq(0);
-
 #		ifdef CONFIG_JPEG
 			irq_input(B_PINMAP_IRQ_JPEG) <= jpeg_irq;
 #		else
@@ -532,198 +286,7 @@ end generate;
 	exc <= nmi;
 #endif
 
-
-perio:
-	entity work.mmr_perio
-	port map (
- 		bus_in     => wb_perio_wr,
- 		bus_out    => wb_perio_rd,
-
-#ifdef HAVE_UART_IOMUX_SEL
-		sysio_uart_sel   => uart_iosel,
-#endif
-
-#ifdef HAVE_EFB
-#include "perio/efb_map.vhdi"
-#endif
-
-#ifdef CONFIG_VIDEO
-		vio_vclk         => pclk,
-		vio_resetn       => video_resetn,
-#ifdef CONFIG_VIDEO_SENSOR
-		vio_data         => unsigned(pvi_data),
-		vio_lv           => pvi_lv,
-		vio_fv           => pvi_fv,
-#endif
-#endif
-
-#ifdef CONFIG_JPEG
-		jpex_irq         => jpeg_irq,
-#endif
-
-#ifdef CONFIG_JPEG_EXTERNAL
--- When external:
-		jpio_sclk        => clk,
-		jpio_pclk        => pclk,
-		jpio_din_valid   => jpeg_din_valid, -- XXX
-		jpio_din_a       => jpeg_din_a, -- XXX
-		jpio_din_b       => jpeg_din_b, -- XXX
-#endif
-
-#ifdef HAVE_DMA
-		sysio_dmairq     => dma_irq,
-#endif
-
-#ifdef HAVE_EXTENDED_SYSIO
-		sysio_reset      => perio_rst,
-		sysio_test_en    => test_enable,
-		-- sysio_xs_unaligned    => xs_unaligned,
-		sysio_exc_o      => sysio_exc,
-		sysio_led_status => led_status_int,
-		sysio_xs_ucode   => xs_ucode,
-		sysio_syscfg     => unsigned(sysconfig),
-		sysio_pc         => dbg_curpc,
-		sysio_sp         => dbg_emudata,
-
-
-		-- sys core specific GPIO muxing:
-#ifdef CONFIG_GPIO
-		sysio_gpio       => gpio,
-#endif
-		sysio_pwm        => unsigned(pwmout),
-		-- console:
-		sysio_con_tx     => uart_tx,
-		sysio_con_rx     => uart_rx,
-#endif
-#if defined(HAVE_DIPSWITCH)
-		sysio_dip_sw     => dip_sw,
-#elif defined(CONFIG_hdr60) || defined (CONFIG_breakout) // hack!
-		sysio_dip_sw     => "0000",
-#endif
-
-#ifdef CONFIG_SIC
-		sicio_reset      => reset,
-		sicio_nmi        => nmi,
-		sicio_irq_in     => irq_input,
-		sicio_irq_out    => irq,
-		sicio_irq_ovr    => irq_override,
-		sicio_ivaddr     => ivaddr,
-#endif
-
-#ifdef CONFIG_SCACHE
-		scache_reset      => reset,
-		scache_da_virt    => io_addr32,
-		scache_da_phys    => daddr_phys,
-		scache_ia_virt    => insn_addr32,
-		scache_ia_phys    => iaddr_phys,
-		scache_sel        => scache_sel,
-		scache_irq        => scache_irq,
-		scache_hold       => cache_wait,
-#endif
-
-#ifdef CONFIG_MACHXO2_EFB
-		-- MACHXO2 hardened IP I/O:
-		efbio_ufm_irq    => open,
-#endif
-
-#if defined(CONFIG_GPIO) && !defined(HAVE_EXTENDED_SYSIO)
-		mio_gpio_in    => gpio_in,
-		mio_gpio_out   => gpio_out,
-		mio_gpio_dir   => gpio_dir,
-#endif
-
-#ifdef CONFIG_TWI
-		twio_sclk     => clk,
-		twio_sda      => twi_sda,
-		twio_scl      => twi_scl,
-#endif
-
-#if  defined(CONFIG_PWM_SIMPLE) || defined(CONFIG_PWM_ADVANCED)
-		pwmio_enable     => pwm_enable,
-		pwmio_irq        => pwm_irq,
-		pwmio_output     => pwmout,
-		pwmio_pwmclk     => pwm_clks,
-		pwmio_pwm_clken  => pwm_clken,
-#endif
-
-#if  defined(CONFIG_PWM_SIMPLE) || defined(CONFIG_PWM_ADVANCED)
-		tmrio_pwm_enable => pwm_enable_register,
-		tmrio_pwm_clken  => clken,
-#endif
-
-#ifdef CONFIG_UART
--- If we don't have Pin muxing, route directly:
-#ifndef HAVE_EXTENDED_SYSIO
-		uartio_tx        => uart_tx,
-		uartio_rx        => uart_rx,
-		uartio_rxirq     => uart_rxirq,
-#endif
-#endif
-
-#if defined(CONFIG_I2C)
-		i2c_scl          => i2c_scl,
-		i2c_sda          => i2c_sda,
-#endif
-
-#ifdef CONFIG_SPI
-		spio_cs          => spi_cs,
-		spio_sclk        => spi_sclk,
-		spio_miso        => spi_miso,
-		spio_mosi        => spi_mosi,
-#endif
-
-#ifdef CONFIG_papilio
-#ifdef CONFIG_LCDIO
-		lcdio_a0         => lcdio_a0,
-		lcdio_cs         => lcdio_cs,
-		lcdio_bgled      => lcdio_bgled,
-		lcdio_rst        => lcdio_rst,
-		lcdio_wr         => lcdio_wr,
-		lcdio_rd         => lcdio_rd,
-		lcdio_idata       => lcdio_idata,
-		lcdio_odata       => lcdio_odata,
-#endif
-#endif
-
-#ifdef CONFIG_MAC
-		macio_mdc        => macio_mdc,
-		macio_mdio       => macio_mdio,
-
-
-		macio_mii_col    => mii_col,
-		macio_mii_crs    => mii_crs,
-		macio_miim_clk   => clk,
-		macio_mii_txclk  => int_mii_txclk,
-		macio_mii_txen   => int_mii_tx_en,
-		macio_mii_txd    => int_mii_txd,
-		macio_mii_rxclk  => int_mii_rxclk,
-		macio_mii_rxval  => int_mii_rx_dv,
-		macio_mii_rxd    => int_mii_rxd,
-		macio_mii_rxerr  => int_mii_rx_er,
-		macio_phy_speed  => int_phy_speed,
-		macio_phy_reset  => phy_reset,
-		macio_phy_lowpwr => macio_phy_lowpwr,
-
---		macio_tx_clk     => dmaclk_tx,
---		macio_tx_rst     => open,
---		macio_tx_enable  => mac_txen,
---		macio_tx_din     => mac_txdata,
---		macio_tx_done    => mac_txdone,
---		macio_tx_busy    => open,
---		macio_rx_clk     => dmaclk_rx,
---		macio_rx_rst     => open,
---		macio_rx_frame   => open,
---		macio_rx_dout    => open,
---		macio_rx_done    => open,
---		macio_rx_error   => open,
-#endif
-
-#ifdef CONFIG_GENSOC_RESET_DEFAULTS
-		reset         => reset,
-#endif
-		ce            => perio_ce,
-		clk           => clk
-	);
+#include "../core/common/perio.chdl"
 
 #ifndef HAVE_UART_IOMUX_SEL
 		uart_iosel <= '0';
@@ -766,122 +329,18 @@ perio:
 #endif
 
 #ifdef CONFIG_MAC
-
--- MAC Debugging XXX:
-
-	-- XXX Flood with data when ready:
-	-- tx_wren <= not tx_full;
-
-#ifdef CONFIG_MAC_RGMII
-
-	int_mii_txclk <= mac_mclk;
-
-mii_rgmii_io_inst : entity work.mii_rgmii_io
-	port map(
-		clock_125_i     => mac_clk125,
-		clock_25_i      => mac_mclk,
-		speed_select_i  => std_ulogic_vector(int_phy_speed),
-
-		-- Signals connected directly to external ports
-		-- RGMII
-		rgmii_tx_clk_o  => macio_rgmii_txclk,
-		rgmii_txd_o     => macio_rgmii_txd,
-		rgmii_txctl     => macio_rgmii_tc,
-		rgmii_rx_clk_i  => macio_rgmii_rxclk,
-		rgmii_rxd_i     => macio_rgmii_rxd,
-		rgmii_rxctl     => macio_rgmii_rc,
-
-		int_rxclk_o     => int_mii_rxclk,
-                           
-		-- Internal MII signals:
-		int_mii_tx_en_i => int_mii_tx_en,
-		int_mii_txd_i   => std_ulogic_vector(int_mii_txd),
-		int_mii_rx_er_o => int_mii_rx_er,
-		int_mii_rx_dv_o => int_mii_rx_dv,
-		int_mii_rxd_o   => int_mii_rxd_ulogic,
-		reset           => phy_reset
-	);
-
-	int_mii_rxd <= unsigned(int_mii_rxd_ulogic);
-
-	mac_gbit_en <= int_phy_speed(1); -- Assign gigabit enable signal
-
-#elif defined (CONFIG_MAC_RMII)
-
--- Use GMII in compatibility mode (lower nibble)
-
-mii_rmii_io_inst : entity work.rmii_port
-	port map(
-		rmii_rxdata   => macio_rmii_rxd,
-		rmii_crs_rxdv => macio_rmii_crs_rxdv,
-		rmii_txdata   => macio_rmii_txd,
-		rmii_txen     => macio_rmii_txen,
-		rmii_clk	  => mac_mclk,
-
-		mii_rxdata    => int_mii_rxd(3 downto 0),
-		mii_rxdv      => int_mii_rx_dv,
-		mii_txdata    => int_mii_txd(3 downto 0),
-		mii_txen      => int_mii_tx_en,
-		mii_clk		  => mac_mii_clk
-	);
-
-	int_mii_txclk <= mac_mclk;
-	int_mii_rxclk <= mac_mclk;
-
-#elif defined (CONFIG_MAC_GMII)
-
-
-mii_gmii_io_inst : entity work.mii_gmii_io
- 	port map(
- 		clock_125_i     => mac_clk125,
- 		clock_tx_o      => int_mii_txclk,
- 		clock_rx_o      => int_mii_rxclk,
-		speed_select_i  => std_ulogic_vector(int_phy_speed),
- 		mii_tx_clk_i    => mii_tx_clk_i,
- 		mii_tx_en_o     => mii_tx_en_o,
- 		mii_txd_o       => mii_txd_o,
- 		mii_rx_clk_i    => mii_rx_clk_i,
- 		mii_rx_er_i     => mii_rx_er_i,
- 		mii_rx_dv_i     => mii_rx_dv_i,
- 		mii_rxd_i       => mii_rxd_i,
- 		gmii_gtx_clk_o  => mii_gtx_clk_o,
- 		int_mii_tx_en_i => int_mii_tx_en,
-		int_mii_txd_i   => std_ulogic_vector(int_mii_txd),
- 		int_mii_rx_er_o => int_mii_rx_er,
- 		int_mii_rx_dv_o => int_mii_rx_dv,
- 		int_mii_rxd_o   => int_mii_rxd_ulogic
- 	);
-
-	int_mii_rxd <= unsigned(int_mii_rxd_ulogic);
-	mac_gbit_en <= int_phy_speed(1); -- Assign gigabit enable signal
-
-#elif defined(CONFIG_MAC_MII)
-
-
-	mii_txd_o <= std_logic_vector(int_mii_txd(3 downto 0));
-	mii_tx_en_o <= int_mii_tx_en;
-
-	int_mii_txclk <= mii_tx_clk_i;
-	int_mii_rxclk <= mii_rx_clk_i;
-	int_mii_rx_er <= mii_rx_er_i;
-	int_mii_rx_dv <= mii_rx_dv_i;
-	int_mii_rxd   <= "0000" & unsigned(mii_rxd_i);
-
-#endif // CONFIG_MAC_GMII
-
-	macio_phyrst <= phy_reset;
-
+#include "../core/common/mac.chdl"
 #endif
 
-	-- Map the register values directly to enable pins:
-#ifdef CONFIG_TIMER
-	pwm_enable <= std_logic_vector(pwm_enable_register);
-#endif
 
 #endif // CONFIG_WISHBONE
 
+#include "../core/common/soc_body.chdl"
+
 -- When SIC not configured, wire IRQ to nmi
-#ifndef CONFIG_SIC
+#ifdef CONFIG_SIC
+	irq <= irq_evt;
+#else
 	-- Bypass not-existing SIC
 	irq_override <= '0';
 	irq <= nmi;
@@ -891,18 +350,6 @@ mii_gmii_io_inst : entity work.mii_gmii_io
 
 ----------------------------------------------------------------------------
 -- Exec pulse clock domain transfer:
-
--- derive:
--- 	process (tin.tapclk)
--- 	begin
--- 		if rising_edge(tin.tapclk) then
--- 			emuexec_d <= tin.emuexec;
--- 		end if;
--- 	end process;
-
--- 	exec <= tin.emuexec and not emuexec_d;
-
--- Couple exec rising edge into CPU clk domain:
 
 exec_pulse:
 	entity work.flagxdp
@@ -940,33 +387,19 @@ count_exec_pulses:
 	                dbg_exstat(B_ZPU_IRQACK - 8);
 
 #elif defined(CONFIG_netpp_node)
+/* LED order on v0.1: BLUE YELLOW GREEN RED  (Adapted to population mistake)
+ *              v0.0: YELLOW BLUE GREEN  RED
+ *                     [D4]  [D3]  [D2]  [D1]
+ */
+
 	led_cpustat <=  "XXXX" &
-	                emurdy &
 	                dbg_exstat(B_ZPU_IRQACK - 8) &
+	                emurdy &
 	                dbg_exstat(B_ZPU_BREAK - 8) &
 	                dbg_exstat(B_ZPU_INRESET - 8);
 
 #endif
 
-
-#ifdef HAVE_EXTENDED_SYSIO
-#if defined(CONFIG_versa_ecp5) || defined (CONFIG_netpp_node)
-	led_status <= led_status_int when test_enable = '1' else led_cpustat;
-#endif
-#else
-#if defined(CONFIG_versa_ecp5) || defined (CONFIG_netpp_node)
-	led_status <= led_cpustat;
-#endif
-#if defined(CONFIG_GPIO)
-	gpio_in <= std_logic_vector(gpio);
-
-gpio_direction:
-	for i in 0 to CONFIG_NUM_GPIO*16-1 generate
-		gpio(i) <= gpio_out(i) when gpio_dir(i) = '1' else 'Z';
-	end generate;
-
-#endif
-#endif
 
 
 #ifdef CONFIG_ZPUNG
@@ -997,7 +430,7 @@ zpucore: entity work.ZPUng
 		tap_exstat    => dbg_exstat,
 		tap_idata     => x"00000000",
 		tap_emuexec   => strobe,
-		tap_odata     => dbg_emudata,
+		tap_odata     => dbg_emudata_o,
 		tap_emuir     => unsigned(tin.emuir(7 downto 0)),
 		tap_emuack    => emuack,
 		tap_emurdy    => emurdy,
@@ -1005,13 +438,12 @@ zpucore: entity work.ZPUng
 		tap_emureq    => tin.emurequest
 	);
 
-	tout.break <= dbg_exstat(B_ZPU_BREAK - 8);
 	tout.emuack <= emuack;
 	tout.emurdy <= emurdy;
-	tout.emudata <= std_logic_vector(dbg_emudata);
-	tout.dbgpc <= std_logic_vector(dbg_curpc);
-	tout.count <= x"0000" & std_logic_vector(exec_count);
-	tout.exstat <= std_logic_vector(dbg_exstat);
+	tout.emudata <= dbg_emudata_o;
+	tout.dbgpc <= dbg_curpc;
+	tout.count <= x"0000" & exec_count;
+	tout.exstat <= dbg_exstat;
 #endif
 
 #ifdef CONFIG_ZEALOT
@@ -1027,7 +459,7 @@ zpucore : ZPUSmallCore
 		emuexec_i => strobe,
 		emuack_o  => emuack,
 		emurdy_o  => emurdy,
-		emuir     => tin.emuir(7 downto 0),
+		emuir     => std_logic_vector(tin.emuir(7 downto 0)),
 		break_o   => break, dbg_o => dbg,
 
 		-- BRAM (text, data, bss and stack)
@@ -1038,16 +470,15 @@ zpucore : ZPUSmallCore
 		addr_o => io_addr, write_en_o => io_we, read_en_o => io_re
 	);
 
-	tout.break <= break;
-	tout.emudata <= std_logic_vector(dbg.stk_a);
-	tout.dbgpc <= std_logic_vector(dbg.pc);
-	tout.count <= x"0000" & std_logic_vector(dbgcount);
+	tout.emudata <= dbg.stk_a;
+	tout.dbgpc <= dbg.pc;
+	tout.count <= x"0000" & dbgcount;
 	dbgstat(B_ZPU_IDIM - 8)    <= dbg.idim;
 	dbgstat(B_ZPU_MEMBUSY - 8) <= '0';
 	dbgstat(B_ZPU_BREAK - 8)   <= break;
 	dbgstat(B_ZPU_INRESET - 8) <= reset;
 
-	tout.exstat <= dbgstat;
+	tout.exstat <= unsigned(dbgstat);
 
 #ifdef CONFIG_SIM_BREAK
 break_term:
@@ -1065,12 +496,5 @@ break_term:
 
 
 #endif // CONFIG_ZEALOT
-
-// Experimental neo430 support:
-#ifdef CONFIG_NEO430
-
-
-#endif
-
 
 end architecture behaviour;

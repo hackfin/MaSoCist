@@ -22,8 +22,8 @@ entity VirtualTAP_Direct is
 	generic (
 		 EMUDAT_SIZE        : natural := 32; -- Dummy
 		 EMUIR_SIZE         : natural := 32; -- Dummy
-		 INS_NOP            : std_logic_vector(32-1 downto 0); -- Dummy
-		 IDCODE      : std_logic_vector(32-1 downto 0)  := x"00000000";
+		 INS_NOP            : unsigned(32-1 downto 0); -- Dummy
+		 IDCODE             : unsigned(32-1 downto 0)  := x"00000000";
 		 USE_GLOBAL_CLK     : boolean := false;
 		 TCLK_PERIOD : time := 40 ns
 	);

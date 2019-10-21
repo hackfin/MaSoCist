@@ -2,6 +2,8 @@
 
 ROMFILE ?= rom_generated.vhd
 VENDOR ?= default
+# Board supply lib name
+BSP_LIBRARIES = -L. -lbsp-$(PLATFORM) 
 
 include ../config.mk
 
@@ -63,11 +65,12 @@ LD      = $(CROSS_COMPILE)ld
 CFLAGS-$(CONFIG_OPT_SIZE)  += -Os
 CFLAGS-$(CONFIG_OPT_SPEED) += -O3
 CFLAGS-$(CONFIG_DEBUG_SYM) += -DDEBUG
-CFLAGS-$(CONFIG_RISCV_POTATO) += -march=rv32i -mabi=ilp32
-# CFLAGS-y += -DCONFIG_GLOBAL_MMRPTR
+CFLAGS-$(CONFIG_RISCV_ARCH) += -march=rv32i -mabi=ilp32
+
 
 CFLAGS = -g -Wall $(PLATFORM_CFLAGS)
 CFLAGS += -I. -Iinclude
+CFLAGS += -Iinclude/arch/$(ARCH)
 CFLAGS += $(CFLAGS-y)
 
 
@@ -126,6 +129,8 @@ BSPLIBOBJS-$(CONFIG_TASK_MANAGEMENT)    += taskmgr.o
 # Further platform specific files should be added here:
 -include plat/$(PLATFORM)/config.mk
 BSPLIBOBJS-y += commonbsp.o
+BSPLIBOBJS-$(CONFIG_RISCV_ARCH) += arch/$(ARCH)/irqmgmt.o
+
 # Hook for system specific BSP addon:
 BSPLIBOBJS-y += $(EXTRA_BSP)
 
@@ -155,11 +160,12 @@ else
 BUILD = $(CC) -o $@ $(OBJS)
 endif
 
+# LDFLAGS are completely handled by ../platform.mk now.
 # LDFLAGS += -Wl,--cref
 
 main.elf: $(OBJS) lib $(CUSTOM_LINKERSCRIPT) $(DUTIES-y)
 	-cp $(PLATFORM).map $(PLATFORM)-old.map
-	$(BUILD) -L. -lbsp-$(PLATFORM) $(LDFLAGS)
+	$(BUILD) $(LDFLAGS)
 
 showchanges:
 	$(DIFF) $(PLATFORM).map $(PLATFORM)-old.map
@@ -173,6 +179,8 @@ HEADERS-y = soc_register.h soc_register_modes.h
 HEADERS-$(CONFIG_MACHXO_EFB) += efb_register.h efb_register_modes.h
 HEADERS-$(CONFIG_I2CBRIDGE) += i2cslave_register.h
 DUTIES-y += soc_mmr.gdb
+
+HEADERS-$(CONFIG_RISCV_ARCH) += arch/riscv/csr_register.h
 
 else
 GENSOC = @echo "gensoc module missing!" \#
@@ -215,6 +223,9 @@ $(PLATFORM)_register.h: $(DEVICEFILE)
 	$(GENSOC) -o $(PLATFORM) -r -M1 -Dplatform_$(PLATFORM) $<
 
 endif
+
+arch/riscv/csr_register.h: ../hdl/riscv/riscv32.xml
+	$(GENSOC) -o arch/riscv/csr -r -B 1 $<
 
 $(PLATFORM).h: $(PLATFORM)_register.h
 	mv -f $< $@

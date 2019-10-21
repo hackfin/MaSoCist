@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<devdesc version="0.1"
+         xsi:schemaLocation="http://www.section5.ch/dclib/schema/devdesc devdesc.xsd"
+         xmlns="http://www.section5.ch/dclib/schema/devdesc"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:xi="http://www.w3.org/2001/XInclude"
+         xmlns:ns22="http://www.w3.org/1999/xhtml"
+         xmlns:ns2="http://www.xmlmind.com/xmleditor/schema/bugreport"
+         xmlns:ns="http://www.section5.ch/dclib/schema/devdesc"
+         xmlns:memmap="http://www.section5.ch/dclib/schema/memmap"
+         xmlns:interfaces="http://www.section5.ch/dclib/schema/interfaces"
+         xmlns:html="http://www.xmlmind.com/xmleditor/schema/xhtml"
+         xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+  <vendor>section5</vendor>
+
+  <!--// (c) 2018 Martin Strubel <hackfin@section5.ch>
+// $Id: $
+-->
+
+  <revision>
+    <major>0</major>
+
+    <minor>1</minor>
+
+    <extension>develop</extension>
+  </revision>
+
+  <device id="virtualboard_test" name="VirtualBoard test" protocol="REGISTER">
+    <revision>
+      <major>0</major>
+
+      <minor>0</minor>
+
+      <extension>testing</extension>
+    </revision>
+
+    <info>Virtual TAP capable device.</info>
+
+    <registermap endian="LITTLE" hidden="false" id="fake" name="MMR_TAP"
+                 nodecode="true">
+      <register access="RO" addr="0x00" id="decode_dummy">
+        <info>The bit fields in this register are dummies with respect to address decoding.
+They are used as bit slice defines within the VHDL top decoder section to
+pick the proper address signals from the top level address bus (or VirtualBus)
+For each I/O unit, a MMR_CFG_ entry is defined.
+Later, these slice defines will be moved to the iomap definitions for the entire SoC
+(see also memmap.xml for memory map)</info>
+
+        <bitfield lsb="0" msb="4" name="MMR_CFG_tap_registers"/>
+      </register>
+    </registermap>
+
+    <registermap endian="BIG" id="tap_registers" name="TAP" offset="0x00">
+      <!--We use the VBUS address offset from the C header.-->
+
+      <register access="RO" addr="0x00" id="TAP_IDCODE" size="4">
+        <info>IDCODE register. Contains IDCODE of attached CPU.</info>
+      </register>
+
+      <register access="RO" addr="0x04" id="TAP_EMUDATA" size="4">
+        <info>EMUDATA register for data exchange between core/debug coprocessor and TAP</info>
+      </register>
+
+      <register addr="0x08" id="TAP_EMUCTRL" size="2">
+        <info>Emulation control register. This is kept generic and CPU independent</info>
+
+        <bitfield lsb="0" msb="0" name="EMUREQ">
+          <info>Set this bit to request CPU to enter emulation</info>
+        </bitfield>
+
+        <bitfield lsb="4" msb="6" name="SELECT_REG">
+          <info>CPU specific select field for emudata input. Used on TAPs which require multiplexing of the EMUDATA register.</info>
+        </bitfield>
+
+        <bitfield lsb="11" msb="11" name="EMUMASK">
+          <info>When set, do not debug inside emulation microcode</info>
+        </bitfield>
+
+        <bitfield lsb="7" msb="7" name="EMUEXEC">
+          <info>Some CPUs require the EMUEXEC bit to be toggled for executing an instruction. Refer to CPU debug reference section for details.</info>
+        </bitfield>
+
+        <bitfield lsb="15" msb="15" name="CORE_RESET">
+          <info>Reset the CPU core.</info>
+        </bitfield>
+
+        <default>0xxx1xxx00000000</default>
+      </register>
+
+      <register access="RO" addr="0x0a" id="TAP_EMUSTAT" size="2">
+        <info>Emulation status register. The LSB contains the TAP generic status bis, MSB contains CPU specific bits. Refer to the CPU debug register description for detailed information.</info>
+
+        <bitfield lsb="0" msb="0" name="EMUACK">
+          <info>Emulation acknowledge. When an emureq request has been issued, this bit turns 1 when it is acknowledged by the attached CPU. The EMUACK bit remains high on most implementations when the CPU is in emulation mode.</info>
+        </bitfield>
+
+        <bitfield lsb="1" msb="1" name="EMURDY">
+          <info>Signal that emulation is ready. Poll this bit to see if emulation is busy.</info>
+        </bitfield>
+
+        <bitfield lsb="8" msb="15" name="CORE_SPEC">
+          <info>Core specific status bits. See CPU debug reference.</info>
+        </bitfield>
+      </register>
+
+      <register access="RW" addr="0x0c" id="TAP_EMUIR" size="4">
+        <info>Emulation instruction register, 32 bit wide. This is used to feed instructions to the CPU core when in emulation mode.</info>
+      </register>
+
+      <register access="RO" addr="0x10" id="TAP_EMUPC" size="4">
+        <info>Program counter of attached CPU. Only valid when in emulation. Might be unused on some CPU cores.</info>
+      </register>
+
+      <register access="RW" addr="0x18" id="TAP_SIMCTRL" size="1">
+        <info>Simulation only control register for Virtual TAP.</info>
+
+        <bitfield lsb="0" msb="0" name="SIM_THROTTLE">
+          <info>Throttle simulation if this bit is set and when no TAP access occurs</info>
+        </bitfield>
+
+        <default>1</default>
+      </register>
+
+      <register addr="0x19" id="SIM_SLEEPCYCLES" size="2">
+        <info>When Throttle bit set, simulation sleeps &lt;this register's value&gt;</info>
+
+        <default>fa00</default>
+      </register>
+
+      <register addr="0x1a" id="SIM_DEBUG_PINS" size="2">
+        <info>Debug pins for external triggering/queries</info>
+
+        <default>0000</default>
+      </register>
+    </registermap>
+
+    <group name="Auxiliaries">
+      <property name="Reset" type="REGISTER">
+        <info>Direct access of reset bit</info>
+
+        <regref bits="CORE_RESET" ref="TAP_EMUCTRL"/>
+      </property>
+
+      <property access="RO" name="Break" type="REGISTER" volatile="true">
+        <info>Direct access of break signal</info>
+
+        <regref bits="EMURDY" ref="TAP_EMUSTAT"/>
+      </property>
+    </group>
+
+    <group name="VirtualTap">
+      <info>The VirtualTAP register set is a direct test access port implemented as virtual Bus in GHDLex.
+It does not require any extra handshake logic.</info>
+
+      <struct name="Emu">
+        <info>New emulation structure</info>
+
+        <property name="Exec" type="BOOL">
+          <info>Toggle this pin to execute command in EmuIR register</info>
+
+          <regref bits="EMUEXEC" ref="TAP_EMUCTRL"/>
+        </property>
+
+        <property name="Req" type="BOOL">
+          <info>Setting this bit to 1 asserts the emulation request pin to the core</info>
+
+          <regref bits="EMUREQ" ref="TAP_EMUCTRL"/>
+        </property>
+
+        <property name="Mask" type="BOOL">
+          <info>When 1, do not debug inside emulation microcode</info>
+
+          <regref bits="EMUMASK" ref="TAP_EMUCTRL"/>
+        </property>
+
+        <property access="RO" name="Ready" type="BOOL">
+          <info>'1' when emulation ready</info>
+
+          <regref bits="EMURDY" ref="TAP_EMUSTAT"/>
+        </property>
+
+        <property access="RO" name="Ack" type="BOOL">
+          <info>'1' when in emulation mode</info>
+
+          <regref bits="EMUACK" ref="TAP_EMUSTAT"/>
+        </property>
+
+        <property access="RO" name="Stat" type="REGISTER">
+          <info>Emulation status register</info>
+
+          <regref ref="TAP_EMUSTAT"/>
+        </property>
+
+        <property name="Ctrl" type="REGISTER">
+          <info>Emulation control register</info>
+
+          <regref ref="TAP_EMUCTRL"/>
+        </property>
+
+        <property name="IR" type="REGISTER">
+          <info>Instruction to execute on core on next EmuExec bit toggle</info>
+
+          <regref ref="TAP_EMUIR"/>
+        </property>
+
+        <property access="RO" name="Data" type="REGISTER">
+          <info>Return emulation data from the core</info>
+
+          <regref ref="TAP_EMUDATA"/>
+        </property>
+
+        <property access="RO" name="PC" type="REGISTER">
+          <info>Current Program counter of core. Valid only when in emulation.</info>
+
+          <regref ref="TAP_EMUPC"/>
+        </property>
+      </struct>
+
+      <property name="SimSleepCycles" type="INT">
+        <info>Set 1 to throttle simulation</info>
+
+        <regref ref="SIM_SLEEPCYCLES"/>
+      </property>
+
+      <property name="TapThrottle" type="BOOL">
+        <info>Set 1 to throttle simulation</info>
+
+        <regref bits="SIM_THROTTLE" ref="TAP_SIMCTRL"/>
+      </property>
+
+      <property access="RO" name="IDCode" type="REGISTER">
+        <info>The IDCODE of the core. Unique to every core architecture.</info>
+
+        <regref ref="TAP_IDCODE"/>
+      </property>
+
+      <property name="Debug" type="REGISTER">
+        <info>Debug register</info>
+
+        <regref ref="SIM_DEBUG_PINS"/>
+      </property>
+    </group>
+
+    <group id="ghdlex_templates" name="GHDLex templates">
+      <info>This group only contains templates for internal generation of entities. Accessing them explicitely will have no effect or crash the system.</info>
+
+      <struct hidden="true" id="ghdlex_fifo" name="Fifo">
+        <property access="RW" id="fifobuf" name="Buffer" type="BUFFER">
+          <!--A buffer object that is handled via a handler function. See handler.c
+(Function get_fifo()/set_fifo() for details.)-->
+
+          <info>A FIFO buffer for communication between VHDL simulation and external software.</info>
+
+          <handler type="DYNAMIC">fifo</handler>
+        </property>
+
+        <property access="RO" id="fifo_infill" name="InFill" type="INT">
+          <handler type="DYNAMIC">fifo_infill</handler>
+        </property>
+
+        <property access="RO" id="fifo_outfill" name="OutFill" type="INT">
+          <handler type="DYNAMIC">fifo_outfill</handler>
+        </property>
+      </struct>
+
+      <struct hidden="true" id="ghdlex_ram" name="RAM">
+        <property access="RW" id="rambuf" name="Buffer" type="BUFFER">
+          <!--A buffer object that is handled via a handler function. See handler.c
+(Function get_fifo()/set_fifo() for details.)-->
+
+          <info>A RAM proxy</info>
+
+          <handler type="DYNAMIC">rambuf</handler>
+        </property>
+
+        <property access="RW" id="offset" name="Offset" type="INT">
+          <handler type="DYNAMIC">ramoffset</handler>
+        </property>
+      </struct>
+
+      <struct hidden="true" id="ghdlex_bus" name="Vbus">
+        <info>Virtual Bus structure export to netpp.</info>
+
+        <property access="RO" name="Width" type="INT">
+          <handler type="DYNAMIC">vbus_width</handler>
+        </property>
+
+        <property name="Addr" type="REGISTER">
+          <info>32 bit address, written first</info>
+
+          <handler type="DYNAMIC">vbus_addr</handler>
+        </property>
+
+        <property name="DataBurst" type="BUFFER">
+          <info>Buffer whose size must be a multiple of BusWidth. When read or written, a bus burst access is triggered.</info>
+
+          <handler type="DYNAMIC">vbus_data</handler>
+        </property>
+
+        <property name="Data" type="REGISTER">
+          <info>Data word. When read or written, a bus access is triggered.</info>
+
+          <handler type="DYNAMIC">vbus_data</handler>
+        </property>
+      </struct>
+    </group>
+  </device>
+</devdesc>

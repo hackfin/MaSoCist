@@ -45,7 +45,7 @@ endif
 
 # This file is generated:
 
-ifdef HAVE_VTAP
+ifdef CONFIG_HAVE_VTAP
 GENERATED_SIMFILES = $(GENSOC_OUTPUT)/vtap_iomap_pkg.vhdl
 GENERATED_SIMFILES += $(GENSOC_OUTPUT)/vtap_tap_registers_decode.vhdl
 endif
@@ -55,6 +55,10 @@ SOC_SRCFILES-$(CONFIG_DUMMYTAP) += vtap_dummy.vhdl # Direct TAP
 SOC_SRCFILES-$(CONFIG_GHDLEX_DEFAULT) += vtap_ghdlex.vhdl
 SOC_SRCFILES-$(CONFIG_ZPUNG) += zputap_iomap_pkg.vhdl
 SOC_SRCFILES-$(CONFIG_ZEALOT) += zputap_iomap_pkg.vhdl
+
+# RISCV uses tunneled, secondary register map:
+SOC_SRCFILES-$(CONFIG_RISCV_PYRV32) += pyrv32tap_iomap_pkg.vhdl
+SOC_SRCFILES-$(CONFIG_RISCV_PYRV32) += pyrv32tap_secondary_tapregs_decode.vhdl
 
 # We need to include this dummy tap for simulation
 ifndef SYNTHESIS
@@ -66,12 +70,12 @@ TOPDIR ?= ../..
 
 $(GENERATED_SIMFILES): $(DESCFILES)/tap.xml
 	$(GENSOC) -o $(GENSOC_OUTPUT)/vtap \
-		--data-width=8 --map-prefix=1 --interface-type=std_logic_vector -s \
+		--data-width=8 --map-prefix=1 --interface-type=unsigned -s \
 		--decoder=tap_registers \
 		$<
 
 $(GENSOC_OUTPUT)/stdtap_iomap_pkg.vhdl: $(DESCFILES)/stdtap.xml
 	$(GENSOC) -o $(GENSOC_OUTPUT)/stdtap \
-		--data-width=8 --map-prefix=1 --interface-type=std_logic_vector -s \
+		--data-width=8 --map-prefix=1 --interface-type=unsigned -s \
 		$<
 

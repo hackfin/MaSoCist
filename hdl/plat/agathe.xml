@@ -213,26 +213,6 @@ use work.global_config.all;</header>
           <info>Timer interrupt</info>
         </bitfield>
       </register>
-
-      <register addr="0x00" id="IRQ_SCACHE">
-        <info>IRQ pin map for Board with SCache option</info>
-
-        <bitfield lsb="0" msb="0" name="PINMAP_IRQ_SCACHE">
-          <info>SCache interrupt</info>
-        </bitfield>
-
-        <bitfield lsb="1" msb="1" name="PINMAP_IRQ_TIMERA">
-          <info>TIMER interrupt</info>
-        </bitfield>
-
-        <bitfield lsb="2" msb="2" name="PINMAP_IRQ_GPIO_A">
-          <info>GPIO Bank A interrupt</info>
-        </bitfield>
-
-        <bitfield lsb="3" msb="3" name="PINMAP_IRQ_GPIO_B">
-          <info>GPIO Bank B interrupt</info>
-        </bitfield>
-      </register>
     </registermap>
 
     <registermap endian="LITTLE" hidden="true" id="ccaps"

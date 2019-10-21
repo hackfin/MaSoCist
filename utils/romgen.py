@@ -14,7 +14,6 @@ import elf
 import intelhex
 
 #Sections to ignore
-IGNORE_SECTIONS = []
 MSG = " section %16s Addr: %08x len %d"
 LOADTXT = "Load" + MSG
 SKIPTXT = "Skipping" + MSG
@@ -386,6 +385,11 @@ class Romgen_MIPS(Romgen_Mem2x16i_4x8d):
 		else:
 			print SKIPTXT % (p.name, p.sh_addr, len(p.data))
 
+
+	def to_buffer(self):
+		return (self.text.tobinstr(), \
+			self.data_a.tobinstr(), self.data_b.tobinstr())
+
 class Romgen_RISCV(Romgen_MIPS):
 	"MIPS/RISCV style memory layout"
 	PROG_SECTIONS = [".text", ".init", ".fixed_vectors" ]
@@ -421,15 +425,11 @@ class Romgen_MSP430(Romgen_imem_dmem):
 
 ############################################################################
 
-def load_elf(elffile, imemory):
-	e = elf.ELFObject()
-	f = open(elffile)
-	e.fromFile(f)
-	offset = 0
-	if e.e_machine != 0x6a:
-		raise TypeError, "This is not a ZPU executable"
+def load_elf_zpu(e, imemory, dmemory, debug = None):
+	"ZPU ELF format loader"
 
 	romgen = Romgen_ZPU("zpu")
+	IGNORE_SECTIONS = []
 
 	for p in e.sections:
 		if p.sh_flags & (elf.ELFSection.SHF_WRITE | 
@@ -438,11 +438,63 @@ def load_elf(elffile, imemory):
 
 			if p.name not in IGNORE_SECTIONS:
 				romgen.handle(p)
+		elif debug:
+			print "Dropping '%s' at %08x, len: %d" % \
+				(p.name, p.sh_addr, len(p.data))
+
+	return romgen
+
+def load_elf_riscv32(e, imemory, dmemory, debug = None):
+	"RISCV32 ELF format loader"
+	DATA_SECTIONS = [ ".data", ".sdata", ".rodata", ".srodata" ]
+
+	romgen = Romgen_RISCV("rv32")
+
+	for p in e.sections:
+		if p.sh_flags & (elf.ELFSection.SHF_WRITE | 
+                         elf.ELFSection.SHF_EXECINSTR |
+		                 elf.ELFSection.SHF_ALLOC):
+
+			romgen.handle(p)
+		elif debug:
+			print "Dropping '%s' at %08x, len: %d" % \
+				(p.name, p.sh_addr, len(p.data))
+
+	return romgen
+
+############################################################################
+# Known 32 bit ELF files to parse:
+
+KNOWN_MACHINES = {
+	0x6a: (load_elf_zpu,     'ZPU'),
+	0xf3: (load_elf_riscv32, 'RISCV32')
+}
+
+def open_elf(infile):
+	e = elf.ELFObject()
+	f = open(infile)
+	e.fromFile(f)
+	f.close()
+	return e
+
+
+def load_elf(elffile, imemory = None, dmemory = None):
+
+	e = open_elf(elffile)
+	if e.e_machine not in KNOWN_MACHINES.keys():
+		raise TypeError, "Unsupported executable format code %02x" \
+			% (e.e_machine)
+
+	handler = KNOWN_MACHINES[e.e_machine][0]
+	romgen = handler(e, imemory, dmemory)
 
 	if imemory == None:
-		return romgen.to_buffer()
+		ret = romgen.to_buffer()
 	elif type(imemory) == type(()):
 		romgen.dump2(imemory[0], imemory[1])
+		ret = None
 	else:
 		romgen.dump(imemory)
+		ret = None
 
+	return ret

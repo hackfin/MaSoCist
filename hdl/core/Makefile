@@ -13,6 +13,14 @@ ifdef CONFIG_NEO430
 NEO430 = $(SRC)/neo430
 endif
 
+ifdef CONFIG_RISCV_POTATO
+SYNLIB = potato
+endif
+
+ifdef CONFIG_RISCV_PYRV32
+SYNLIB = pyrv32
+endif
+
 ifdef CONFIG_UART
 REQUIRE_FIFOBUF = y
 endif
@@ -41,10 +49,11 @@ SOC_MODULE-$(CONFIG_ZEALOT) = $(SRC)/zpu/zpu_soc.chdl
 SOC_MODULE-$(CONFIG_NEO430) = $(SRC)/neo430/neo430_soc.chdl
 SOC_MODULE-$(CONFIG_NEO430_NATIVE) = $(SRC)/neo430/neo430_soc_native.chdl
 
-SOC_MODULE-$(CONFIG_RISCV_POTATO) = $(SRC)/riscv/potato_soc.chdl
+SOC_MODULE-$(CONFIG_RISCV_ARCH) = $(SRC)/riscv/riscv32_soc.chdl
 
 # Wishbone bridge:
 SRCFILES-$(CONFIG_ZPUNG)  += core/wb2zpu.vhdl
+SRCFILES-$(CONFIG_RISCV_PYRV32)  += core/wb2pyps.vhdl
 SRCFILES-$(CONFIG_ZEALOT) += core/wb2zpu.vhdl
 SRCFILES-$(CONFIG_NEO430) += core/wb2zpu.vhdl
 
@@ -71,6 +80,7 @@ GENERATED_FILES-y += $(SOC_MODULE-y:%.chdl=%.vhdl)
 
 # Library files:
 SYN_LIBFILES-$(CONFIG_ZEALOT) += $(ZPU_VHDL)
+SYN_LIBFILES-$(CONFIG_RISCV_POTATO) += $(COREFILES)
 
 CUSTOM_DUTIES-$(CONFIG_ZEALOT) += $(ZEALOT)
 CUSTOM_DUTIES-$(CONFIG_ZEALOT) += $(WORKDIR)/zpu-obj$(VHDL_STD_SUFFIX).cf

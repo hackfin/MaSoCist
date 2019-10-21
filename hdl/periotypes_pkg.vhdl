@@ -7,8 +7,14 @@ library work;
 	use work.busdef.all;
 
 package periotypes is
+	-- Register address types. These are for compatibility with
+	-- somewhat strictly specified XML descriptions
+	subtype regaddr4_t  is unsigned(7 downto 0);
+	subtype regaddr8_t is unsigned(7 downto 0);
 	subtype regaddr13_t is unsigned(15 downto 0);
 	subtype regaddr16_t is unsigned(15 downto 0);
+
+	constant RAMTYPE_BLOCKRAM : string := "block_ram";
 
 	component jpegmem_wrapper is
 		port (

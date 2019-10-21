@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<devdesc version="0.1"
+         xsi:schemaLocation="http://www.section5.ch/dclib/schema/devdesc devdesc.xsd"
+         xmlns="http://www.section5.ch/dclib/schema/devdesc"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:xi="http://www.w3.org/2001/XInclude"
+         xmlns:ns22="http://www.w3.org/1999/xhtml"
+         xmlns:ns2="http://www.xmlmind.com/xmleditor/schema/bugreport"
+         xmlns:ns="http://www.section5.ch/dclib/schema/devdesc"
+         xmlns:memmap="http://www.section5.ch/dclib/schema/memmap"
+         xmlns:interfaces="http://www.section5.ch/dclib/schema/interfaces"
+         xmlns:html="http://www.xmlmind.com/xmleditor/schema/xhtml"
+         xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+  <vendor>section5</vendor>
+
+  <!--// (c) 2011,2012 Martin Strubel <hackfin@section5.ch>
+// $Id: $
+
+
+This is a register map file for a few supported taps and CPU cores.
+It is part of the unified emulation library (uniemu)-->
+
+  <revision>
+    <major>0</major>
+
+    <minor>2</minor>
+
+    <extension>develop</extension>
+  </revision>
+
+  <header language="VHDL">library work; use work.stdtap.all;</header>
+
+  <!--This is the list of possible codes the device may return:-->
+
+  <returncodes>
+    <errorspec code="-1024" name="GENERIC_ERROR">
+      <info>Generic, unspecified error code</info>
+    </errorspec>
+
+    <warnspec code="1" name="GENERIC_WARNING">
+      <info>Something is not ok, but we don't fail.</info>
+    </warnspec>
+  </returncodes>
+
+  <device id="tap_std" name="StandardTAP" protocol="REGISTER">
+    <revision>
+      <major>0</major>
+
+      <minor>0</minor>
+    </revision>
+
+    <info>A generic TAP for 32 bit architectures, independent of vendor JTAG
+    interface (user defined JTAG)</info>
+
+    <registermap access="RO" endian="BIG" id="tap_registers"
+                 name="STD">
+      <info>The generic TAP register map</info>
+
+      <register access="RO" addr="0x01" id="TAP_IDCODE" size="4">
+        <info>Used to retrieve the CPU ID from the attached core. </info>
+      </register>
+
+      <register access="RO" addr="0x02" id="TAP_EMUDATA" size="4">
+        <info>Data I/O from/to the core. Some TAP revisions may use
+        bidirectional full duplex I/O through EMUDATA.</info>
+      </register>
+
+      <register access="WO" addr="0x03" id="TAP_EMUCTRL" size="2">
+        <info>Emulation control register. Used to control the emulation modes
+        and configuration.</info>
+
+        <bitfield lsb="0" msb="0" name="EMUREQ">
+          <info>1: Request emulation mode, 0: Disable emulation</info>
+        </bitfield>
+
+        <bitfield lsb="4" msb="6" name="SELREG">
+          <info>Select register to latch in EMUDATA</info>
+        </bitfield>
+
+        <bitfield lsb="7" msb="7" name="EMUEXEC">
+          <info>Toggling this bit executes an opcode from EMUIR</info>
+        </bitfield>
+
+        <bitfield lsb="8" msb="10" name="AUTOINC">
+          <info>Currently unused.</info>
+        </bitfield>
+
+        <bitfield lsb="11" msb="11" name="EMUMASK">
+          <info>When set, do not debug inside emulation microcode</info>
+        </bitfield>
+
+        <bitfield lsb="15" msb="15" name="CORE_RESET">
+          <info>Reset the core logic. Use this to reset the CPU core. Note:
+          a JTAG state machine does NOT reset the core.</info>
+        </bitfield>
+      </register>
+
+      <register access="RO" addr="0x04" id="TAP_EMUSTAT" size="2">
+        <info>Emulation status register.</info>
+
+        <bitfield lsb="0" msb="0" name="EMUACK">
+          <info>Acknowledge signal. High when emulation request
+          acknowledged.</info>
+        </bitfield>
+
+        <bitfield lsb="1" msb="1" name="EMURDY">
+          <info>1 when emulation ready, 0 else.</info>
+        </bitfield>
+
+        <bitfield lsb="2" msb="2" name="EMUDAT_UNR">
+          <info>EMUDATA underrun bit: Set when an empty register was
+          read.</info>
+        </bitfield>
+
+        <bitfield lsb="3" msb="3" name="EMUDAT_OVR">
+          <info>Emudata overrun bit. Set when EMUDAT was overrun. Clear by
+          writing 1.</info>
+        </bitfield>
+
+        <bitfield lsb="8" msb="15" name="CORE_SPEC">
+          <info>Core specific bits. Refer to core specific
+          documentation.</info>
+        </bitfield>
+      </register>
+
+      <register access="WO" addr="0x05" id="TAP_EMUIR" size="4">
+        <info>The emulation instruction register to push opcodes into the
+        core. Entering Run-Test-Idle executes the opcode.</info>
+      </register>
+
+      <register access="RO" addr="0x05" id="TAP_DBGPC" size="4">
+        <info>This is the current PC of the running system. This is NOT
+        identical to the emulation PC (EMUPC). Query the EMUPC for the current
+        PC where the system is halted, when in emulation.</info>
+      </register>
+
+      <register access="RO" addr="0x0c" id="TAP_COUNT1" size="4">
+        <info>Event counter 1. Userdefined.</info>
+      </register>
+
+      <register access="RO" addr="0x0d" id="TAP_COUNT2" size="4">
+        <info>Event counter 2. Userdefined.</info>
+      </register>
+    </registermap>
+
+    <registermap endian="BIG" id="dummy_select" name="SELECT"
+                 offset="0x00000">
+      <info>Indirect register map for SELREG values</info>
+
+      <register addr="0x00" id="EMUDATA" size="3">
+        <info>EMUDATA register</info>
+      </register>
+
+      <register addr="0x01" id="DBGPC" size="3">
+        <info>Select PC</info>
+      </register>
+
+      <register addr="0x02" id="EMUIR" size="3">
+        <info>Select Emulation instruction register</info>
+      </register>
+
+      <register addr="0x04" id="COUNT" size="3">
+        <info>Select event counter</info>
+      </register>
+
+      <register addr="0x05" id="ERRCOUNT" size="3">
+        <info>Select error counter</info>
+      </register>
+
+      <register addr="0x06" id="ANALYZER" size="3">
+        <info>Little LA</info>
+      </register>
+
+      <register addr="0x07" id="TAPCAPS" size="3">
+        <info>TAP capability field</info>
+
+        <bitfield lsb="0" msb="3" name="REV_MAJ">
+          <info>Tap revision major (0-15)</info>
+        </bitfield>
+
+        <bitfield lsb="4" msb="7" name="REV_MIN">
+          <info>Tap revision minor (0-15)</info>
+        </bitfield>
+
+        <bitfield lsb="8" msb="15" name="SELECT_MAP">
+          <info>Flags corresponding to the selection field, denoting if function is supported ('1')</info>
+        </bitfield>
+      </register>
+    </registermap>
+
+    <group name="Select">
+      <property name="Select" type="MODE">
+        <info>SELREG multiplexer values</info>
+
+        <regref bits="SELREG" ref="TAP_EMUCTRL"/>
+
+        <choice>
+          <item name="EMUDATA">
+            <value>0</value>
+          </item>
+
+          <item name="DBGPC">
+            <value>1</value>
+          </item>
+
+          <item name="EMUIR">
+            <value>2</value>
+          </item>
+
+          <item name="COUNT">
+            <value>4</value>
+          </item>
+
+          <item name="ERRCOUNT">
+            <value>5</value>
+          </item>
+
+          <item name="ANALYZER">
+            <value>6</value>
+          </item>
+
+          <item name="TAPCAPS">
+            <value>7</value>
+          </item>
+        </choice>
+      </property>
+    </group>
+  </device>
+</devdesc>

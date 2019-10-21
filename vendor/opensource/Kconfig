@@ -22,6 +22,11 @@ config ZEALOT
 	help
 	  Zealot ZPU architecture with debugger enhancement
 
+config RISCV_ARCH
+	bool "RISCV architecture"
+	help
+	  Support for RISCV architectures
+
 config NEO430
 	bool "Neo430"
 	depends on OPENSOURCE
@@ -29,12 +34,6 @@ config NEO430
 	  NEO430 architecture designed by Stephan Nolting
 	  Support for this configuration is still experimental
 
-config RISCV_POTATO
-	bool "RISCV potato"
-	depends on OPENSOURCE
-	help
-	  RISCV potato architecture (https://github.com/skordal/potato.git)
-	  Support for this configuration is still experimental
 
 config ZPUNG
 	bool "ZPUng (ZPU next gen)"
@@ -45,6 +44,30 @@ config ZPUNG
 	  section5 proprietary pipelined ZPU architecture with hardware debugger
 
 endchoice
+
+choice
+	prompt "RISC V processor implementation"
+	depends on RISCV_ARCH
+	default RISCV_PYRV32
+
+config RISCV_POTATO
+	bool "RISCV potato"
+	depends on RISCV_ARCH
+	help
+	  RISCV potato architecture (https://github.com/skordal/potato.git)
+	  Support for this configuration is still experimental
+
+config RISCV_PYRV32
+	depends on !OPENSOURCE
+	bool "RISCV pyrv32"
+	depends on RISCV_ARCH
+	select GENSOC_READ_DELAY
+	select ADDR_WITH
+	help
+	  section5 proprietary riscv32 in a non-configureable edition
+
+endchoice
+
 
 config ZPUNG_VHDL_ONLY
 	bool "VHDL only release"
@@ -66,8 +89,8 @@ config virtual_neo430
 	help
 	  Virtual board, no hardware implementation
 
-config virtual_potato
-	bool "Virtual RISCV potato board"
+config virtual_rv32ui
+	bool "Virtual RISCV board"
 	select VIRTUAL_SILICON
 	help
 	  Virtual board, no hardware implementation
@@ -92,6 +115,12 @@ config PLAT_EXTENSION
 	default "main"
 	help
 	  Platform HDL variant extension
+
+config HAVE_VTAP
+	bool "Virtual TAP support"
+	default "y"
+	help
+	  Set to 'y' when Virtual TAP support is present.
 
 if NEO430 = 'y'
 source "hdl/neo430/Kconfig"

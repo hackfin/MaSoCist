@@ -13,26 +13,6 @@ endif
 
 SIM_TOP ?= $(PLATFORM)
 
-ifdef MINGW32
-LIBSLAVE = $(NETPP)/devices/libslave
-LIBEXTRA_FLAGS = -Wl,-lws2_32
-SIM_TOP_EXE = $(SIM_PREFIX)$(SIM_TOP).exe
-else
-LIBEXTRA_FLAGS = -Wl,-lpthread
-SIM_TOP_EXE = $(SIM_PREFIX)$(SIM_TOP)
-ifdef NETPP
-LIBSLAVE = $(NETPP)/devices/libslave
-else
-MACHINE = $(shell uname -m)
-ifeq ($(MACHINE),x86_64)
-LOCAL_LIBS = ../contrib
-else
-LOCAL_LIBS = ../contrib/lib32
-endif
-LIBSLAVE = $(LOCAL_LIBS)
-endif
-endif
-
 
 SIM_LIBNAME = $(subst $\",,$(CONFIG_LIBSIM))
 
@@ -55,7 +35,6 @@ $(GENSOC_OUTPUT):
 perio: generate
 	@echo "------------------------------------"
 	@echo "No CPU, building perio simulation..."
-	# $(MAKE) -C perio
 	cd $@ && make all
 
 .PHONY: all reconfig generate perio
@@ -70,8 +49,11 @@ SIM_SRCFILES-$(CONFIG_VIRTUAL_I2CSLAVE) += hdl/i2c/i2c_syn_pkg.vhd
 # Include Test bench and simulation specific files:
 PROJECTFILES += $(TOPDIR)/sim/tb_$(SIM_TOP).vhdl $(SIM_SRCFILES-y)
 
-VIRTUAL_EXTENSIONS-$(CONFIG_NATIVE) += hdl/virtualuart.vhdl
-VIRTUAL_EXTENSIONS-$(CONFIG_MINGW32) += hdl/dummy-virtualuart.vhdl
+ifdef CONFIG_NATIVE
+VIRTUAL_EXTENSIONS-$(CONFIG_VIRTUAL_UART) += hdl/virtualuart.vhdl
+else
+VIRTUAL_EXTENSIONS-$(CONFIG_VIRTUAL_UART) += hdl/dummy-virtualuart.vhdl
+endif
 
 PROJECTFILES += $(VIRTUAL_EXTENSIONS-y)
 
@@ -80,6 +62,7 @@ debug:
 	@echo "ghdl binary: $(GHDL)" `$(GHDL) --version`
 	@echo "ghdlex target: $(GHDLTARGET)"
 	@echo "ghdlex dir: $(GHDLEX)"
+	@echo "work dir: $(WORKDIR)"
 	@echo "VHDL lib dir: $(LIBGHDL)"
 
 show-duties:
@@ -146,19 +129,20 @@ else
 endif
 
 ifdef LIBGHDL
+ifeq (lattice,$(FPGA_VENDOR))
 GHDL_LIBFLAGS += -P$(LIBGHDL)/lattice/$(FPGA_ARCH)
+endif
+ifeq (xilinx,$(FPGA_VENDOR))
 GHDL_LIBFLAGS += -P$(LIBGHDL)/xilinx/unisim
+endif
 GHDL_LIBFLAGS += -P$(LIBGHDL)/fmf
 GHDL_LIBFLAGS += -P$(LIBGHDL)/
 GHDL_LIBFLAGS += -P$(WORKDIR)
 endif
 
-ifdef MINGW32
-BUILD_SIMLIB_OPTIONS ?= CC=$(CROSS_CC) PLATFORM=mingw32
-LIBEXT = .a
+ifdef CONFIG_MINGW32
 else
 BUILD_SIMLIB_OPTIONS ?= all-libsim
-LIBEXT = .so
 endif
 
 ifneq ($(SIM_LIBNAME),)
@@ -181,7 +165,7 @@ endif
 
 $(LIBSIM):
 	$(MAKE) -f libsim.mk LIBSIM=lib$(SIM_LIBNAME) $(BUILD_SIMLIB_OPTIONS) \
-	GHDLEX=$(GHDLEX) show-duties
+	GHDLEX=$(GHDLEX) show-duties all-libsim
 
 
 ghw: $(SIM_TOP_EXE)

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<devdesc version="0.1"
+         xsi:schemaLocation="http://www.section5.ch/dclib/schema/devdesc devdesc.xsd"
+         xmlns="http://www.section5.ch/dclib/schema/devdesc"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:xi="http://www.w3.org/2001/XInclude"
+         xmlns:ns22="http://www.w3.org/1999/xhtml"
+         xmlns:ns2="http://www.xmlmind.com/xmleditor/schema/bugreport"
+         xmlns:ns="http://www.section5.ch/dclib/schema/devdesc"
+         xmlns:memmap="http://www.section5.ch/dclib/schema/memmap"
+         xmlns:interfaces="http://www.section5.ch/dclib/schema/interfaces"
+         xmlns:html="http://www.xmlmind.com/xmleditor/schema/xhtml"
+         xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+  <vendor>&lt;your vendor name&gt;</vendor>
+
+  <!--// (c) 2017-2019, section5.ch
+// This is an incomplete RV32I descriptor
+-->
+
+  <revision>
+    <major>0</major>
+
+    <minor>0</minor>
+
+    <extension>develop</extension>
+  </revision>
+
+  <device id="riscv32" name="RISC-V-32" protocol="REGISTER">
+    <revision>
+      <major>0</major>
+
+      <minor>0</minor>
+
+      <extension>develop</extension>
+    </revision>
+
+    <registermap addrsize="32" endian="LITTLE" name="csr" offset="0x0300">
+      <register addr="0x00" id="MSTATUS" size="1">
+        <bitfield lsb="31" msb="31" name="SD"/>
+
+        <bitfield lsb="23" msb="30" name="WPRI"/>
+
+        <bitfield lsb="3" msb="3" name="MIE"/>
+
+        <bitfield lsb="7" msb="7" name="MPIE"/>
+      </register>
+
+      <register addr="0x01" id="MISA">
+        <bitfield lsb="30" msb="30" name="MXL0"/>
+
+        <bitfield lsb="8" msb="8" name="MISA_I">
+          <info>1: RV32I</info>
+        </bitfield>
+      </register>
+
+      <register addr="0x05" id="MTVEC">
+        <bitfield lsb="0" msb="1" name="MTMODE">
+          <info>0: single vector, 1: multi vector mode</info>
+        </bitfield>
+      </register>
+
+      <register addr="0x42" id="MCAUSE">
+        <bitfield lsb="31" msb="31" name="IRQ"/>
+
+        <bitfield lsb="0" msb="3" name="CAUSE"/>
+      </register>
+    </registermap>
+  </device>
+</devdesc>

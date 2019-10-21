@@ -12,7 +12,7 @@
          xmlns:interfaces="http://www.section5.ch/dclib/schema/interfaces"
          xmlns:html="http://www.xmlmind.com/xmleditor/schema/xhtml"
          xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
-  <vendor>&lt;your vendor name&gt;</vendor>
+  <vendor>opensource</vendor>
 
   <!--// (c) 2015 Martin Strubel <hackfin@section5.ch>
 // $Id: $

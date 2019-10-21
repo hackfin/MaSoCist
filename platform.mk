@@ -3,7 +3,7 @@
 # DEPRECATED: No more adding of platforms. Use vendor/<VENDOR>/config.mk
 # (likewise for software: sw/plat/<PLATFORM>/config.mk
 
-VERSION = 0.2
+VERSION = 0.2.1
 
 ############################################################################
 # Public SOC descriptions: (vendor specific ones go to <VENDOR>/config.mk)
@@ -61,7 +61,7 @@ DATA_WIDTH = 16
 BINFMT = -
 endif
 
-ifdef CONFIG_RISCV_POTATO
+ifdef CONFIG_RISCV_ARCH
 ARCH = riscv
 endif
 
@@ -74,6 +74,10 @@ PLATFORM_CFLAGS += -mno-memreg
 endif
 endif
 
+
+LIBRARIES += $(BSP_LIBRARIES)
+LIBRARIES += -nostdlib -lgcc
+
 ifeq ($(ARCH),zpu)
 	# We use big endian config for now. Little endian not properly supported.
 	# PLATFORM_CFLAGS = -mno-bytesbig
@@ -84,21 +88,26 @@ ifeq ($(ARCH),zpu)
 	endif
 
 	LDFLAGS = -Wl,--relax -Wl,--gc-sections -Wl,-Map -Wl,$(MAPFILE)
-	LDFLAGS += -Wl,-T -Wl,$(CUSTOM_LINKERSCRIPT) -nostdlib -lgcc
+	LDFLAGS += -Wl,-T -Wl,$(CUSTOM_LINKERSCRIPT) $(LIBRARIES)
 	LDFLAGS += -Wl,--defsym -Wl,ZPU_ID=0x$(TAP_ID)
 endif
 
 ifeq ($(ARCH),riscv)
 	CUSTOM_LINKERSCRIPT = ldscripts/riscv/potato_linker_script.x
-	LDFLAGS += -Wl,-T -Wl,$(CUSTOM_LINKERSCRIPT) -nostdlib -lgcc
+	LDFLAGS += -Wl,-T -Wl,$(LINKERSCRIPT) $(LIBRARIES)
 	LDFLAGS += -Wl,-Map -Wl,$(MAPFILE)
 	ASMFLAGS = -x assembler-with-cpp
+
+	LINKERSCRIPT = riscv_default.x
+	DUTIES-y += $(LINKERSCRIPT)
+	ROM_DATA_TABLES = $(ARCH)_dram_a.tmp $(ARCH)_dram_b.tmp
+	ROM_DATA_TABLES += $(ARCH)_iram_h.tmp $(ARCH)_iram_l.tmp
 endif
 
 ifeq ($(ARCH),msp430)
 	DUTIES-y += crt0.elf
 	CUSTOM_LINKERSCRIPT = ldscripts/neo430/neo430_linker_script.x
-	LDFLAGS += -Wl,-T -Wl,$(CUSTOM_LINKERSCRIPT) -nostdlib -lgcc
+	LDFLAGS += -Wl,-T -Wl,$(CUSTOM_LINKERSCRIPT) $(LIBRARIES)
 	LDFLAGS += -Wl,-Map -Wl,$(MAPFILE)
 endif
 
@@ -148,3 +157,30 @@ ARCH ?= UNKNOWN
 BINFMT ?= -elf-
 
 CROSS_COMPILE ?= $(ARCH)$(BINFMT)
+
+############################################################################
+# Common mingw32 stuff:
+#
+
+ifdef CONFIG_MINGW32
+LIBEXT = .a
+LIBEXTRA_FLAGS = -Wl,-lws2_32
+SIM_TOP_EXE = $(SIM_PREFIX)$(SIM_TOP).exe
+else
+LIBEXT = .so
+LIBEXTRA_FLAGS = -Wl,-lpthread
+SIM_TOP_EXE = $(SIM_PREFIX)$(SIM_TOP)
+ifdef NETPP
+else
+MACHINE = $(shell uname -m)
+ifeq ($(MACHINE),x86_64)
+LOCAL_LIBS = ../contrib
+else
+LOCAL_LIBS = ../contrib/lib32
+endif
+LIBSLAVE = $(LOCAL_LIBS)
+endif
+endif
+
+LIBSLAVE ?= $(NETPP)/devices/libslave
+

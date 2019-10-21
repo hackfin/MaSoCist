@@ -49,8 +49,6 @@ end entity virtual_top;
 
 architecture behaviour of virtual_top is
 
-	-- for hwtap : GenericTAP use entity work.MachXO2_TAP;
-
 	attribute NOM_FREQ : string;
 	-- attribute NOM_FREQ of osc_inst : label is "22.17";
 
@@ -74,20 +72,6 @@ architecture behaviour of virtual_top is
 	signal gpio          : unsigned(31 downto 0);
 	signal pwm           : std_logic_vector(7 downto 0);
 
---	component pll_wrapper is
---		port (
---			CLKI: in  std_logic; 
---			CLKOP: out  std_logic; 
---			LOCK: out  std_logic
---	 	);
---	end component;
-
--- 	component pwrc
--- 		port (USERSTDBY: in  std_logic; CLRFLAG: in  std_logic; 
--- 			CFGSTDBY: in  std_logic; STDBY: out  std_logic; 
--- 			SFLAG: out  std_logic);
--- 	end component;
-
 	-- Debugging:
 	signal uart_loopback : std_logic;
 
@@ -99,31 +83,43 @@ begin
 ----------------------------------------------------------------------------
 -- SoC CPU
 
+maybe_swtap:
+if SIMULATION generate
+	swtap: VirtualTAP_DIRECT
+	generic map ( IDCODE => CONFIG_TAP_ID, TCLK_PERIOD => CONFIG_TAPCLK_PERIOD,
+		INS_NOP => x"00000013" )
+	port map (
+		-- Core <-> TAP signals:
+		tin         => core2tap,
+		tout        => tap2core
+	);
+end generate;
 
 
--- synthesis translate_on
-
-	cpu_reset <= not nreset;
+	cpu_reset <= tap2core.core_reset or not nreset;
 
 soc: entity work.SoC
 	port map (
 		clk        => mclk,
-
-		-- Emulation pins:
-
-		irq_i      => irq_in,
+		nmi_i      => '0',
+		irq0       => irq_in,
+		perio_rst  => '0',
 		-- gpio      => gpio,
 		-- pwm       => pwm(CONFIG_NUM_TMR-1 downto 0),
 
--- Requires CONFIG_UART and CONFIG_SPI enabled:
-		uartio_tx       => uart_tx,
-		uartio_rx       => uart_rx,
-		uartio_rxirq    => open,
+		-- Emulation pins:
+		tin          => tap2core,
+		tout         => core2tap,
+		tap_reset    => global_reset,
 
-		spio_sclk   => spi_clk,
-		spio_cs     => spi_cs,
-		spio_mosi   => spi_mosi,
-		spio_miso   => spi_miso,
+-- Requires CONFIG_UART and CONFIG_SPI enabled:
+		uart_tx       => uart_tx,
+		uart_rx       => uart_rx,
+
+		spi_sclk   => spi_clk,
+		spi_cs     => spi_cs,
+		spi_mosi   => spi_mosi,
+		spi_miso   => spi_miso,
 
 		reset      => cpu_reset
 	);

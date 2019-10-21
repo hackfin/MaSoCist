@@ -18,6 +18,9 @@
 #else
 #endif
 
+#ifdef CONFIG_RISCV_ARCH
+#include "arch/riscv/irq.h"
+#endif
 
 /** Simple macro to create bit field value */
 #define BITFIELD(name, x)  (((x) << name##_SHFT) & name)

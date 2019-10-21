@@ -1,0 +1,9 @@
+Regress test directory
+----------------------------------------------------------------------------
+
+The test environment needs the FULL developer version of the ghdlex
+Co-Simulation toolchain.
+
+The virtual/ directory contains some examples on how to test the
+virtual hardware. It is subject to the OpenSource license.
+

@@ -13,13 +13,16 @@ CONFIG_SOCDESC="minimal"
 #
 # CONFIG_OPENSOURCE is not set
 # CONFIG_ZEALOT is not set
+# CONFIG_RISCV_ARCH is not set
 CONFIG_ZPUNG=y
 CONFIG_ZPUNG_VHDL_ONLY=y
 CONFIG_virtual=y
 # CONFIG_virtual_neo430 is not set
+# CONFIG_virtual_rv32ui is not set
 # CONFIG_papilio is not set
 # CONFIG_xo2starter is not set
 CONFIG_PLAT_EXTENSION="main"
+CONFIG_HAVE_VTAP=y
 
 #
 # Common Address configuration
@@ -88,6 +91,8 @@ CONFIG_VIRTUAL_RAM=y
 # TAP configuration
 #
 CONFIG_TAPCLK_PERIOD="50 ns"
+# CONFIG_VTAP_DEBUG is not set
+# CONFIG_VTAP is not set
 # CONFIG_DUMMYTAP is not set
 CONFIG_GHDLEX_DEFAULT=y
 
@@ -114,3 +119,4 @@ CONFIG_NATIVE=y
 # CONFIG_MINGW32 is not set
 # CONFIG_EMULATE_PLATFORM_IP is not set
 CONFIG_USE_PLATFORM_IP_LIBRARY=y
+CONFIG_LIBSIM="jtagsim"

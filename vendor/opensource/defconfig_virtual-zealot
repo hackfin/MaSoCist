@@ -13,12 +13,15 @@ CONFIG_SOCDESC="minimal"
 #
 CONFIG_OPENSOURCE=y
 CONFIG_ZEALOT=y
+# CONFIG_RISCV_ARCH is not set
 # CONFIG_NEO430 is not set
 CONFIG_virtual=y
 # CONFIG_virtual_neo430 is not set
+# CONFIG_virtual_rv32ui is not set
 # CONFIG_papilio is not set
 # CONFIG_xo2starter is not set
 CONFIG_PLAT_EXTENSION="zealot"
+CONFIG_HAVE_VTAP=y
 
 #
 # Common Address configuration
@@ -87,6 +90,8 @@ CONFIG_VIRTUAL_RAM=y
 # TAP configuration
 #
 CONFIG_TAPCLK_PERIOD="50 ns"
+# CONFIG_VTAP_DEBUG is not set
+# CONFIG_VTAP is not set
 # CONFIG_DUMMYTAP is not set
 CONFIG_GHDLEX_DEFAULT=y
 
@@ -104,7 +109,6 @@ CONFIG_OPT_SIZE=y
 # Networking
 #
 # CONFIG_FULL_REENTRANCY is not set
-# CONFIG_TASK_MANAGEMENT is not set
 
 #
 # Simulation options
@@ -113,3 +117,4 @@ CONFIG_NATIVE=y
 # CONFIG_MINGW32 is not set
 # CONFIG_EMULATE_PLATFORM_IP is not set
 CONFIG_USE_PLATFORM_IP_LIBRARY=y
+CONFIG_LIBSIM="jtagsim"

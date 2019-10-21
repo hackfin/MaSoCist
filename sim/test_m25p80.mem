@@ -1,0 +1,17 @@
+// Memory file
+@00000
+de
+ad
+be
+ef
+ca
+fe
+01
+aa
+// Next offset
+@000aa
+01
+02
+03
+04
+05

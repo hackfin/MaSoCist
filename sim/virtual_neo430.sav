@@ -1,16 +1,19 @@
 [*]
 [*] GTKWave Analyzer v3.3.70 (w)1999-2016 BSI
-[*] Wed Oct 31 11:46:08 2018
+[*] Mon Oct 21 18:31:48 2019
 [*]
 [dumpfile] "(null)"
-[savefile] "/home/strubi/src/vhdl/masocist-work/sim/virtual_neo430.sav"
-[timestart] 2199000000000
+[savefile] "/home/strubi/src/vhdl/masocist-work/sim/virtual_neo430-main.sav"
+[timestart] 9120000000000
 [size] 1274 600
-[pos] 479 1076
-*-36.417233 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
-[treeopen] uut.
-[treeopen] uut.soc.
-[treeopen] uut.soc.neo430_cpu_inst.
+[pos] 478 1159
+*-40.417233 14347350000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] tb_virtual_neo430.
+[treeopen] tb_virtual_neo430.maybe_vuart.
+[treeopen] tb_virtual_neo430.maybe_vuart.vuart.
+[treeopen] tb_virtual_neo430.uut.
+[treeopen] tb_virtual_neo430.uut.soc.
+[treeopen] tb_virtual_neo430.uut.soc.neo430_cpu_inst.
 [sst_width] 329
 [signals_width] 187
 [sst_expanded] 1
@@ -18,34 +21,39 @@
 @200
 -CPU
 @8022
-uut.soc.neo430_cpu_inst.neo430_reg_file_inst.pc[15:0]
+tb_virtual_neo430.uut.soc.neo430_cpu_inst.neo430_reg_file_inst.pc[15:0]
 @20000
 -
 @8022
 [color] 5
-uut.soc.neo430_cpu_inst.neo430_reg_file_inst.sp[15:0]
+tb_virtual_neo430.uut.soc.neo430_cpu_inst.neo430_reg_file_inst.sp[15:0]
 @20000
 -
-@29
-[color] 1
-uut.soc.neo430_cpu_inst.rst_i
-@22
-uut.soc.neo430_cpu_inst.neo430_control_inst.imm_o[15:0]
 @28
-uut.soc.neo430_cpu_inst.neo430_control_inst.branch_taken
-uut.soc.neo430_cpu_inst.neo430_control_inst.mem_rd
+[color] 1
+tb_virtual_neo430.uut.soc.neo430_cpu_inst.rst_i
 @22
-uut.soc.neo430_cpu_inst.neo430_control_inst.instr_i[15:0]
+tb_virtual_neo430.uut.soc.neo430_cpu_inst.neo430_control_inst.imm_o[15:0]
+@28
+tb_virtual_neo430.uut.soc.neo430_cpu_inst.neo430_control_inst.branch_taken
+tb_virtual_neo430.uut.soc.neo430_cpu_inst.neo430_control_inst.mem_rd
+@22
+tb_virtual_neo430.uut.soc.neo430_cpu_inst.neo430_control_inst.instr_i[15:0]
 @200
 -IMEM
 @22
-uut.soc.imem.b_read[15:0]
-uut.soc.imem.b_addr[10:0]
+tb_virtual_neo430.uut.soc.imem.b_read[15:0]
+tb_virtual_neo430.uut.soc.imem.b_addr[10:0]
 @200
 -DMEM
 @28
-uut.soc.perio_ce
+tb_virtual_neo430.uut.soc.perio_ce
 @22
-uut.soc.neo430_cpu_inst.mem_addr[15:0]
+tb_virtual_neo430.uut.soc.neo430_cpu_inst.mem_addr[15:0]
+@201
+-UART console
+@28
+tb_virtual_neo430.uut.uart_rx
+tb_virtual_neo430.uut.uart_tx
 [pattern_trace] 1
 [pattern_trace] 0

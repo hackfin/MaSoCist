@@ -1,0 +1,114 @@
+[*]
+[*] GTKWave Analyzer v3.3.70 (w)1999-2016 BSI
+[*] Sat Sep  7 19:38:24 2019
+[*]
+[dumpfile] "(null)"
+[savefile] "/home/strubi/src/vhdl/masocist-work/sim/virtual_potato-main.sav"
+[timestart] 6012000000000
+[size] 1274 960
+[pos] 414 1053
+*-38.755402 7482950000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] tb_virtual_riscv.
+[treeopen] tb_virtual_riscv.uut.
+[treeopen] tb_virtual_riscv.uut.soc.
+[treeopen] tb_virtual_riscv.uut.soc.data_memory_bank_a.
+[treeopen] tb_virtual_riscv.uut.soc.data_memory_bank_a.loop_bram(0).
+[treeopen] tb_virtual_riscv.uut.soc.data_memory_bank_a.loop_bram(1).
+[treeopen] tb_virtual_riscv.uut.soc.data_memory_bank_a.loop_bram(2).
+[treeopen] tb_virtual_riscv.uut.soc.data_memory_bank_a.loop_bram(3).
+[treeopen] tb_virtual_riscv.uut.soc.perio.
+[treeopen] tb_virtual_riscv.uut.soc.perio.inst_dev_spi.
+[treeopen] tb_virtual_riscv.uut.soc.perio.inst_dev_uart.
+[treeopen] tb_virtual_riscv.uut.soc.potato_cpu_inst.
+[treeopen] tb_virtual_riscv.uut.soc.potato_cpu_inst.csr_unit.
+[treeopen] tb_virtual_riscv.uut.soc.potato_cpu_inst.decode.
+[treeopen] tb_virtual_riscv.uut.soc.potato_cpu_inst.execute.
+[sst_width] 282
+[signals_width] 312
+[sst_expanded] 1
+[sst_vpaned_height] 373
+@28
+tb_virtual_riscv.uut.soc.potato_cpu_inst.clk
+tb_virtual_riscv.uut.soc.potato_cpu_inst.reset
+[color] 6
+tb_virtual_riscv.uut.uart_tx
+[color] 6
+tb_virtual_riscv.uut.uart_rx
+@200
+-CPU
+@8022
+[color] 5
+tb_virtual_riscv.uut.soc.potato_cpu_inst.memory.pc[31:0]
+@20000
+-
+@22
+[color] 5
+tb_virtual_riscv.uut.soc.potato_cpu_inst.ex_pc[31:0]
+[color] 5
+tb_virtual_riscv.uut.soc.potato_cpu_inst.id_pc[31:0]
+[color] 5
+tb_virtual_riscv.uut.soc.potato_cpu_inst.if_pc[31:0]
+@28
+[color] 2
+tb_virtual_riscv.uut.soc.potato_cpu_inst.execute.do_jump
+@22
+tb_virtual_riscv.uut.soc.potato_cpu_inst.decode.control_unit.exception_cause[5:0]
+@28
+[color] 1
+tb_virtual_riscv.uut.soc.potato_cpu_inst.decode.control_unit.exception
+[color] 1
+tb_virtual_riscv.uut.soc.potato_cpu_inst.stall_mem
+@200
+-DMEM
+@28
+tb_virtual_riscv.uut.soc.data_memory_bank_a.lb_we
+@22
+tb_virtual_riscv.uut.soc.data_memory_bank_a.lb_addr[31:0]
+tb_virtual_riscv.uut.soc.data_memory_bank_a.loop_bram(0).bram.a_addr[12:0]
+@28
+tb_virtual_riscv.uut.soc.data_memory_bank_a.lb_size_select[1:0]
+@22
+tb_virtual_riscv.uut.soc.data_memory_bank_a.lb_data_in[31:0]
+tb_virtual_riscv.uut.soc.data_memory_bank_a.lb_data_out[31:0]
+@28
+tb_virtual_riscv.uut.soc.data_memory_bank_a.addr_d[1:0]
+tb_virtual_riscv.uut.soc.data_memory_bank_a.size_d[1:0]
+tb_virtual_riscv.uut.soc.perio_ce_d
+@800023
+tb_virtual_riscv.uut.soc.data_memory_bank_a.dram_we[0:3]
+@29
++{tb_virtual_riscv.uut.soc.data_memory_bank_a.dram_we[0]} (0)tb_virtual_riscv.uut.soc.data_memory_bank_a.dram_we[0:3]
++{tb_virtual_riscv.uut.soc.data_memory_bank_a.dram_we[1]} (1)tb_virtual_riscv.uut.soc.data_memory_bank_a.dram_we[0:3]
++{tb_virtual_riscv.uut.soc.data_memory_bank_a.dram_we[2]} (2)tb_virtual_riscv.uut.soc.data_memory_bank_a.dram_we[0:3]
++{tb_virtual_riscv.uut.soc.data_memory_bank_a.dram_we[3]} (3)tb_virtual_riscv.uut.soc.data_memory_bank_a.dram_we[0:3]
+@1001201
+-group_end
+@22
+tb_virtual_riscv.uut.soc.perio_data_in[31:0]
+@28
+tb_virtual_riscv.uut.soc.perio.ce_sys
+tb_virtual_riscv.uut.soc.perio_read_req
+tb_virtual_riscv.uut.soc.perio_read_ack
+tb_virtual_riscv.uut.soc.dmem_if.mem_r_ack
+tb_virtual_riscv.uut.soc.dmem_if.mem_read_req
+@22
+tb_virtual_riscv.uut.soc.data_memory_bank_a.loop_bram(0).bram.a_read[7:0]
+tb_virtual_riscv.uut.soc.data_memory_bank_a.loop_bram(1).bram.a_read[7:0]
+tb_virtual_riscv.uut.soc.data_memory_bank_a.loop_bram(2).bram.a_read[7:0]
+tb_virtual_riscv.uut.soc.data_memory_bank_a.loop_bram(3).bram.a_read[7:0]
+@200
+-Wishbone
+@28
+tb_virtual_riscv.uut.soc.potato_cpu_inst.csr_unit.clk
+@22
+tb_virtual_riscv.uut.soc.potato_cpu_inst.regfile.rd_addr[4:0]
+tb_virtual_riscv.uut.soc.potato_cpu_inst.regfile.rd_data[31:0]
+@28
+tb_virtual_riscv.uut.soc.potato_cpu_inst.regfile.rd_write
+@22
+tb_virtual_riscv.uut.soc.potato_cpu_inst.regfile.rs1_addr[4:0]
+tb_virtual_riscv.uut.soc.potato_cpu_inst.regfile.rs1_data[31:0]
+tb_virtual_riscv.uut.soc.potato_cpu_inst.regfile.rs2_addr[4:0]
+tb_virtual_riscv.uut.soc.potato_cpu_inst.regfile.rs2_data[31:0]
+[pattern_trace] 1
+[pattern_trace] 0

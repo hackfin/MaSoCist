@@ -17,27 +17,34 @@ default: $(VENDOR)
 .PHONY: default
 
 BUILD_DUTIES ?= all
+QUIET ?= >/dev/null
 
 %_config.stamp:
 	@echo ---------------------------------------------------------
-	@echo Building platform '$*'
+	@echo -e "\e[36mConfiguring platform '$*' \e[0m"
 	@echo ---------------------------------------------------------
-	$(MAKE) -C .. $* VENDOR=$(VENDOR)
-	touch $@
+	@$(MAKE) -C .. $* VENDOR=$(VENDOR)
+	@touch $@
 
 %_build.stamp: %_config.stamp
-	$(MAKE) -C .. $(BUILD_DUTIES) $(BUILD_PARAMS) 2> /tmp/$*.log || \
-	( echo "!! BUILD FAILED, see /tmp/$*.log"; false )
-	touch $@
+	@echo ---------------------------------------------------------
+	@echo -e "\e[36mBuilding platform '$*' \e[0m"
+	@echo ---------------------------------------------------------
+	@$(MAKE) -C .. $(BUILD_DUTIES) $(BUILD_PARAMS) $(QUIET) 2> /tmp/$*.log || \
+	( echo -e "!! \e[41mBUILD FAILED\e[0m, see /tmp/$*.log"; false )
+	@touch $@
 
-%_regtest.stamp: %_config.stamp
-	$(MAKE) -C .. test 2> /tmp/$*.log || \
-	( echo "!! REGTEST FAILED, see /tmp/$*.log"; false )
-	touch $@
+%_regtest.stamp: %_build.stamp
+	@echo ---------------------------------------------------------
+	@echo -e "\e[36mRunning test for '$*' \e[0m"
+	@echo ---------------------------------------------------------
+	$(MAKE) -C .. test $(QUIET) 2> /tmp/$*.log || \
+	( echo -e "!! \e[41mREGTEST FAILED\e[0m, see /tmp/$*.log"; false )
+	@touch $@
 
 %_defconfig.stamp: %_build.stamp
 	$(MAKE) -C .. defconfig VENDOR=$(VENDOR)
-	touch $@
+	@touch $@
 
 
 .PHONY: clean build_all test_all
@@ -45,16 +52,17 @@ BUILD_DUTIES ?= all
 STAMPS = $(DIST_PLATFORMS:%=%_defconfig.stamp)
 
 REGRESS_TEST_STAMPS += $(TEST_PLATFORMS:%=%_regtest.stamp)
+REGRESS_TEST_STAMPS += $(TEST_PLATFORMS:%=%_defconfig.stamp)
 
 build_all: $(STAMPS)
-	@echo ------------------------------------
-	@echo ---             DONE             ---
-	@echo ------------------------------------
+	@echo -e "------------------------------------"
+	@echo -e "---       \e[42mBUILD DONE\e[0m             ---"
+	@echo -e "------------------------------------"
 
 test_all: $(REGRESS_TEST_STAMPS)
-	@echo ------------------------------------
-	@echo ---             DONE             ---
-	@echo ------------------------------------
+	@echo -e "------------------------------------"
+	@echo -e "---       \e[42mTESTS DONE\e[0m             ---"
+	@echo -e "------------------------------------"
 
 clean:
 	rm -f *.stamp

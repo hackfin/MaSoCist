@@ -3,7 +3,7 @@
 
 #if defined(CONFIG_ZEALOT) || defined(CONFIG_ZPUNG)
 #define ARCH_ZPU
-#elif defined(CONFIG_RISCV_POTATO)
+#elif defined(CONFIG_RISCV_ARCH)
 #define HAVE_STRLEN
 #define ARCH_RISCV
 #elif defined(CONFIG_NEO430)
@@ -20,9 +20,17 @@
 
 
 #if defined(ARCH_ZPU)
+#define MAYBE_STATIC static
+// use BSD networking style:
+#define __USE_BSD
 #ifndef __VHDL__
 #include "arch/zpu/inttypes.h"
 #define BREAK asm("breakpoint")
+#ifdef CONFIG_REGTEST
+#define TEST_BREAK BREAK;
+#else
+#define TEST_BREAK
+#endif
 #	ifdef CONFIG_ZPUNG
 #		ifdef CONFIG_SCACHE_INSN
 #			define __rodata_ext   __attribute__((section(".ext.rodata")))
@@ -38,13 +46,23 @@
 #		define EXTERN_PROG
 #	endif
 #endif
-#elif defined(ARCH_MSP430) || defined(ARCH_RISCV)
+#elif defined(ARCH_MSP430)
+#define MAYBE_STATIC
 #ifndef __VHDL__
 #include <stdint.h>
 #endif
-#define BREAK
 // Currently not breaking:
-// #define BREAK asm("ebreak");
+#define BREAK
+#		define FORCE_L1RAM
+#		define EXTERN_PROG
+#elif defined(ARCH_RISCV)
+#define MAYBE_STATIC static
+#ifndef __VHDL__
+#include <stdint.h>
+#endif
+#define BREAK asm("ebreak");
+#		define FORCE_L1RAM
+#		define EXTERN_PROG
 #endif
 
 // Aux decorators for functions to be placed in outer space:

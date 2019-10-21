@@ -2,11 +2,14 @@
 # (c) Kristian Klomsten Skordal 2016 <kristian.skordal@wafflemail.net>
 # Report bugs and issues on <https://github.com/skordal/potato/issues>
 
+.globl exception_handler
+.type exception_handler, @function;
+
 .section .init
+
 
 .global _start
 _start:
-
 // Sets the exception handler address:
 .hidden init_mtvec
 init_mtvec:

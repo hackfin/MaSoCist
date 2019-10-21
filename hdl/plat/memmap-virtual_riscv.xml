@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<devdesc version="0.1"
+         xsi:schemaLocation="http://www.section5.ch/dclib/schema/devdesc devdesc.xsd"
+         xmlns="http://www.section5.ch/dclib/schema/devdesc"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:xi="http://www.w3.org/2001/XInclude"
+         xmlns:ns22="http://www.w3.org/1999/xhtml"
+         xmlns:ns2="http://www.xmlmind.com/xmleditor/schema/bugreport"
+         xmlns:ns="http://www.section5.ch/dclib/schema/devdesc"
+         xmlns:memmap="http://www.section5.ch/dclib/schema/memmap"
+         xmlns:interfaces="http://www.section5.ch/dclib/schema/interfaces"
+         xmlns:html="http://www.xmlmind.com/xmleditor/schema/xhtml"
+         xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+  <vendor>section5</vendor>
+
+  <!--// (c) <year> <your name>
+// $Id: $
+-->
+
+  <revision>
+    <major>0</major>
+
+    <minor>0</minor>
+
+    <extension>develop</extension>
+  </revision>
+
+  <!--This is a header file specification. Statements in this field will be included
+in handler skeleton code and in the generated property list.
+Including a header is necessary when implementing access to global variables.-->
+
+  <header>iomap_config</header>
+
+  <header language="LINKERSCRIPT"> OUTPUT_FORMAT("elf32-littleriscv",
+  "elf32-littleriscv", "elf32-littleriscv")
+OUTPUT_ARCH(riscv)
+ENTRY(_start)</header>
+
+  <device id="rv32_memmap" name="RISCV_netpp_node_mmap" protocol="REGISTER">
+    <revision>
+      <major>0</major>
+
+      <minor>0</minor>
+    </revision>
+
+    <!-- NOTE! Currently, not all information is translated to all
+	secondary source files. You will have to still adapt:
+	* simple.x (linker script)
+	
+	Each memory map is currently translated into one memory bus slave. The
+	HSEL index corresponds to the DECODE_<name> value. See zpu_soc.vhdl
+	for example how decoding is done.
+	-->
+
+    <memorymap access="x" addrsize="15" endian="BIG" name="l1prog"
+               offset="0x00000000" size="0x08000">
+      <memmap:info>The instruction RAM, mapped into the linear address space from offset. Address size is per 32 bit.</memmap:info>
+    </memorymap>
+
+    <memorymap access="rw" addrsize="13" endian="BIG" name="l1data_a"
+               offset="0x00010000" size="0x4000">
+      <memmap:info>Data RAM Bank A</memmap:info>
+    </memorymap>
+
+    <memorymap access="x" addrsize="13" endian="BIG" name="l1data_b"
+               offset="0x00020000" size="0x2000">
+      <memmap:info>Reserved for cache, optional bank B</memmap:info>
+    </memorymap>
+
+    <memorymap access="rw" addrsize="10" endian="BIG" name="mmr"
+               offset="0xfff80000" size="0x1000">
+      <memmap:info>Memory mapped register space</memmap:info>
+
+    </memorymap>
+
+    <memorymap access="x" addrsize="13" endian="BIG" name="scratchpad_a"
+               offset="0x00fcf000" size="0x1000">
+      <memmap:info>Scratch pad A</memmap:info>
+    </memorymap>
+
+    <memorymap access="x" addrsize="13" endian="BIG" name="scratchpad_b"
+               offset="0x00fdf000" size="0x1000">
+      <memmap:info>Scratch pad B</memmap:info>
+    </memorymap>
+
+
+    <section name=".text" target="l1prog">
+		<linkerscript>
+		crt0-nocache.o(*.text)
+		*(.init)
+
+		__text_begin = .;
+		*(.text*)
+		__text_end = .;
+		</linkerscript>
+    </section>
+
+    <section name=".rodata" target="l1data_a">
+		<linkerscript>
+		__rodata_begin = .;
+		*(.rodata*)
+		__rodata_end = .;
+		</linkerscript>
+    </section>
+
+    <section name=".ext.rodata" target="l1data_b">
+		<linkerscript>
+		__cached_rodata_begin = .;
+		*(.ext.rodata*)
+		__cached_rodata_end = .;
+		</linkerscript>
+    </section>
+
+    <section name=".dma0.data (NOLOAD)" target="scratchpad_a">
+		<linkerscript>
+		. = ALIGN(4);
+		*.o(.dma.data)
+		*.o(.dma0.data)
+		</linkerscript>
+    </section>
+
+    <section name=".dma1.data (NOLOAD)" target="scratchpad_b">
+		<linkerscript>
+		. = ALIGN(4);
+		*.o(.dma1.data)
+		</linkerscript>
+    </section>
+
+    <section name=".data" target="l1data_a">
+		<linkerscript>
+		__data_begin = .;
+		*(.data*)
+		*(.eh_frame*)
+		__data_end = .;
+		</linkerscript>
+    </section>
+
+    <section name=".sdata" target="l1data_a">
+		<linkerscript>
+		__data_begin = .;
+		*(.sdata*)
+		*(.srodata*)
+		__data_end = .;
+		__config_start = . ;
+		*(.config.data)
+		__config_end = . ;
+		</linkerscript>
+    </section>
+
+    <section name=".bss ALIGN(4)" target="l1data_a">
+		<linkerscript>
+		__bss_begin = .;
+		*(.bss*)
+		*(.sbss*)
+		__bss_end = ALIGN(4);
+		</linkerscript>
+    </section>
+
+}
+  </device>
+</devdesc>

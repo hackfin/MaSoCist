@@ -87,6 +87,7 @@ config FULL_REENTRANCY
 config TASK_MANAGEMENT
 	bool "Enable rudimentary task management"
 	default n
+	depends on ZPUNG || ZPUNGV2
 	help
 	  Rudimentary time slice based task management.
 

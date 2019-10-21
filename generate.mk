@@ -33,7 +33,7 @@ endif
 
 $(ROMFILE):
 	@echo Build ROM for platform: $(PLATFORM)
-	make -C ../sw all $(IS_SIM) PLATFORM=$(PLATFORM) \
+	make -C ../sw all USE_CACHE=n $(IS_SIM) PLATFORM=$(PLATFORM) \
 	ROMFILE=$(ROMFILE)
 
 .PHONY: $(ROMFILE)

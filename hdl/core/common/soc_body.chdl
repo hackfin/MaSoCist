@@ -1,0 +1,38 @@
+// Generic SoC body
+//
+
+
+	-- Map the register values directly to enable pins:
+#ifdef CONFIG_TIMER
+	pwm_enable <= std_logic_vector(pwm_enable_register);
+#endif
+
+#ifdef CONFIG_TIMER
+pwm_clocks:
+for i in 0 to LAST_TMR_INDEX generate
+	pwm_clks(i) <= clk;
+	pwm_clken(i) <= clken;
+end generate;
+#endif
+
+
+#ifdef HAVE_EXTENDED_SYSIO
+#if defined(CONFIG_versa_ecp5) || defined (CONFIG_netpp_node)
+	led_status <= led_status_int when test_enable = '1' else led_cpustat;
+#endif
+#else
+#if defined(CONFIG_versa_ecp5) || defined (CONFIG_netpp_node)
+	led_status <= led_cpustat;
+#endif
+#if defined(CONFIG_GPIO)
+	gpio_in <= std_logic_vector(gpio);
+
+gpio_direction:
+	for i in 0 to CONFIG_NUM_GPIO*16-1 generate
+		gpio(i) <= gpio_out(i) when gpio_dir(i) = '1' else 'Z';
+	end generate;
+
+#endif
+#endif
+
+

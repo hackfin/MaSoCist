@@ -1,6 +1,6 @@
 
 menu "Common Address configuration"
-	visible if ZEALOT || ZPUNG || ZPUNGV2 || NEO430 || NETPP_CPU || RISCV_POTATO
+	visible if ZEALOT || ZPUNG || ZPUNGV2 || NEO430 || NETPP_CPU || RISCV_ARCH
 
 config ADDR_WIDTH
 	int "I/O address width (range)"
@@ -8,6 +8,11 @@ config ADDR_WIDTH
 
 config BRAM_ADDR_WIDTH
 	int "Block RAM address width (range)"
+	default "14"
+
+config DRAM_ADDR_WIDTH
+	int "Separate DRAM address width (range)"
+	depends on RISCV_ARCH
 	default "14"
 
 config MMR_ADDR_BIT

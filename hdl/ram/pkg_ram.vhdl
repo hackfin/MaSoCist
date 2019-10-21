@@ -14,8 +14,10 @@ use work.global_config.all;
 
 package memory is
 	-- For the 32 bit wide memory, we use:
-	constant ADDR_W_16 : integer := CONFIG_BRAM_ADDR_WIDTH-1; -- two of them
-	constant ADDR_W_8  : integer := CONFIG_BRAM_ADDR_WIDTH-2;  -- four of them
+	constant ADDR_W_32 : integer := CONFIG_BRAM_ADDR_WIDTH-2;
+	constant ADDR_W_16 : integer := CONFIG_BRAM_ADDR_WIDTH-2;
+	constant ADDR_W_8  : integer := CONFIG_BRAM_ADDR_WIDTH-2;
+	constant DRAM_ADDR_W  : integer := CONFIG_DRAM_ADDR_WIDTH-2;
 	-- For encoding of endianness:
 	subtype UPPER_WORD is integer range 31 downto 16;
 	subtype LOWER_WORD is integer range 15 downto 0;
@@ -25,19 +27,19 @@ package memory is
 	subtype BYTE2      is integer range 23 downto 16;
 	subtype BYTE3      is integer range 31 downto 24;
 
-	type dpram16_t is array(natural range 0 to ((2**ADDR_W_16))-1)
+	type dpram16_t is array(natural range 0 to ((2**ADDR_W_32))-1)
 	of unsigned(15 downto 0);
 
-	type dpram8_t is array(natural range 0 to ((2**ADDR_W_8))-1)
+	type dpram8_t is array(natural range 0 to ((2**ADDR_W_32))-1)
 	of unsigned(7 downto 0);
 
 	-- Define memory bank types for initialization statements.
 	-- See mem_init.chdl for details.
 	-- Note: They differ from the above and are always 16 bit wide
-	type dram_init_t is array(natural range 0 to 2**ADDR_W_8-1)
+	type dram_init_t is array(natural range 0 to 2**DRAM_ADDR_W-1)
 		of unsigned(15 downto 0);
 
-	type iram_init_t is array(natural range 0 to 2**ADDR_W_16-1)
+	type iram_init_t is array(natural range 0 to 2**ADDR_W_32-1)
 		of unsigned(15 downto 0);
 
 	type dram_bank_t is array(natural range 0 to 3)

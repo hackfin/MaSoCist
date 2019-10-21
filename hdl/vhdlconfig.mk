@@ -67,7 +67,10 @@ CONFIGURATION-y += $(call convert_boolean,CONFIG_SCACHE_INSN)
 
 # Make sure to not use spaces, otherwise variables don't resolve indirectly.
 include $(TOPDIR)/tapconfig.mk
-CONFIGURATION-y += $(call convert_hex32,CONFIG_TAP_ID)
+CONFIGURATION-y += $(call convert_hex32u,CONFIG_TAP_ID)
+ifdef CONFIG_CSR_TAP_EXPORT_REGADDR
+CONFIGURATION-y += $(call convert_hex32u,CONFIG_CSR_TAP_EXPORT_REGADDR)
+endif
 
 CONFIGURATION-y += $(call convert_time,CONFIG_TAPCLK_PERIOD)
 CONFIGURATION-y += $(call convert_time,CONFIG_VIRTUALCLK_PERIOD)
@@ -91,6 +94,13 @@ CONFIGURATION-y += $(call convert_int,CONFIG_ADDR_WIDTH)
 CONFIGURATION-y += $(call convert_int,CONFIG_BRAM_ADDR_WIDTH)
 CONFIGURATION-y += $(call convert_int,CONFIG_CACHE_PHYSICAL_ADDRESS_BIT)
 
+# If DRAM width is configured, use it, otherwise default BRAM_ADDR_WIDTH
+ifdef CONFIG_DRAM_ADDR_WIDTH
+	CONFIGURATION-y += $(call convert_int,CONFIG_DRAM_ADDR_WIDTH)
+else
+	CONFIGURATION-y += constant CONFIG_DRAM_ADDR_WIDTH : natural := $(CONFIG_BRAM_ADDR_WIDTH);${nl}
+endif
+
 CONFIGURATION-$(CONFIG_SCRATCHPAD_RAM) += \
 	$(call convert_int,CONFIG_SCRATCHPAD_HIGHEST_ADDRESS_BIT)
 
@@ -107,6 +117,7 @@ CONFIGURATION-y += $(call convert_boolean,CONFIG_PYPS)
 
 CONFIGURATION-y += $(call convert_boolean,CONFIG_CRC16)
 CONFIGURATION-y += $(call convert_boolean,CONFIG_WPU)
+CONFIGURATION-y += $(call convert_boolean,CONFIG_RV32_CSR)
 
 CONFIGURATION-$(CONFIG_FIFO) += $(call convert_int,CONFIG_FIFO_WORDWIDTH)
 
@@ -130,8 +141,8 @@ ifdef CONFIG_NEO430
 CPU_TYPE = 3
 endif
 
-ifdef CONFIG_RISCV_POTATO
-CPU_TYPE = 4
+ifdef CONFIG_RISCV_ARCH
+CPU_TYPE = 5
 endif
 
 
@@ -139,6 +150,8 @@ endif
 -include $(TOPDIR)/vendor/$(VENDOR)/vhdlconfig.mk
 
 CONFIGURATION-y += \tconstant SOCINFO_CPU_TYPE : integer := $(CPU_TYPE);${nl}
+
+CONFIGURATION-y += \tconstant CONFIG_SOCDESC : string := $(CONFIG_SOCDESC);${nl}
 
 CONFIGURATION-$(CONFIG_MACHXO2) += \tconstant CONFIG_OSCCLK : string := "$(shell expr substr $(CONFIG_MACHXO2_OSC_CLK) 1 2).$(shell expr substr $(CONFIG_MACHXO2_OSC_CLK) 3 2)";${nl}
 

@@ -9,15 +9,23 @@ use IEEE.numeric_std.all;
 library work;
 	use work.global_config.all;
 
+library ghdlex;
+	use ghdlex.ghpi_netpp.all;
+
 -- Free model foundry models:
 library fmf;
 
-entity tb_virtual_potato is
+entity tb_virtual_riscv is
 end entity;
 
-architecture sim of tb_virtual_potato is
+architecture sim of tb_virtual_riscv is
+
+	constant UART_MCLK      : natural := 25000000;
+	constant UCLK_PERIOD    : time := 
+		real(500000000) / real(UART_MCLK) * (1 ns);
 
 	signal clk                : std_logic := '0';
+	signal uclk               : std_logic := '0';
 	signal pclk               : std_logic := '0';
 	signal reset_n            : std_logic := '1';
 	signal led_g, led_r       : std_logic;
@@ -49,6 +57,13 @@ architecture sim of tb_virtual_potato is
 
 begin
 
+initialize:
+	process
+		variable retval : integer;
+	begin
+		retval := netpp_init("VirtualRiscV_SoC");
+		wait;
+	end process;
 
 uut: entity work.virtual_top
 	port map (
@@ -84,13 +99,13 @@ maybe_vuart:
 
 vuart: entity work.VirtualUART
 	generic map (
-		DIVIDER => CONFIG_SYSCLK / CONFIG_DEFAULT_UART_BAUDRATE / 16 - 1
+		DIVIDER => UART_MCLK / CONFIG_DEFAULT_UART_BAUDRATE / 16 - 1
 	)
 	port map (
 		rxi     => uart_tx,
 		rxirq  => open,
 		txo    => uart_rx,
-		clk    => clk
+		clk    => uclk
 	);
 
 	end generate;
@@ -101,31 +116,12 @@ maybe_uart_loopback:
 	uart_rx <= uart_tx; -- Loopback
 	end generate;
 
--- This model may crash with GHDL. Don't use.
-
--- spi_flash:
--- 	entity fmf.s25fl032a
--- 	generic map (
--- 		TimingModel   => "None",
---  		mem_file_name => "test_potato.mem",
---  		UserPreload   => TRUE
--- 	)
---  	port map (
---  		  SCK           => spi_clk,
---  		  SI            => spi_mosi,
---  		  CSNeg         => spi_cs,
---  		  HOLDNeg       => '1',
---  		  WNeg          => '1',
---  		  SO            => spi_miso
---  	);
-
-
 	spi_clk_delayed <= spi_clk after 20 ns;
 
 m25p80_flash:
 	entity fmf.m25p80
 	generic map (
-		mem_file_name => "test_neo430.mem",
+		mem_file_name => "test_m25p80.mem",
 		UserPreload   => TRUE
 	)
 	port map (
@@ -137,25 +133,10 @@ m25p80_flash:
         Q             => spi_miso
  	);
 
-
--- break_term:
--- 	process (clk)
--- 	begin
--- 		if rising_edge(clk) then
--- 			-- If we run into a break and we did not request emulation,
--- 			-- terminate simulation.
--- 			if (tstat.exstat(B_ZPU_BREAK - 8) = '1'
--- 			and tctrl.emurequest = '0') then
--- -- Disabled for JTAG simulation:
--- --				assert false report "Break issued, terminating simulation" 
--- --					severity failure;
--- 			end if;
--- 		end if;
--- 	end process;
--- 
 clkgen:
 
 	clk <= not clk after CONFIG_VIRTUALCLK_PERIOD;
+	uclk <= not uclk after UCLK_PERIOD;
 
 	pclk <= not pclk after 40 ns;
 
@@ -176,7 +157,6 @@ clkgen:
 	-- Pull to (weak) H:
 	i2c_scl <= 'H';
 	i2c_sda <= 'H';
-
 
 end sim;
 

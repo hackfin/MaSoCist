@@ -33,9 +33,9 @@ ifdef CONFIG_NETPP_CPU
 	RELEASED = y
 endif
 
-ifdef CONFIG_RISCV_POTATO
-	ARCH_CODE = cafe30
-	CPU_CODE = 4
+ifdef CONFIG_RISCV_PYRV32
+	ARCH_CODE = cafe10
+	CPU_CODE = 5
 	REV_CODE = 0
 endif
 
@@ -49,7 +49,7 @@ endif
 endif
 
 ARCH_CODE ?= 00000f
-CPU_CODE = 0
-REV_CODE = 0
+CPU_CODE ?= 0
+REV_CODE ?= 0
 
 CONFIG_TAP_ID ?= $(ARCH_CODE)$(CPU_CODE)$(REV_CODE)

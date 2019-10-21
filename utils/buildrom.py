@@ -73,7 +73,7 @@ def gen_hex(e, isize = DEFAULT_ISIZE, dsize = DEFAULT_DSIZE):
 KNOWN_ARCHITECTURES = {
 	0x08 : (Romgen_MIPS, "MIPS"),
 	0x6a : (Romgen_ZPU, "ZPU"),
-	0xf3 : (Romgen_RISCV, "RISCV"),
+	0xf3 : (Romgen_RISCV, "RISCV32"),
 	0x69 : (Romgen_MSP430, "NEO430"),
 }
 

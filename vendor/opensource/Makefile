@@ -10,4 +10,3 @@
 # search for libs in $HOME/lib:
 
 GHDL_LDFLAGS += -Wl,-L$(HOME)/lib
-GHDL_LDFLAGS += -Wl,-L$(GHDLEX)/src

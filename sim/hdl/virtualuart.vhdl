@@ -19,7 +19,6 @@ entity VirtualUART is
 end entity;
 
 architecture sim of VirtualUART is
-	signal count : unsigned(7 downto 0) := x"05";
 	signal txdata : unsigned(7 downto 0);
 	signal rxdata : unsigned(7 downto 0);
 	signal sigterm : std_logic := '0';

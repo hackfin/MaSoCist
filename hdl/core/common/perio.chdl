@@ -1,0 +1,184 @@
+// File for inclusion only
+
+perio:
+	entity work.mmr_perio
+	port map (
+ 		bus_in     => wb_perio_wr,
+ 		bus_out    => wb_perio_rd,
+
+#ifdef HAVE_UART_IOMUX_SEL
+		sysio_uart_sel   => uart_iosel,
+#endif
+
+#ifdef HAVE_EFB
+#include "perio/efb_map.vhdi"
+#endif
+
+#ifdef CONFIG_VIDEO
+		vio_vclk         => pclk,
+		vio_resetn       => video_resetn,
+#ifdef CONFIG_VIDEO_SENSOR
+		vio_data         => unsigned(pvi_data),
+		vio_lv           => pvi_lv,
+		vio_fv           => pvi_fv,
+#endif
+#endif
+
+#ifdef CONFIG_JPEG
+		jpex_irq         => jpeg_irq,
+#endif
+
+#ifdef CONFIG_JPEG_EXTERNAL
+-- When external:
+		jpio_sclk        => clk,
+		jpio_pclk        => pclk,
+		jpio_din_valid   => jpeg_din_valid, -- XXX
+		jpio_din_a       => jpeg_din_a, -- XXX
+		jpio_din_b       => jpeg_din_b, -- XXX
+#endif
+
+#ifdef HAVE_DMA
+		sysio_dmairq     => dma_irq,
+#endif
+
+#ifdef HAVE_EXTENDED_SYSIO
+		sysio_reset      => perio_rst,
+		sysio_test_en    => test_enable,
+		-- sysio_xs_unaligned    => xs_unaligned,
+		sysio_exc_o      => sysio_exc,
+		sysio_led_status => led_status_int,
+		sysio_xs_ucode   => xs_ucode,
+		sysio_syscfg     => unsigned(sysconfig),
+		sysio_pc         => dbg_curpc,
+#ifdef CONFIG_ZPUNG
+		sysio_sp         => dbg_emudata_o,
+#else
+		sysio_sp         => x"00000000",
+#endif
+
+		-- sys core specific GPIO muxing:
+#ifdef CONFIG_GPIO
+		sysio_gpio       => gpio,
+#endif
+		sysio_pwm        => unsigned(pwmout),
+		-- console:
+		sysio_con_tx     => uart_tx,
+		sysio_con_rx     => uart_rx,
+#endif
+#if defined(HAVE_DIPSWITCH)
+		sysio_dip_sw     => dip_sw,
+#elif defined(CONFIG_hdr60)
+		sysio_dip_sw     => "0000",
+#endif
+
+#ifdef CONFIG_SIC
+		sicio_reset      => reset,
+		sicio_nmi        => nmi,
+		sicio_irq_in     => irq_input,
+		sicio_irq_out    => irq_evt,
+		sicio_irq_ovr    => irq_override,
+		sicio_ivaddr     => ivaddr,
+#endif
+
+#ifdef CONFIG_SCACHE
+		scache_reset      => reset,
+		scache_da_virt    => io_addr32,
+		scache_da_phys    => daddr_phys,
+		scache_ia_virt    => insn_addr32,
+		scache_ia_phys    => iaddr_phys,
+		scache_sel        => scache_sel,
+		scache_irq        => scache_irq,
+		scache_hold       => cache_wait,
+#endif
+
+#ifdef CONFIG_MACHXO2_EFB
+		-- MACHXO2 hardened IP I/O:
+		efbio_ufm_irq    => open,
+#endif
+
+#if defined(CONFIG_GPIO) && !defined(HAVE_EXTENDED_SYSIO)
+		mio_gpio_in    => gpio_in,
+		mio_gpio_out   => gpio_out,
+		mio_gpio_dir   => gpio_dir,
+#endif
+
+#ifdef CONFIG_TWI
+		twio_sclk     => clk,
+		twio_sda      => twi_sda,
+		twio_scl      => twi_scl,
+#endif
+
+#if  defined(CONFIG_PWM_SIMPLE) || defined(CONFIG_PWM_ADVANCED)
+		pwmio_enable     => pwm_enable,
+		pwmio_irq        => pwm_irq,
+		pwmio_output     => pwmout,
+		pwmio_pwmclk     => pwm_clks,
+		pwmio_pwm_clken  => pwm_clken,
+#endif
+
+#if  defined(CONFIG_PWM_SIMPLE) || defined(CONFIG_PWM_ADVANCED)
+		tmrio_pwm_enable => pwm_enable_register,
+		tmrio_pwm_clken  => clken,
+#endif
+
+#ifdef CONFIG_UART
+-- If we don't have Pin muxing, route directly:
+#ifndef HAVE_EXTENDED_SYSIO
+		uartio_tx        => uart_tx,
+		uartio_rx        => uart_rx,
+		uartio_rxirq     => uart_rxirq,
+#endif
+#endif
+
+#if defined(CONFIG_I2C)
+		i2c_scl          => i2c_scl,
+		i2c_sda          => i2c_sda,
+#endif
+
+#ifdef CONFIG_SPI
+		spio_cs          => spi_cs,
+		spio_sclk        => spi_sclk,
+		spio_miso        => spi_miso,
+		spio_mosi        => spi_mosi,
+#endif
+
+#ifdef CONFIG_papilio
+#ifdef CONFIG_LCDIO
+		lcdio_a0         => lcdio_a0,
+		lcdio_cs         => lcdio_cs,
+		lcdio_bgled      => lcdio_bgled,
+		lcdio_rst        => lcdio_rst,
+		lcdio_wr         => lcdio_wr,
+		lcdio_rd         => lcdio_rd,
+		lcdio_idata      => lcdio_idata,
+		lcdio_odata      => lcdio_odata,
+#endif
+#endif
+
+#ifdef CONFIG_MAC
+		macio_mdc        => macio_mdc,
+		macio_mdio       => macio_mdio,
+
+
+		macio_mii_col    => mii_col,
+		macio_mii_crs    => mii_crs,
+		macio_miim_clk   => clk,
+		macio_mii_txclk  => int_mii_txclk,
+		macio_mii_txen   => int_mii_tx_en,
+		macio_mii_txd    => int_mii_txd,
+		macio_mii_rxclk  => int_mii_rxclk,
+		macio_mii_rxval  => int_mii_rx_dv,
+		macio_mii_rxd    => int_mii_rxd,
+		macio_mii_rxerr  => int_mii_rx_er,
+		macio_phy_speed  => int_phy_speed,
+		macio_phy_reset  => phy_reset,
+		macio_phy_lowpwr => macio_phy_lowpwr,
+#endif
+
+#ifdef CONFIG_GENSOC_RESET_DEFAULTS
+		reset         => reset,
+#endif
+		ce            => perio_ce,
+		clk           => clk
+	);
+

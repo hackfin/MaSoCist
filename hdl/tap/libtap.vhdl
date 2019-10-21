@@ -10,6 +10,7 @@
 
 library IEEE;
 use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
 
 package stdtap is
 
@@ -22,9 +23,9 @@ package stdtap is
 	subtype  REG_SIZE16 is integer range 15 downto 0;
 	subtype  REG_SIZE32 is integer range 31 downto 0;
 
-	subtype emudata_t  is std_logic_vector(EMUDAT_SIZE-1 downto 0);
-	subtype emucount_t is std_logic_vector(32-1 downto 0);
-	subtype emuir_t    is std_logic_vector(EMUIR_SIZE-1 downto 0);
+	subtype emudata_t  is unsigned(EMUDAT_SIZE-1 downto 0);
+	subtype emucount_t is unsigned(32-1 downto 0);
+	subtype emuir_t    is unsigned(EMUIR_SIZE-1 downto 0);
 
 	type tap_out_rec is record
 		tapclk    	: std_logic; --! TAP clock (must exist for PulseStrobe)
@@ -35,7 +36,8 @@ package stdtap is
 		emurequest	: std_logic; --! Emulation request to core
 		emudata     : emudata_t; --! Emulation data I/O register
 		emuir       : emuir_t;   --! Emulation instruction
-		reg         : std_logic_vector(2 downto 0); --! Register select
+		reg         : unsigned(2 downto 0); --! Register select
+		craddr      : unsigned(2 downto 0); --! Custom chip reg address
 	end record;
 
 	type tap_in_rec is record
@@ -45,7 +47,7 @@ package stdtap is
 		emudata  	: emudata_t;  --! Emulation data I/O register
 		count 	    : emucount_t; --! Custom counter register
 		--! Extra status bits, core dependent
-		exstat		: std_logic_vector(7 downto 0);
+		exstat		: unsigned(7 downto 0);
 		--! PC of possibly running core. Allows to access PC without
 		--! entering emulation. Not on all systems.
 		dbgpc		: emudata_t;
@@ -65,8 +67,8 @@ package stdtap is
 	component GenericTAP is
 		generic (EMUDAT_SIZE : natural := 32;
 				 EMUIR_SIZE  : natural := 32;
-				 IDCODE      : std_logic_vector(32-1 downto 0) := x"deadbeef";
-				 INS_NOP     : std_logic_vector(32-1 downto 0) := x"00000000"
+				 IDCODE      : unsigned(32-1 downto 0) := x"deadbeef";
+				 INS_NOP     : unsigned(32-1 downto 0) := x"00000000"
 		);
 		port (
 			-- JTAG signals:
@@ -83,8 +85,8 @@ package stdtap is
 		generic (
 			EMUDAT_SIZE    : natural := 32;
 			EMUIR_SIZE     : natural := 32;
-			IDCODE         : std_logic_vector(32-1 downto 0) := x"deadbeef";
-			INS_NOP        : std_logic_vector(32-1 downto 0) := x"00000000";
+			IDCODE         : unsigned(32-1 downto 0) := x"deadbeef";
+			INS_NOP        : unsigned(32-1 downto 0) := x"00000000";
 			USE_GLOBAL_CLK : boolean := false;
 			TCLK_PERIOD    : time    := 40 ns
 		);
@@ -102,8 +104,8 @@ package stdtap is
 		generic (
 			EMUDAT_SIZE : natural := 32; -- Dummy
 			EMUIR_SIZE  : natural := 32; -- Dummy
-			INS_NOP     : std_logic_vector(32-1 downto 0); -- Dummy
-			IDCODE      : std_logic_vector(32-1 downto 0)  := x"00000000";
+			INS_NOP     : unsigned(32-1 downto 0); -- Dummy
+			IDCODE      : unsigned(32-1 downto 0)  := x"00000000";
 			USE_GLOBAL_CLK : boolean := false;
 			TCLK_PERIOD : time := 40 ns
 		);
@@ -123,8 +125,8 @@ package stdtap is
 		generic (
 			EMUDAT_SIZE    : natural := 32;
 			EMUIR_SIZE     : natural := 32;
-			IDCODE         : std_logic_vector(32-1 downto 0)  := x"deadbeef";
-			INS_NOP	       : std_logic_vector(32-1 downto 0)  := x"00000000";
+			IDCODE         : unsigned(32-1 downto 0)  := x"deadbeef";
+			INS_NOP	       : unsigned(32-1 downto 0)  := x"00000000";
 			TCLK_PERIOD    : time := 40 ns
 		);
 		port (
@@ -134,11 +136,11 @@ package stdtap is
 			emuack		: in std_logic;  -- Core has acknowledged EMULATION request
 			emurdy		: in std_logic; -- Core ready to execute next instruction
 			pulse		: in std_logic; -- Pulse event counter
-			dbgpc		: in std_logic_vector(EMUDAT_SIZE-1 downto 0); -- PC
-			exstat		: in std_logic_vector(7 downto 0);
-			emudata_i	: in std_logic_vector(EMUDAT_SIZE-1 downto 0);
-			emudata_o	: out std_logic_vector(EMUDAT_SIZE-1 downto 0);
-			emuir		: out std_logic_vector(EMUIR_SIZE-1 downto 0)
+			dbgpc		: in unsigned(EMUDAT_SIZE-1 downto 0); -- PC
+			exstat		: in unsigned(7 downto 0);
+			emudata_i	: in unsigned(EMUDAT_SIZE-1 downto 0);
+			emudata_o	: out unsigned(EMUDAT_SIZE-1 downto 0);
+			emuir		: out unsigned(EMUIR_SIZE-1 downto 0)
 		);
 
 	end component VirtualTAP;
@@ -154,8 +156,8 @@ package stdtap is
     component StdTestAccessPort
 		generic (EMUDAT_SIZE : natural := 32;
 				 EMUIR_SIZE  : natural := 32;
-				 IDCODE      : std_logic_vector(32-1 downto 0) := x"deadbeef";
-				 INS_NOP     : std_logic_vector(32-1 downto 0) := x"00000000"
+				 IDCODE      : unsigned(32-1 downto 0) := x"deadbeef";
+				 INS_NOP     : unsigned(32-1 downto 0) := x"00000000"
 		);
 		port (
 			tck, trst, tms, tdi : in std_logic;
@@ -167,14 +169,14 @@ package stdtap is
 			emurdy      : in std_logic; -- Core ready to execute next instruction
 			pulse       : in std_logic; -- event counter
 			-- Program Counter without going to emulation.
-			dbgpc       : in std_logic_vector(EMUDAT_SIZE-1 downto 0);
-			exstat      : in std_logic_vector(7 downto 0);
+			dbgpc       : in unsigned(EMUDAT_SIZE-1 downto 0);
+			exstat      : in unsigned(7 downto 0);
 
-			emudata_i   : in std_logic_vector(EMUDAT_SIZE-1 downto 0);
-			emudata_o   : out std_logic_vector(EMUDAT_SIZE-1 downto 0);
+			emudata_i   : in unsigned(EMUDAT_SIZE-1 downto 0);
+			emudata_o   : out unsigned(EMUDAT_SIZE-1 downto 0);
 			-- emudat_wr   : in std_logic;
 			-- emudat_rd   : in std_logic;
-			emuir       : out std_logic_vector(EMUIR_SIZE-1 downto 0)
+			emuir       : out unsigned(EMUIR_SIZE-1 downto 0)
 		);
     end component;
 
@@ -194,12 +196,12 @@ package stdtap is
 			emurdy      : in std_logic;
 			pulse       : in std_logic;
 			-- Program Counter without going to emulation.
-			dbgpc       : in std_logic_vector(EMUDAT_SIZE-1 downto 0);
-			exstat      : in std_logic_vector(7 downto 0);
+			dbgpc       : in unsigned(EMUDAT_SIZE-1 downto 0);
+			exstat      : in unsigned(7 downto 0);
 
-			emudata_i   : in std_logic_vector(EMUDAT_SIZE-1 downto 0);
-			emudata_o   : out std_logic_vector(EMUDAT_SIZE-1 downto 0);
-			emuir       : out std_logic_vector(EMUIR_SIZE-1 downto 0)
+			emudata_i   : in unsigned(EMUDAT_SIZE-1 downto 0);
+			emudata_o   : out unsigned(EMUDAT_SIZE-1 downto 0);
+			emuir       : out unsigned(EMUIR_SIZE-1 downto 0)
 		);
     end component;
 
