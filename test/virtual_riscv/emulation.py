@@ -8,6 +8,7 @@
 #
 import netpp
 import sys
+import os
 sys.path.append("../../hdl/riscv/pyrv32")
 sys.path.append("../../utils")
 import time
@@ -305,7 +306,7 @@ def run_pyrv32_test(soc, elffile, logfile):
 ############################################################################
 # Official riscv test suite integrated:
 
-RISCV_TEST_SUITE = "/home/strubi/build/riscv-tests/isa"
+RISCV_TEST_SUITE = os.environ['HOME'] + "/build/riscv-tests/isa"
 
 RISCV_TESTS = [
 "beq", "bge", "bgeu", "blt", "bltu", "bne", "jal", "jalr", "lb", "lbu",

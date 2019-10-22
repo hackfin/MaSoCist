@@ -16,7 +16,8 @@ RUN echo "deb http://section5.ch/debian buster non-free" > /etc/apt/sources.list
 
 RUN apt-get update ; \
 	apt-get install -y gensoc binutils-msp430 gcc-msp430 msp430-libc \
-		zpu-toolchain netpp-dev riscv32-binutils riscv32-gcc riscv32-newlib-libc
+		zpu-toolchain netpp-dev netpp-python \
+		riscv32-binutils riscv32-gcc riscv32-newlib-libc
 
 # Install some python modules:
 RUN pip install intelhex numpy

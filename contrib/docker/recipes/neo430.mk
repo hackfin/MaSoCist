@@ -1,18 +1,20 @@
 
 MASOCIST = src/vhdl/masocist-opensource
 
+SIM_EXECUTABLE = $(MASOCIST)/sim/net_virtual_neo430
+
 $(MASOCIST)/.config:
 	$(MAKE) -C $(MASOCIST) virtual_neo430-main
 
-$(MASOCIST)/sim/tb_virtual_neo430: $(MASOCIST)/.config
+$(SIM_EXECUTABLE): $(MASOCIST)/.config
 	$(MAKE) -C $(MASOCIST)/sim all
 
-all: $(MASOCIST)/sim/net_virtual_neo430
+all: $(SIM_EXECUTABLE)
 
-run: $(MASOCIST)/sim/net_virtual_neo430
+run: $(SIM_EXECUTABLE)
 	sh recipes/scripts/run-neo430.sh virtual_neo430
 
-test: $(MASOCIST)/sim/net_virtual_neo430
+test: $(SIM_EXECUTABLE)
 	sh recipes/scripts/test-neo430.sh virtual_neo430
 
 clean:

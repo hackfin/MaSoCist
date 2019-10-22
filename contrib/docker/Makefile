@@ -2,7 +2,7 @@ RECIPES = $(sort $(wildcard recipes/*.mk))
 
 INSTALL_PACKAGES = $(RECIPES:recipes/%.mk=install-%)
 
-RUN_RECIPES = neo430 pyrv32
+RUN_RECIPES = pyrv32
 
 TEST_PACKAGES = $(RUN_RECIPES:%=test-%)
 RUN_PACKAGES = $(RUN_RECIPES:%=run-%)

@@ -25,9 +25,14 @@ $(GHDLEX):
 ifeq ($(MODULE_TAPLIB),y)
 include $(GHDLEX)/ghdlex.mk
 endif
-include $(NETPP)/xml/prophandler.mk
 
-CFLAGS += -I$(NETPP)/include -I$(NETPP)/devices
+NETPP ?= /usr/share/netpp
+
+ifdef NETPP
+	include $(NETPP)/xml/prophandler.mk
+	CFLAGS += -I$(NETPP)/include -I$(NETPP)/devices
+endif
+
 
 all-libsim: check-env $(MYSIM_DUTIES)
 
@@ -36,9 +41,6 @@ show-duties:
 	@echo DLL to build: $(MYSIM_DUTIES)
 	@echo TAPLIB: $(MODULE_TAPLIB)
 check-env:
-ifndef NETPP
-	$(error environment variable NETPP undefined. Do you have NETPP?)
-endif
 ifndef MODULE_TAPLIB
 	$(warning ### TAPLIB not enabled ###)
 endif
