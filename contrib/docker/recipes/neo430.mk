@@ -7,7 +7,7 @@ $(MASOCIST)/.config:
 	$(MAKE) -C $(MASOCIST) virtual_neo430-main
 
 $(SIM_EXECUTABLE): $(MASOCIST)/.config
-	$(MAKE) -C $(MASOCIST)/sim all
+	$(MAKE) -C $(MASOCIST)/sim clean all
 
 all: $(SIM_EXECUTABLE)
 

@@ -36,7 +36,7 @@ crt%.o: crt%.s
 	$(CC) -c $(ASMFLAGS) -o $@ $<
 
 
-test.elf: test.o
+test.elf: test.o crt0.o
 	$(CC) -o $@ -T riscv_default.x -nostdlib $<
 
 test.lst: test.elf

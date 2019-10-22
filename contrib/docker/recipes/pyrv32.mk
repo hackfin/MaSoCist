@@ -10,7 +10,7 @@ $(MASOCIST)/.config:
 	$(MAKE) -C $(MASOCIST) virtual_riscv-main
 
 $(SIM_EXECUTABLE): $(MASOCIST)/.config
-	$(MAKE) -C $(MASOCIST)/sim all
+	$(MAKE) -C $(MASOCIST)/sim clean all
 
 $(TESTSUITE):
 	[ -e $(dir $@) ] || mkdir $(dir $@)
