@@ -20,7 +20,7 @@ CONFIG_virtual_neo430=y
 # CONFIG_papilio is not set
 # CONFIG_xo2starter is not set
 CONFIG_PLAT_EXTENSION="main"
-CONFIG_HAVE_VTAP=y
+# CONFIG_HAVE_VTAP is not set
 
 #
 # NEO430 specific configuration
@@ -108,8 +108,8 @@ CONFIG_VIRTUAL_UART=y
 CONFIG_TAPCLK_PERIOD="50 ns"
 # CONFIG_VTAP_DEBUG is not set
 # CONFIG_VTAP is not set
-CONFIG_DUMMYTAP=y
-# CONFIG_GHDLEX_DEFAULT is not set
+# CONFIG_DUMMYTAP is not set
+CONFIG_GHDLEX_DEFAULT=y
 
 #
 # Software options
@@ -132,4 +132,3 @@ CONFIG_NATIVE=y
 # CONFIG_MINGW32 is not set
 # CONFIG_EMULATE_PLATFORM_IP is not set
 CONFIG_USE_PLATFORM_IP_LIBRARY=y
-CONFIG_LIBSIM="jtagsim"

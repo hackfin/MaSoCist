@@ -5,8 +5,11 @@
 #
 MASOCIST=$HOME/src/vhdl/masocist-opensource
 
+# In case we use the default GHDLEX lib:
+export LD_LIBRARY_PATH=$GHDLEX:$LD_LIBRARY_PATH
+
 cd $MASOCIST/sim
-./tb_$1 >/dev/null &
+./$1 >/dev/null &
 TB_PID=$!
 minicom -o -D /tmp/virtualcom
 kill $TB_PID

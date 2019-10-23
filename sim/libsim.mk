@@ -22,17 +22,17 @@ endif
 $(GHDLEX):
 	cd `dirname $(GHDLEX)`; tar xfz ghdlex-$(GHDLEX_VERSION).tgz
 
+# Make sure this fallback is before including ghdlex.mk
+NETPP ?= /usr/share/netpp
+
 ifeq ($(MODULE_TAPLIB),y)
 include $(GHDLEX)/ghdlex.mk
 endif
-
-NETPP ?= /usr/share/netpp
 
 ifdef NETPP
 	include $(NETPP)/xml/prophandler.mk
 	CFLAGS += -I$(NETPP)/include -I$(NETPP)/devices
 endif
-
 
 all-libsim: check-env $(MYSIM_DUTIES)
 

@@ -49,7 +49,7 @@ Now pull and build all necessary packages:
 
 Run the neo430 demo:
 
-    make run
+    make clean run-neo430
 
 If nothing went wrong, the simulation for the neo430 CPU will be built
 and started with a virtual UART and SPI simulation. A minicom terminal will

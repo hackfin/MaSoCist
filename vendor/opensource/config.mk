@@ -89,7 +89,7 @@ CONFIG_LIBSIM = "ghdlex"
 endif
 
 # Look for libraries in GHDLEX dir:
-# GHDL_LDFLAGS += -Wl,-L$(GHDLEX)/src
+GHDL_LDFLAGS += -Wl,-L$(GHDLEX)/src
 
 # Use this path to look for libraries:
 # OLD_LD_LIBRARY_PATH=$(shell echo $$LD_LIBRARY_PATH)

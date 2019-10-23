@@ -7,9 +7,9 @@ TESTSUITE = src/EXTERN/riscv-tests
 TESTSUITE_REPO = https://github.com/riscv/riscv-tests
 
 $(MASOCIST)/.config:
-	$(MAKE) -C $(MASOCIST) virtual_riscv-main
 
-$(SIM_EXECUTABLE): $(MASOCIST)/.config
+$(SIM_EXECUTABLE):
+	$(MAKE) -C $(MASOCIST) virtual_riscv-main
 	$(MAKE) -C $(MASOCIST)/sim clean all
 
 $(TESTSUITE):

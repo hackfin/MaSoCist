@@ -7,7 +7,7 @@ include config.mk
 GHDLLIB_URL = http://section5.ch/downloads/ghdllib-devel.tgz
 
 # We depend on ghdlex:
-GHDLEX = src/vhdl/ghdlex
+GHDLEX ?= $(VHDL)/ghdlex
 LIBNAME = lib-devel
 GHDLLIB = src/vhdl/$(LIBNAME)
 
