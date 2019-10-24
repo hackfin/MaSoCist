@@ -10,10 +10,10 @@ $(SIM_EXECUTABLE):
 all: $(SIM_EXECUTABLE)
 
 run: $(SIM_EXECUTABLE)
-	sh recipes/scripts/run-neo430.sh net_virtual_neo430 GHDLEX=$(GHDLEX)
+	sh recipes/scripts/run-neo430.sh $(notdir $<) GHDLEX=$(GHDLEX)
 
 test: $(SIM_EXECUTABLE)
-	sh recipes/scripts/test-neo430.sh net_virtual_neo430 GHDLEX=$(GHDLEX)
+	sh recipes/scripts/test-neo430.sh $(notdir $<) GHDLEX=$(GHDLEX)
 
 clean:
 	rm -f $(MASOCIST)/.config

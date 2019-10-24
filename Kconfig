@@ -108,7 +108,7 @@ config VIDEO_MASTERCLK
 	default "27000000"
 
 config VIRTUALCLK_PERIOD
-	depends on virtual
+	depends on virtual || virtual_rv32ui
 	string "Virtual board clock period [ns, us, ms]"
 	default "20 ns"
 

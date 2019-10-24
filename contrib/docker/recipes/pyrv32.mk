@@ -21,6 +21,9 @@ install-testsuite: $(TESTSUITE)
 
 all: $(SIM_EXECUTABLE)
 
+run: $(SIM_EXECUTABLE)
+	sh recipes/scripts/run-pyrv32.sh $(notdir $<) GHDLEX=$(GHDLEX)
+
 test: $(SIM_EXECUTABLE)
 	sh recipes/scripts/test-pyrv32.sh
 

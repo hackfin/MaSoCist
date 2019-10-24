@@ -1,5 +1,5 @@
 #!/bin/sh
-export LD_LIBRARY_PATH=`pwd`/../contrib:.:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$HOME/src/vhdl/ghdlex:.:$LD_LIBRARY_PATH
 killall shmidcat
 WAVEFILE=/tmp/pipe.vcd
 [ -e $WAVEFILE ] || mkfifo $WAVEFILE

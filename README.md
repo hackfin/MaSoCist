@@ -47,13 +47,16 @@ Now pull and build all necessary packages:
 
     make all
 
-Run the neo430 demo:
+Run the virtual CPU demo, for example for pyrv32 or neo430:
+
+    make clean run-pyrv32
 
     make clean run-neo430
 
-If nothing went wrong, the simulation for the neo430 CPU will be built
+
+If nothing went wrong, the simulation for the selected CPU will be built
 and started with a virtual UART and SPI simulation. A minicom terminal will
-connect to that UART and you'll be able to speak to the neo430 'bare metal'
+connect to that UART and you'll be able to speak to the 'bare metal'
 shell, for example, you can dump the content of the virtual SPI flash by:
 
     s 0 1

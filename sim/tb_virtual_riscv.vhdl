@@ -1,4 +1,4 @@
--- NEO430 simulation only test bench
+-- Simple virtual RISC-V simulation only test bench
 --
 --
 
@@ -99,13 +99,17 @@ maybe_vuart:
 
 vuart: entity work.VirtualUART
 	generic map (
-		DIVIDER => UART_MCLK / CONFIG_DEFAULT_UART_BAUDRATE / 16 - 1
+		-- DIVIDER => UART_MCLK / CONFIG_DEFAULT_UART_BAUDRATE / 16 - 1
+		-- Let UART run on same sysclk for fast UART sim:
+		DIVIDER => CONFIG_SYSCLK / CONFIG_DEFAULT_UART_BAUDRATE / 16 - 1
 	)
 	port map (
 		rxi     => uart_tx,
 		rxirq  => open,
 		txo    => uart_rx,
-		clk    => uclk
+		-- See uncommented DIVIDER statement above
+		-- clk    => uclk
+		clk    => clk
 	);
 
 	end generate;

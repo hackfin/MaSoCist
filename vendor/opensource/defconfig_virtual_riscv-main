@@ -45,6 +45,7 @@ CONFIG_VIRTUAL_SILICON=y
 # Clock configuration
 #
 CONFIG_SYSCLK=25000000
+CONFIG_VIRTUALCLK_PERIOD="20 ns"
 
 #
 # Peripheral I/O
