@@ -1,6 +1,9 @@
 The MaSoCist environment 
 -------------------------------------------------------------------------
 
+[![Docker build status](https://img.shields.io/docker/cloud/build/hackfin/masocist)](https://hub.docker.com/r/hackfin/masocist/builds)
+
+
 <info@section5.ch>
 ---
 (**Ma**rtin's **SoC** **I**nstancing and **S**imulation/Synthesis **T**oolchain)
