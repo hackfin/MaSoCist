@@ -35,4 +35,5 @@ RUN chown masocist /home/masocist/init-pty.sh; \
 USER masocist
 WORKDIR /home/masocist
 
-ENTRYPOINT ["/home/masocist/init-pty.sh"]
+ENTRYPOINT ["/bin/bash"]
+CMD ["/home/masocist/init-pty.sh"]

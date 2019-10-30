@@ -28,4 +28,4 @@ test: $(SIM_EXECUTABLE)
 	sh recipes/scripts/test-pyrv32.sh
 
 clean:
-	rm -f $(MASOCIST)/.config
+	rm -f $(MASOCIST)/.config $(SIM_EXECUTABLE)

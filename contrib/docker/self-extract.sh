@@ -1,4 +1,4 @@
 #!/bin/bash
 
-sed '0,/^#EOF#$/d' $0 | tar zx; exit 0
-#EOF#
+sed '0,/^#MASOCIST_EOF#$/d' $0 | tar xz; exit 0
+#MASOCIST_EOF#

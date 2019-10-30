@@ -16,4 +16,4 @@ test: $(SIM_EXECUTABLE)
 	sh recipes/scripts/test-neo430.sh $(notdir $<) GHDLEX=$(GHDLEX)
 
 clean:
-	rm -f $(MASOCIST)/.config
+	rm -f $(MASOCIST)/.config $(SIM_EXECUTABLE)

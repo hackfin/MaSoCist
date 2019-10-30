@@ -2,7 +2,7 @@ RECIPES = $(sort $(wildcard recipes/*.mk))
 
 INSTALL_PACKAGES = $(RECIPES:recipes/%.mk=install-%)
 
-RUN_RECIPES = pyrv32
+RUN_RECIPES = pyrv32 neo430
 
 TEST_PACKAGES = $(RUN_RECIPES:%=test-%)
 RUN_PACKAGES = $(RUN_RECIPES:%=run-%)
@@ -10,7 +10,7 @@ CLEAN_PACKAGES = $(RUN_RECIPES:%=clean-%)
 
 all: $(INSTALL_PACKAGES)
 
-test: $(TEST_PACKAGES)
+test: clean $(TEST_PACKAGES)
 
 run: $(RUN_PACKAGES)
 
@@ -33,7 +33,8 @@ dry-run:
 
 clean: $(CLEAN_PACKAGES)
 
-DISTFILES = Makefile config.mk recipes
+DISTFILES = Makefile config.mk $(wildcard recipes/*)
+DISTFILES += $(wildcard recipes/scripts/*.sh)
 
 masocist-installer.tgz: $(DISTFILES)
 	tar cfz $@ $^

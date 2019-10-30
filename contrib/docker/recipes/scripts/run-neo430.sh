@@ -14,13 +14,12 @@ if [ -e $1 ]; then
 	TB_PID=$!
 	echo "Check if simulation running..."
 	sleep 1
-	if jobs | grep \$1;  then
+	if  kill -0 $TB_PID ; then
 		# Turn off tap throttle:
 		netpp localhost TapThrottle 0
 		minicom -o -D /tmp/virtualcom
 		kill $TB_PID
 	else
-		echo
 		jobs
 		echo -e "\e[41m$1 just exited\e[0m"
 	fi
