@@ -10,3 +10,4 @@ socat PTY,link=/tmp/ghdlsim,raw,echo=0,user=$me \
 	   PTY,link=$VCOM,raw,echo=0,user=$me & \
 echo Virtual COM running on $VCOM. Use: minicom -o -D $VCOM
 
+/bin/bash
