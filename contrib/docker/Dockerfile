@@ -28,12 +28,13 @@ RUN echo "export LD_LIBRARY_PATH=\$HOME/src/vhdl/ghdlex/src:$LD_LIBRARY_PATH" >>
 RUN adduser masocist sudo
 RUN echo "masocist ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/masocist-nopw
 
-COPY init-pty.sh /home/masocist
-RUN chown masocist /home/masocist/init-pty.sh; \
-	chmod a+x /home/masocist/init-pty.sh
+COPY init-pty.sh /usr/local/bin
+COPY run-tests.sh /usr/local/bin
+RUN chown masocist ; \
+	chmod a+rx /usr/local/bin/init-pty.sh /usr/local/bin/run-tests.sh
 
 USER masocist
 WORKDIR /home/masocist
 
 ENTRYPOINT ["/bin/bash"]
-CMD ["/home/masocist/init-pty.sh"]
+CMD ["/usr/local/bin/init-pty.sh"]
