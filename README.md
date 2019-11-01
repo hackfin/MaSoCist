@@ -32,12 +32,14 @@ online sandbox. You'll need to build and copy some files from contrib/docker
 to the remote Docker machine instance.
 
 Run 'make dist' inside contrib/docker, this will create a file `masocist_sfx.sh`
-Copy Dockerfile and init-pty.sh to the Docker playground by dragging the files onto
-the Playground browser shell window.
+Copy the following files to the Docker playground by dragging them onto
+the Playground browser shell window:
+
+ `Dockerfile init-pty.sh run-tests.sh`
 
 Build the container and run it:
 
-    docker build -t masocist .
+    docker build . -t masocist .
 
     docker run -it -v/root:/usr/local/src masocist
 
