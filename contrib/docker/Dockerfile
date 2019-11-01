@@ -23,7 +23,7 @@ RUN apt-get update ; \
 RUN pip install intelhex numpy
 
 RUN useradd -u 1000 -g 100 -m -s /bin/bash masocist 
-RUN echo "export LD_LIBRARY_PATH=\$HOME/src/vhdl/ghdlex/src:$LD_LIBRARY_PATH" >> /home/masocist/.bashrc
+RUN echo "export LD_LIBRARY_PATH=\$HOME/src/vhdl/ghdlex/src:\$LD_LIBRARY_PATH" >> /home/masocist/.bashrc
 
 RUN adduser masocist sudo
 RUN echo "masocist ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/masocist-nopw
