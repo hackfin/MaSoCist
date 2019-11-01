@@ -30,8 +30,7 @@ RUN echo "masocist ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/masocist-nopw
 
 COPY init-pty.sh /usr/local/bin
 COPY run-tests.sh /usr/local/bin
-RUN chown masocist ; \
-	chmod a+rx /usr/local/bin/init-pty.sh /usr/local/bin/run-tests.sh
+RUN chmod a+rx /usr/local/bin/init-pty.sh /usr/local/bin/run-tests.sh
 
 USER masocist
 WORKDIR /home/masocist
