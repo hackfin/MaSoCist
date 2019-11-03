@@ -1,0 +1,866 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"/usr/share/xml/docbook/schema/dtd/4.5/docbookx.dtd">
+<book>
+  <bookinfo>
+    <title>cCAP 'beatrix' reference</title>
+
+    <author>
+      <firstname>section5 &lt;info@section5.ch&gt;</firstname>
+
+      <affiliation>
+        <orgname>section5</orgname>
+      </affiliation>
+    </author>
+
+    <pubdate>11/2019</pubdate>
+
+    <releaseinfo>v0.3-opensource</releaseinfo>
+
+    <revhistory>
+      <revision>
+        <date>3.11.2019</date>
+
+        <authorinitials>ms</authorinitials>
+
+        <revdescription>
+          <para>First opensource docs release</para>
+        </revdescription>
+      </revision>
+    </revhistory>
+  </bookinfo>
+
+  <chapter>
+    <title>Introduction</title>
+
+    <section>
+      <title>cCAP SoC family</title>
+
+      <para>The cCAP main line is based on a configureable CPU core that can
+      be selected from the architecture listed in <xref
+      linkend="sec_cpucores"/>. Typically, the SoC is core specific, the
+      default architecture used is shown in the family overview <xref
+      linkend="tbl_family"/>.</para>
+
+      <para>The cCAP base architecture includes the following peripherals by
+      default (can be disabled):</para>
+
+      <variablelist>
+        <varlistentry>
+          <term>(TAP)</term>
+
+          <listitem>
+            <para>Test Access Port via native JTAG interface for
+            debugging</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>UART</term>
+
+          <listitem>
+            <para>UART console for interactive I/O</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>TWI</term>
+
+          <listitem>
+            <para>Two wire interface (I2C compatible)</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>SPI</term>
+
+          <listitem>
+            <para>Simple polled SPI master interface</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>TIMER/PWM</term>
+
+          <listitem>
+            <para>Rudimentary timer and PWM controller for synchronous pulse
+            width output</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+
+      <table id="tbl_cap_app" pgwide="1">
+        <title>cCAP example overview</title>
+
+        <tgroup cols="3">
+          <colspec align="left" colwidth="2*"/>
+
+          <colspec align="left" colwidth="1*"/>
+
+          <colspec align="justify" colwidth="4*"/>
+
+          <thead>
+            <row>
+              <entry align="center">Name</entry>
+
+              <entry align="center">Extra Peripherals</entry>
+
+              <entry>Application</entry>
+            </row>
+          </thead>
+
+          <tbody>
+            <row>
+              <entry>agathe</entry>
+
+              <entry>8x PWM</entry>
+
+              <entry>OpenSource config processor demo first generation</entry>
+            </row>
+
+            <row>
+              <entry>anselm</entry>
+
+              <entry>"</entry>
+
+              <entry>", for MACHXO[2,3] platforms</entry>
+            </row>
+
+            <row>
+              <entry>agneta</entry>
+
+              <entry>EFB</entry>
+
+              <entry>Configuration processor for Lattice MACHXO[2,3]
+              platforms</entry>
+            </row>
+
+            <row>
+              <entry>beatrix</entry>
+
+              <entry>LCDIO, SCACHE, SPI32</entry>
+
+              <entry>embedded netpp processor</entry>
+            </row>
+
+            <row>
+              <entry>bertram</entry>
+
+              <entry>PWMplus, SCACHE, SPI32</entry>
+
+              <entry>embedded netpp processor with PWMplus extensions</entry>
+            </row>
+
+            <row>
+              <entry>cranach</entry>
+
+              <entry>SCACHE, SPI32, MAC, DMA</entry>
+
+              <entry>networked netpp/UDP processor</entry>
+            </row>
+
+            <row>
+              <entry>dombert</entry>
+
+              <entry>DMAA, JPEG, MAC, VPI</entry>
+
+              <entry>JPEG encoder SoC (<productname>dorothea</productname>
+              successor)</entry>
+            </row>
+
+            <row>
+              <entry>dagobert</entry>
+
+              <entry>DMAA, SCACHE, MAC, LCDIO</entry>
+
+              <entry>netpp/UDP 'industrial' processor</entry>
+            </row>
+
+            <row>
+              <entry>emil</entry>
+
+              <entry>DMAA, VPI, CPK</entry>
+
+              <entry>'cordula' successor for video processing</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+
+      <para><xref linkend="tbl_family"/> shows the standard reference design
+      chip family and its typical logic resource usage in a set of supported
+      FPGAs. These designs are considered mature and stable. The more complex
+      the peripherals are, the higher ranks the naming in the alphabet.</para>
+
+      <para>The given usage percentage is based on a pessimistic maximum of
+      the number of SLICEs used and the LUT usage.</para>
+
+      <table id="tbl_family" pgwide="1">
+        <title>FPGA usage overview</title>
+
+        <tgroup cols="7">
+          <colspec align="left" colwidth="4*"/>
+
+          <colspec colwidth="2*"/>
+
+          <colspec align="justify" colwidth="1*"/>
+
+          <colspec align="justify" colwidth="1*"/>
+
+          <colspec align="justify" colwidth="1*"/>
+
+          <colspec align="justify" colwidth="1*"/>
+
+          <colspec align="justify" colwidth="1*"/>
+
+          <thead>
+            <row>
+              <entry align="center">Name</entry>
+
+              <entry align="center">CPU / FPGA &gt;</entry>
+
+              <entry align="center">MACHXO?-7000</entry>
+
+              <entry>SP3-250</entry>
+
+              <entry>SP6-LX9</entry>
+
+              <entry>ECP3-45</entry>
+
+              <entry>ECP5-45</entry>
+            </row>
+          </thead>
+
+          <tbody>
+            <row>
+              <entry>agathe</entry>
+
+              <entry>Zealot</entry>
+
+              <entry>N/A</entry>
+
+              <entry>15%</entry>
+
+              <entry>-</entry>
+
+              <entry>-</entry>
+
+              <entry>-</entry>
+            </row>
+
+            <row>
+              <entry>anselm</entry>
+
+              <entry>Zealot</entry>
+
+              <entry>25%</entry>
+
+              <entry>N/A</entry>
+
+              <entry>N/A</entry>
+
+              <entry>-</entry>
+
+              <entry>-</entry>
+            </row>
+
+            <row>
+              <entry>agneta</entry>
+
+              <entry>ZPUng</entry>
+
+              <entry>34%</entry>
+
+              <entry>N/A</entry>
+
+              <entry>-</entry>
+
+              <entry>-</entry>
+
+              <entry>-</entry>
+            </row>
+
+            <row>
+              <entry>beatrix</entry>
+
+              <entry>ZPUng</entry>
+
+              <entry>-</entry>
+
+              <entry>50%</entry>
+
+              <entry>-</entry>
+
+              <entry>-</entry>
+
+              <entry>-</entry>
+            </row>
+
+            <row>
+              <entry>bertram</entry>
+
+              <entry>ZPUng</entry>
+
+              <entry>40%</entry>
+
+              <entry>90%</entry>
+
+              <entry>20%</entry>
+
+              <entry>-</entry>
+
+              <entry>-</entry>
+            </row>
+
+            <row>
+              <entry>cordula</entry>
+
+              <entry>PyPS</entry>
+
+              <entry>-</entry>
+
+              <entry>-</entry>
+
+              <entry>-</entry>
+
+              <entry>20%</entry>
+
+              <entry>-</entry>
+            </row>
+
+            <row>
+              <entry>cranach</entry>
+
+              <entry>ZPUng</entry>
+
+              <entry>-</entry>
+
+              <entry>-</entry>
+
+              <entry>30%</entry>
+
+              <entry>15%</entry>
+
+              <entry>14%</entry>
+            </row>
+
+            <row>
+              <entry>dombert</entry>
+
+              <entry>ZPUng</entry>
+
+              <entry>-</entry>
+
+              <entry>-</entry>
+
+              <entry>N/A</entry>
+
+              <entry>N/A</entry>
+
+              <entry>29%</entry>
+            </row>
+
+            <row>
+              <entry>dagobert</entry>
+
+              <entry>ZPUng</entry>
+
+              <entry>-</entry>
+
+              <entry>-</entry>
+
+              <entry>60%</entry>
+
+              <entry>N/A</entry>
+
+              <entry>N/A</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+
+      <para>The extra peripherals are specific to the configuration:</para>
+
+      <variablelist>
+        <varlistentry>
+          <term>SCACHE</term>
+
+          <listitem>
+            <para>Virtual ROM (SPI cache). Enhances program memory up to
+            several MB of ROM code for program overlay or data storage</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>LCDIO</term>
+
+          <listitem>
+            <para>Custom LCD driver engine</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>SPI32</term>
+
+          <listitem>
+            <para>32 bit word capable SPI I/O, DMA capable</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>PWMPLUS</term>
+
+          <listitem>
+            <para>Improved PWM for realtime pulse width control</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>FX2FIFO</term>
+
+          <listitem>
+            <para>Cypress FX2 FIFO interface for fast isochronous data
+            transfer</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>MAC</term>
+
+          <listitem>
+            <para>Ethernet MAC interface for RGMII or GMII capable GigE
+            Phy</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>DMA/DMAA</term>
+
+          <listitem>
+            <para>DMA engine with optional autobuffer configuration (high
+            speed peripheral streaming)</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>JPEG</term>
+
+          <listitem>
+            <para>JPEG hardware encoder</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>CPK</term>
+
+          <listitem>
+            <para>'Cottonpicken' proprietary image processing pipeline</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>VPI</term>
+
+          <listitem>
+            <para>Parallel port peripheral video interface</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>SPORT</term>
+
+          <listitem>
+            <para>Fast serial port for audio codec I/O, DMA capable</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </section>
+
+    <xi:include href="reference/cpucores.xml" xpointer="element(/1)"
+                xmlns:xi="http://www.w3.org/2001/XInclude"/>
+  </chapter>
+
+  <chapter>
+    <title>Peripheral modules</title>
+
+    <para>The SoC peripherals are mapped automatically from the device
+    description. Several instances of peripheral modules, such as GPIO
+    controller banks, can be mapped into the MMR address space according to
+    the addressing scheme defined in a specific unit map. For register
+    reference, the absolute address of a register is calculated as the sum of
+    the following values:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>A registermap offset per device unit, listed in <xref
+        linkend="tbl_devicemap_system_map"/>.</para>
+      </listitem>
+
+      <listitem>
+        <para>A register offset, listed in the peripheral address map</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>For external Wishbone peripheral IP that is not auto-generated from
+    the device description, an address relative to the MMR_OFFSET range
+    applies, thus requiring none of the above calculations.</para>
+
+    <para>The register map reference is valid only for the following hardware
+    revision of the SoC device:</para>
+
+    <xi:include href="device_properties.xml" xpointer="rev_tag_system_map"
+                xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+    <note>
+      <para>Use the 'sysinfo' GDB script to obtain the current HW revision
+      from the SoC (<link linkend="tbl_reg_HWVersion">HWVersion</link>
+      register)</para>
+    </note>
+
+    <para>Each component has some software support, or optional regression
+    test scripts to test the interface. See <xref linkend="tbl_swsupport"/>
+    for an overview on source files corresponding to a peripheral.</para>
+
+    <table id="tbl_swsupport">
+      <title>Peripheral module software support</title>
+
+      <tgroup cols="3">
+        <thead>
+          <row>
+            <entry align="center">Description</entry>
+
+            <entry align="center">C source</entry>
+
+            <entry align="center">Regtest script</entry>
+          </row>
+        </thead>
+
+        <tbody>
+          <row>
+            <entry>General tests and board initialization</entry>
+
+            <entry>test_$(PLATFORM).c</entry>
+
+            <entry>-</entry>
+          </row>
+
+          <row>
+            <entry>System interrupt controller</entry>
+
+            <entry>irqhandler.c</entry>
+
+            <entry>sw/regtest-common/sic.gdb</entry>
+          </row>
+
+          <row>
+            <entry>Timer and PWM</entry>
+
+            <entry>pwm.c</entry>
+
+            <entry>sw/regtest-common/pwm.gdb</entry>
+          </row>
+
+          <row>
+            <entry>Simple UART</entry>
+
+            <entry>uart.c</entry>
+
+            <entry>sw/regtest-common/uart.gdb</entry>
+          </row>
+
+          <row>
+            <entry>16550 UART</entry>
+
+            <entry>uart16550.c</entry>
+
+            <entry>-</entry>
+          </row>
+
+          <row>
+            <entry>Opencores I2C controller</entry>
+
+            <entry>i2c_oc.c</entry>
+
+            <entry>-</entry>
+          </row>
+
+          <row>
+            <entry>LCDIO</entry>
+
+            <entry>lcdio.c</entry>
+
+            <entry>sw/lcdio.gdb</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+
+    <section id="sec_sys">
+      <title>System control</title>
+
+      <para>The system control section covers the platform specific
+      configuration properties. To synchronize the Firmware with the hardware,
+      the <property>HWVersion</property> register should be queried.
+      Typically, this revision code is generated from the system device
+      description XML. One might note that the SysCtrl map follows a different
+      naming scheme than the other agathe peripherals. The reason for this is,
+      that the SysCtrl unit is specific to the system architecture, whereas
+      the basic peripherals are per se system agnostic. For example, if a
+      system supports I/O multiplexing (GPIO and alternate functions) or cache
+      functionality, the SysCtrl unit becomes relevant.</para>
+
+      <note>
+        <para>All MaSoCist SoC instances must have at least a SysCtrl unit
+        with the XML id 'sys'.</para>
+      </note>
+
+      <para>More complex systems may have a separate I/O multiplexing
+      unit.</para>
+
+      <xi:include href="device_properties.xml" xpointer="tbl_regmap_sys"
+                  xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+      <important>
+        <para>In order to facilitate downward compatibility with respect to
+        firmware, it is mandatory for the HWVersion register to remain at the
+        end of the register map. Since the address bits are masked according
+        to the MMR_CFG_SysCtrl definition in the system map VHDL file, it is
+        ensured that queries with higher MSBs set (that are masked out on the
+        older HW revision) still receive the correct HWVersion.</para>
+      </important>
+
+      <section>
+        <title>Clock configuration</title>
+
+        <para>The agathe and beatrix configurations have a simple clock scheme
+        for the peripherals. The main system clock is simply divided by a
+        divisor value to obtain the clock for the peripheral. The system clock
+        itself depends on the FPGA hardware and oscillator frequencies used.
+        Some platforms do have a PLL, multiplying the external master clock by
+        a fractional value. The configuration of clock frequencies and
+        dividers is done by the menu configuration. The formula to obtain the
+        system clock (see also <filename>sw/driver.h</filename>):</para>
+
+        <?latex \begin{equation}
+SYSCLK = CLOCK\_FREQUENCY * \frac{CONFIG\_PLL\_MUL}{CONFIG\_PLL\_DIV}
+\end{equation}?>
+
+        <note>
+          <para>You can output the current system clock in Hz within the GNU
+          debugger by <command>print g_sysclk</command> when using the
+          standard test firmware.</para>
+        </note>
+
+        <para>For platforms without PLL and missing CONFIG_PLL variables you
+        can assume DIV and MUL = 1. Some FPGAs have internal oscillators whose
+        frequencies may not be arbitrary. These have their own CONFIG
+        variables. Handle with care, do not reconfigure those clocks freely or
+        your system may stop to operate correctly.</para>
+
+        <para>The software library support coming with your board supply
+        package typically takes care of the clock configuration.</para>
+      </section>
+    </section>
+
+    <xi:include href="reference/scache.xml" xpointer="element(/1)"
+                xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+    <section id="sec_irqhandling">
+      <title>Interrupt handling</title>
+
+      <xi:include href="reference/sic.xml" xpointer="element(/1)"
+                  xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+      <section>
+        <title>Interrupt source mapping</title>
+
+        <para>Currently, only four interrupt channels are used. The mapping is
+        platform specific, see <xref linkend="app_custom"/>.</para>
+      </section>
+
+      <section>
+        <title>Core specific interrupt handling</title>
+
+        <para><note>
+            <para>This section applies to the 'ZPUng' CPU architecture
+            only</para>
+          </note>Typically, an IRQ routine is a just a normal C subroutine
+        with no specific interrupt attributes. However, this only is valid
+        when no memreg instanciations are used inside the IRQ handler. If this
+        is the case, restore() and save() macros need to be called inside the
+        interrupt routine.</para>
+
+        <para>Whenever an interrupt is serviced from the handler, it must
+        signal to the SIC by clearing the IPEND bit to the corresponding IRQ
+        channel that the interrupt logic can rearm for the next event to
+        happen on this channel.</para>
+
+        <para>The ZPU legacy architecture does not have a protection against
+        reentrancy of an interrupt handler on recurring events, so too
+        frequent interrupt events could trash the stack. The ZPUng logic
+        prevents this by internal usage of an IRQ flag. While this flag is
+        set, no other IRQ source can interrupt a current handler. The flag is
+        always cleared at the end of the interrupt handler, more details
+        below.</para>
+
+        <section>
+          <title>Interrupt priorities</title>
+
+          <para>Interrupt priorities are sorted out by the System Interrupt
+          Controller (SIC). By default, all SIC implementations handle lower
+          channel numbers with higher priority such that:</para>
+
+          <itemizedlist>
+            <listitem>
+              <para>Simultaneous events on two channels will trigger the
+              higher priority event only</para>
+            </listitem>
+
+            <listitem>
+              <para>Higher priority events will cause an override action (more
+              below)</para>
+            </listitem>
+
+            <listitem>
+              <para>Lower priority events while another interrupt is in
+              service will queue and execute after the current interrupt
+              handler exits</para>
+            </listitem>
+          </itemizedlist>
+
+          <para>The SIC will assert the override signal if it detects an event
+          with higher priority than the one currently latched. The override
+          signal clears the internal IRQ flag in the ZPUng core and therefore
+          allows reentrancy.</para>
+        </section>
+
+        <section>
+          <title>Exceptions</title>
+
+          <para>Exceptions are also handled like an interrupt in the ZPUng,
+          however, they only occur on special occasions like memory accesses.
+          The ZPUng v1 only covers memory access exceptions via the SCache
+          system peripheral. An exception can be assigned to any property,
+          however a higher priority IRQ can interrupt the exception handler
+          <emphasis>only after</emphasis> the cause for the exception has been
+          cleared. If the exception cause clearing is forgotten inside the
+          exception handler, the system will hang on the next memory
+          access.</para>
+        </section>
+
+        <section>
+          <title>Writing handlers</title>
+
+          <para>Interrupt routines on systems that allow interrupt handler
+          reentrancy must clear the internal interrupt flag before the IRQ
+          routine is left. On the ZPUng v1, the IRQ_REARM() macro must be
+          called at the end of the irq handler. Below is a standard example
+          with the v0.1 toolchain release.</para>
+
+          <programlisting>void irq_generic_handler(void)
+{
+    MMR(Reg_SIC_IPEND_W1C) =  PINMAP_IRQ_GPIO_A; // clear IRQ and rearm
+    g_counter++;
+    IRQ_REARM();
+}
+</programlisting>
+
+          <note>
+            <para>With the v0.2 toolchain and ZPUng v1.1, the IRQ_REARM()
+            macro is no longer required, instead, the
+            <code>__attribute__((interrupt))</code> decorator must be used as
+            preamble to the function declaration.</para>
+          </note>
+        </section>
+      </section>
+    </section>
+
+    <section id="sec_gpio">
+      <title>GPIO module</title>
+
+      <para>Simple general purpose I/O controller. The available registers are
+      shown in <xref linkend="tbl_regmap_gpio"/>.</para>
+
+      <para>The GPIO bank has a very simple functionality. Configure this bank
+      in your firmware as follows:</para>
+
+      <orderedlist>
+        <listitem>
+          <para>Choose direction (input or output) using the GPIO_DIR
+          register</para>
+        </listitem>
+
+        <listitem>
+          <para>Read a value using the GPIO_IN register, write via GPIO_OUT
+          register</para>
+        </listitem>
+
+        <listitem>
+          <para>Atomically set GPIO outputs high using the GPIO_SET register
+          (write only)</para>
+        </listitem>
+
+        <listitem>
+          <para>Atomically clear GPIO outputs using the GPIO_CLR register
+          (write only)</para>
+        </listitem>
+      </orderedlist>
+
+      <xi:include href="device_properties.xml" xpointer="tbl_regmap_gpio"
+                  xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    </section>
+
+    <xi:include href="reference/pwm.xml" xpointer="element(/1)"
+                xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+    <xi:include href="reference/uartsimple.xml" xpointer="element(/1)"
+                xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+    <xi:include href="reference/spi.xml" xpointer="element(/1)"
+                xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+    <xi:include href="reference/lcdio.xml" xpointer="element(/1)"
+                xmlns:xi="http://www.w3.org/2001/XInclude"/>
+  </chapter>
+
+  <chapter>
+    <title>Firmware</title>
+
+    <para>This chapter covers firmware support and board supply
+    packages</para>
+
+    <section>
+      <title>Firmware</title>
+
+      <xi:include href="../../masocist/doc/software.xml"
+                  xpointer="sec_overlay"
+                  xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    </section>
+  </chapter>
+
+  <xi:include href="reference/plat-opensource.xml" xpointer="element(/1)"
+              xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <appendix>
+    <title>Register map reference</title>
+
+    <section>
+      <title>Device peripheral map</title>
+
+      <para><xref linkend="tbl_devicemap_system_map"/> shows the address map
+      offsets for the peripheral units in this SoC.<xi:include
+      href="devicemap.xml" xpointer="tbl_devicemap_system_map"
+      xmlns:xi="http://www.w3.org/2001/XInclude"/></para>
+    </section>
+
+    <section>
+      <title>Register details</title>
+
+      <xi:include href="device_properties.xml" xpointer="sec_reg_system_map"
+                  xmlns:xi="http://www.w3.org/2001/XInclude"/>
+    </section>
+  </appendix>
+
+  <xi:include href="reference/app_issues.xml" xpointer="element(/1)"
+              xmlns:xi="http://www.w3.org/2001/XInclude"/>
+</book>

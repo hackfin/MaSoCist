@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<section id="sec_cache">
+  <title>SCache - simple software cache</title>
+
+  <para>The SCache core is enabled by CONFIG_SCACHE=y. It is only effective on
+  the ZPUng architecture and provides a simple exception mechanism to
+  implement data caches for systems with limited block ram.</para>
+
+  <para>Basically, it detects whether an addressing attempt is made to a I/O
+  space which is not inside the peripheral MMR section. On access (read only),
+  it raises an exception on a LOAD instruction and jumps into a cache handler
+  in uCodespace. This handler can then execute necessary DMA or SPI flash
+  loading functions, copying the requested data page into the cache
+  memory.</para>
+
+  <para>The cacheable memory segments are organized in pages of a specific
+  size. On access of cacheable virtual memory, the full page is copied from
+  external memory into the cache area. Note that there may be access
+  restrictions imposed by the CPU core that may, for example, prohibit
+  overlaps of function code to page boundaries. See implementation notes
+  below.</para>
+
+  <xi:include href="../device_properties.xml" xpointer="tbl_regmap_cache"
+              xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+  <section>
+    <title>Setup</title>
+
+    <para>The SCache uses the exception channel of the SIC. The corresponding
+    SIC_EV0 vector is reserved and typically initialized by the board support
+    package init routines (crt0.o). The code below demonstrates a typical
+    setup sequence:</para>
+
+    <programlisting>
+// Trigger a cache exception when Pages 0x10xxx-0x17xxx are hit:
+MMR(Reg_DCacheMask)     = 0x038000;
+MMR(Reg_DCachePageMask) = 0xfff000;
+MMR(Reg_DCacheAddr)     = 0x010000;
+MMR(Reg_SIC_EV0)        = (uint32_t) &amp;cache_exc_handler;
+// Enable cache address translation
+MMR(Reg_CacheControl)   = DCACHE_ENABLE;
+</programlisting>
+
+    <note>
+      <para>On the ZPUng v0, the <function>cache_exc_handler()</function>
+      function must reside in uCodespace to operate correctly</para>
+    </note>
+
+    <para>An access to 0x11600, for example, will trigger the exception, once
+    the cache is enabled through the <link
+    linkend="tbl_reg_CacheControl">DCACHE_ENABLE</link> bit. The exception
+    address is AND masked with the value from
+    <property>DCachePageMask</property> AND the value from
+    <property>DCacheMask</property>, the result is placed in
+    <property>DCacheHitAddr</property>. Reading this register yields the page
+    base address, in this example, 0x01000. The cache handler will typically
+    use this page address to read from an external memory, like demonstrated
+    in the following example code implementing a SPI flash cache:</para>
+
+    <programlisting>void cache_handler(void)
+{
+    uint32_t addr;
+    // address of cache memory:
+    uint32_t *cacheaddr = (uint32_t *) CACHE_PHYS_ADDR;
+
+    // Set DACK bit to clear exception flag (important!)
+    MMR(Reg_CacheControl) = DACK | DCACHE_ENABLE;
+
+    // Do some math to translate into SPI flash offset:
+    addr = USER_DATA_OFFSET;
+    addr += MMR(Reg_DCacheHitAddr); // Get page address
+    addr += _start_xdata;           // See linker script
+
+    // Read data from SPI flash:
+    spiflash_read32(addr, cacheaddr, CACHE_SIZE &gt;&gt; 2);
+}
+</programlisting>
+  </section>
+
+  <section id="sec_caching">
+    <title>Instruction caching</title>
+
+    <para>When <varname>CONFIG_SCACHE_INSN</varname> is enabled, a second
+    SCACHE instance can be used for instruction caching. When enabled via
+    <link linkend="tbl_reg_CacheControl">ICACHE_ENABLE</link>, half of the
+    SCACHE RAM area is used for the instruction cache (ICACHE). In this case,
+    the exception handler must check for the IMISS and DMISS bits of the
+    CacheStatus register to determine which cache triggered an exception. The
+    first half of the cache is reserved for data access, the second for
+    instruction access. If the ICACHE is not enabled, the full cache area can
+    be used for the data cache.</para>
+
+    <figure>
+      <title>CacheStatus</title>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="img/reg_CacheStatus.pdf"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <para>The default board supply code automatically determines the size of
+    the caches, depending on the <varname>CONFIG_SCACHE_INSN</varname>
+    configuration.</para>
+
+    <section>
+      <title>Implementation notes</title>
+
+      <para>When the internal block ram is filled up with program code,
+      functions can be overlayed to the extended program area where the ICACHE
+      becomes effective. Whenever a jump into the extended area is made, the
+      virtual address will trigger an exception, the program loader will load
+      the code from SPI flash and the CPU will fetch the instructions from the
+      cache area using a physical address translated by the ICACHE.</para>
+
+      <para>For detailed information about program design and function
+      overlays, see <xref linkend="sec_overlay"/>.</para>
+
+      <para>Note that the instruction and data cache areas are separated
+      memory areas by default. If <varname>CONFIG_SCACHE_HARDCODE</varname> is
+      not enabled, the following rules apply:</para>
+
+      <orderedlist>
+        <listitem>
+          <para>Program code (<varname>.text</varname> segment) can not be
+          allocated in a cacheable data page</para>
+        </listitem>
+
+        <listitem>
+          <para>Data (<varname>.rodata.*</varname> segments) can not be
+          allocated in a cacheable instruction page</para>
+        </listitem>
+      </orderedlist>
+
+      <para>This results in data or instruction accesses to the wrong cache
+      page returning false results without warning! This also produces false
+      disassembly output of code in virtual instruction memory.</para>
+
+      <note>
+        <para>You can disassemble the overlay function code anyway by
+        examining the raw instruction cache physical memory (see <xref
+        linkend="sec_soc_mmap"/>)</para>
+      </note>
+
+      <para>With <varname>CONFIG_SCACHE_HARDCODE</varname> enabled,
+      CachePageMask and CacheOffset register settings are ignored for both
+      instruction and data cache area. In this case, there can be mixed DATA
+      access from both instruction and data cache areas.</para>
+
+      <note>
+        <para>DATA access to an ICACHE page does not trigger an exception in
+        the typical standard design. If this is wanted, the DCacheMask
+        register must be set accordingly</para>
+      </note>
+    </section>
+  </section>
+
+  <section>
+    <title>User code</title>
+
+    <para>The SCache function is somewhat generic, therefore it can be used to
+    watch accesses to a specific address space. Likewise, it can be configured
+    for a single hardware breakpoint unit, when
+    <varname>CONFIG_SCACHE_HARDCODE</varname> is not effective. This is up to
+    the user to implement.</para>
+  </section>
+</section>

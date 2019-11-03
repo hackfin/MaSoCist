@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
-<chapter>
+<chapter id="cha_software">
   <title>Software</title>
 
   <section id="sec_configure">
@@ -42,12 +42,12 @@
       <para>The configuration is saved in the file
       <filename>.config</filename> (again in the top level MaSoCist
       directory). This is a simple text file with typical configuration
-      statements like CONFIG_FOO=y. To verify a configuration variable, the
-      text file can be opened directly. It is also possible to manually edit
-      the file and change variables, however care needs to be taken about the
-      syntax and possile configuration variable dependencies. kconfig is able
-      to fix most mistakes, so when the configuration turns out to be invalid,
-      simply run menuconfig again.</para>
+      statements like <option>CONFIG_FOO</option>=y. To verify a configuration
+      variable, the text file can be opened directly. It is also possible to
+      manually edit the file and change variables, however care needs to be
+      taken about the syntax and possile configuration variable dependencies.
+      kconfig is able to fix most mistakes, so when the configuration turns
+      out to be invalid, simply run menuconfig again.</para>
 
       <section>
         <title>Default configurations</title>
@@ -69,8 +69,8 @@
         <para>Note that the defconfig rule will choose the default board name
         to generate a defconfig_board file in your default vendor directory.
         If you have different variants for one board, use the
-        <varname>CONFIG_PLAT_EXTENSION</varname> variable to name your
-        specific configuration variant.</para>
+        <option>CONFIG_PLAT_EXTENSION</option> variable to name your specific
+        configuration variant.</para>
       </section>
     </section>
 
@@ -228,12 +228,12 @@
     <section id="sec_overlay">
       <title>Large programs - function overlay</title>
 
-      <para>If the <varname>CONFIG_SCACHE_INSN</varname> option is present in
-      the board supply package, larger programs than the actual block ram size
-      allows can be created. Depending on the board configuration, functions
-      may be placed into the extended program area by default, or a special
-      attribute might be required to decorate the function. See also <xref
-      linkend="sec_insncache"/>.</para>
+      <para>If the <option><varname>CONFIG_SCACHE_INSN</varname></option>
+      option is present in the board supply package, larger programs than the
+      actual block ram size allows can be created. Depending on the board
+      configuration, functions may be placed into the extended program area by
+      default, or a special attribute might be required to decorate the
+      function. See also <xref linkend="sec_cache"/>.</para>
 
       <para>Which of these applies, is easily determined by the first letter
       of the board supply package name. If it begins with 'a', then you will
@@ -558,8 +558,8 @@ Transfer rate: 11809 bits/sec, 98 bytes/write.
       addresses may have changed. Therefore, functions that call code from
       non-updated ROM will likely crash or produce unexpected results. When
       testing programs via RAM downloads, make sure your ROM is up to date or
-      not called (CONFIG_SCACHE_INSN disabled). Another possibility is to
-      avoid relative jump addresses by using the
+      not called (<option>CONFIG_SCACHE_INSN</option> disabled). Another
+      possibility is to avoid relative jump addresses by using the
       <option>--mno-callpcrel</option> flag during compilation
       (<varname>CFLAGS</varname> variable in the Makefile).</para>
 
@@ -630,7 +630,9 @@ which has no line number information.
         applications that require repeated dumps of variables, it is
         recommended to use a global variable in memory. The reason for this
         behaviour is that the ZPU architecture is a stack machine and full
-        context tracking is limited on the current GCC toolchain.</para>
+        context tracking is limited on the current GCC toolchain. On RISC-V,
+        FLiX and other register based architectures this is not the
+        case.</para>
       </section>
 
       <section>
@@ -645,7 +647,7 @@ which has no line number information.
         executed by the following command sequence:</para>
 
         <screen>(gdb) source soc_mmr.gdb
-(gdb) dump_irq_sic_ilat 0
+(gdb) dump_IRQ_SIC_ILAT 0
 
 Address: 00008304 SIC_ILAT:	00000080
 </screen>

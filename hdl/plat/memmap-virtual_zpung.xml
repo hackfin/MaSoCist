@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<devdesc version="0.1"
+         xsi:schemaLocation="http://www.section5.ch/dclib/schema/devdesc devdesc.xsd"
+         xmlns="http://www.section5.ch/dclib/schema/devdesc"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:xi="http://www.w3.org/2001/XInclude"
+         xmlns:ns22="http://www.w3.org/1999/xhtml"
+         xmlns:ns2="http://www.xmlmind.com/xmleditor/schema/bugreport"
+         xmlns:ns="http://www.section5.ch/dclib/schema/devdesc"
+         xmlns:memmap="http://www.section5.ch/dclib/schema/memmap"
+         xmlns:interfaces="http://www.section5.ch/dclib/schema/interfaces"
+         xmlns:html="http://www.xmlmind.com/xmleditor/schema/xhtml"
+         xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+  <vendor>section5</vendor>
+
+  <!--// (c) 2019 section5.ch
+
+-->
+
+  <revision>
+    <major>0</major>
+
+    <minor>1</minor>
+
+    <extension>alpha</extension>
+  </revision>
+
+  <header>iomap_config</header>
+
+  <header language="LINKERSCRIPT"> OUTPUT_FORMAT("elf32-bigmips",
+  "elf32-bigmips", "elf32-bigmips") OUTPUT_ARCH(mips) ENTRY(start)</header>
+
+  <device id="pyps_hdr60" name="PyPS HDR60" protocol="REGISTER">
+    <revision>
+      <major>0</major>
+
+      <minor>0</minor>
+    </revision>
+
+    <info>Legacy map, no longer supported</info>
+
+    <memorymap access="rw" addrsize="13" endian="BIG" name="l1ram_a"
+               offset="0x00000000" size="0x2000">
+      <memmap:info>Data RAM Bank A</memmap:info>
+    </memorymap>
+
+    <memorymap access="rw" addrsize="13" endian="BIG" name="l1ram_b"
+               offset="0x40000000" size="0x2000">
+      <memmap:info>Data RAM Bank B</memmap:info>
+    </memorymap>
+
+    <memorymap access="rw" addrsize="10" endian="BIG" name="mmr"
+               offset="0x10000000" size="0x1000">
+      <memmap:info>Memory mapped register space</memmap:info>
+
+      <!-- Instantiate a IP unit by register map -->
+
+      <memmap:map>
+        <memmap:unit decodereg="MMR_UNIT" ref="jpegctrl">
+          <memmap:item>JPEG</memmap:item>
+        </memmap:unit>
+      </memmap:map>
+    </memorymap>
+
+    <memorymap access="rw" addrsize="10" endian="BIG" name="asyncio"
+               offset="0x20000000" size="0x1000">
+      <memmap:info>Asynchronous I/O interface</memmap:info>
+    </memorymap>
+
+    <memorymap access="x" addrsize="13" endian="BIG" name="iram"
+               offset="0x80000000" size="0x20000">
+      <memmap:info>The instruction RAM, mapped into the linear address space from offset. Address size is per 32 bit.</memmap:info>
+    </memorymap>
+
+    <memorymap access="x" addrsize="13" endian="BIG" name="cache"
+               offset="0xc0000000" size="0x2000">
+      <memmap:info>Reserved for cache, optional bank B</memmap:info>
+    </memorymap>
+  </device>
+
+  <device id="zpung_virtual" name="ZPUng 'virtual'" protocol="REGISTER">
+    <revision>
+      <major>0</major>
+
+      <minor>0</minor>
+    </revision>
+
+    <memorymap access="rw" endian="BIG" name="init" offset="0x00000000"
+               size="0x400">
+      <memmap:info>Startup and emulation code</memmap:info>
+    </memorymap>
+
+    <memorymap access="rwx" endian="BIG" name="l1ram" offset="0x00000400"
+               size="0x3c00">
+      <memmap:info>Program/Data RAM and heap</memmap:info>
+    </memorymap>
+
+    <memorymap access="rw" endian="BIG" name="dcache" offset="0x00004000"
+               size="0x2000">
+      <memmap:info>DCache memory</memmap:info>
+    </memorymap>
+
+    <memorymap access="rwx" endian="BIG" name="icache" offset="0x00006000"
+               size="0x2000">
+      <memmap:info>ICache memory</memmap:info>
+    </memorymap>
+
+    <memorymap access="s" endian="BIG" name="cache" offset="0x00008000"
+               size="0x800">
+      <memmap:info>Dedicated stack memory</memmap:info>
+    </memorymap>
+
+    <memorymap access="x" endian="BIG" name="vrom_prog_a" offset="0x00008000"
+               size="0x8000">
+      <memmap:info>Virtual program ROM Bank A (cache mapped)</memmap:info>
+    </memorymap>
+
+    <memorymap access="x" endian="BIG" name="vrom_prog_b" offset="0x00018000"
+               size="0x8000">
+      <memmap:info>Virtual program ROM Bank B (cache mapped)</memmap:info>
+    </memorymap>
+
+    <memorymap access="rwx" endian="BIG" name="vrom_prog_b"
+               offset="0x00020000" size="0x10000">
+      <memmap:info>Extended data ROM (cached mapped)</memmap:info>
+    </memorymap>
+
+    <memorymap access="rw" endian="BIG" name="mmr" offset="0xfffc0000"
+               size="0x40000">
+      <memmap:info>Memory mapped registers</memmap:info>
+    </memorymap>
+  </device>
+</devdesc>

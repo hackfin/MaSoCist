@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
-<section>
+<section id="sec_cpucores">
   <title>CPU cores</title>
 
-  <para>Several CPU cores have been adapted to the MaSoCist build
-  environment.</para>
+  <para>Several CPU cores have been developed for or integrated into the
+  MaSoCist build environment.</para>
 
   <section>
     <title>ZPU small core 'Zealot'</title>
@@ -90,36 +90,29 @@
   <section>
     <title>PyPS core</title>
 
-    <para>The PyPS core is based on a classic MIPS architecture design with a
-    few specific optimizations with regards to Block RAM. It runs up to 70 MHz
-    on Spartan3 platforms ('cordula' configuration) with a BRAM register bank.
-    Higher speeds can be achieved with distributed register RAM.</para>
+    <para>The PyPS core (section5 proprietary, written in Python) is a
+    reconfigureable processor design based on a classic RISC architecture
+    design with a few specific optimizations with regards to Block RAM. It
+    runs up to 100 MHz on Spartan6 platforms ('emil' configuration) with a
+    distributed register file.</para>
 
     <itemizedlist>
       <listitem>
-        <para>MIPS-I instruction set with microcode enhancements
-        (DIV/MUL)</para>
+        <para>RISC-V instruction set compatible (rv32ui tests passing)</para>
       </listitem>
 
       <listitem>
-        <para>Five-Stage pipeline with hazard resolving unit</para>
+        <para>Configureable CSR functionality</para>
       </listitem>
 
       <listitem>
-        <para>StdTAP debugging interface</para>
+        <para>Four/Five (shortcut) pipeline stages with hazard
+        prevention</para>
       </listitem>
 
       <listitem>
-        <para>Limited MIPS16 ASE option (no exception support)</para>
-      </listitem>
-
-      <listitem>
-        <para>Configureable to be either fully compatible to MIPS-I or
-        fast</para>
-      </listitem>
-
-      <listitem>
-        <para>Limited interrupt support (use DMA where possible)</para>
+        <para>StdTAP debugging interface with simplified
+        In-Circuit-Emulation</para>
       </listitem>
 
       <listitem>
@@ -128,9 +121,31 @@
     </itemizedlist>
 
     <note>
-      <para>The PyPS core is no longer maintained for new designs due to its
-      complexity and resource usage. It is recommended to use the ZPUng v1.1
-      instead.</para>
+      <para>The legacy PyPS core MIPS compatibility is dropped in favor of the
+      stable RISC-V rv32ui architecture</para>
+    </note>
+
+    <para>The specific RISC-V 32 bit variant is also referred to as
+    <productname>pyrv32</productname> in the MaSoCist configuration. Renaming
+    in progress...</para>
+  </section>
+
+  <section>
+    <title>neo430 - MSP430 compatible</title>
+
+    <para>As a proof of concept, the neo430 processor from Stefan Nolting was
+    slightly modified and integrated into the opensource MaSoCist
+    distribution. For more information on the processor architecture, please
+    see <ulink
+    url="https://github.com/stnolting/neo430">https://github.com/stnolting/neo430</ulink>.</para>
+
+    <para>Note that this is a 16 bit processor, thus some functionality
+    depending on 32 bit peripheral registers is not supported (no Ethernet
+    networking, for example).</para>
+
+    <note>
+      <para>Support for neo430 is experimental only, no extensive tests were
+      made</para>
     </note>
   </section>
 </section>

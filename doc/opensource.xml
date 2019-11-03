@@ -15,9 +15,21 @@
       </affiliation>
     </author>
 
-    <pubdate>10/2018</pubdate>
+    <pubdate>11/2019</pubdate>
 
-    <releaseinfo>v0.2opensource</releaseinfo>
+    <releaseinfo>v0.21opensource</releaseinfo>
+
+    <revhistory>
+      <revision>
+        <date>3.11.2019</date>
+
+        <authorinitials>ms</authorinitials>
+
+        <revdescription>
+          <para>Added some sections, work in progress</para>
+        </revdescription>
+      </revision>
+    </revhistory>
   </bookinfo>
 
   <chapter>
@@ -35,7 +47,7 @@
     </note>
 
     <para>This evaluation version is featured by the simple System On Chip
-    design 'agathe'. It implements a microcontroller with the following
+    design 'beatrix'. It implements a microcontroller with the following
     peripherals:</para>
 
     <itemizedlist>
@@ -60,8 +72,8 @@
       </listitem>
     </itemizedlist>
 
-    <para>See separate SoC documentation (<filename>soc-agathe.pdf</filename>)
-    for details.</para>
+    <para>See separate SoC documentation
+    (<filename>soc-beatrix.pdf</filename>) for details.</para>
 
     <para>The MaSoCist environment is available as:</para>
 
@@ -426,47 +438,531 @@
   <xi:include href="reference/quickstart.xml" xpointer="element(/1)"
               xmlns:xi="http://www.w3.org/2001/XInclude"/>
 
+  <chapter>
+    <title>SoC generation</title>
+
+    <para>A few sections are still missing from this chapter.</para>
+
+    <para><remark>Work in progress</remark></para>
+
+    <section id="sec_pseudoreg">
+      <title>Pseudo register maps</title>
+
+      <para>Some registermap nodes do not represent a specific component but
+      are used for address decoding purposes or port exports. These register
+      definitions basically emit address and bitfield specification constants
+      only to make the life of a VHDL programmer easier and keep the code
+      flexible. To prevent these definitions from being converted into
+      component definitions, special attributes can be assigned to a
+      registermap node. <xref linkend="tbl_regmap_attr"/> shows the possible
+      combinations.</para>
+
+      <table id="tbl_regmap_attr">
+        <title>Register map attributes</title>
+
+        <tgroup cols="3">
+          <colspec align="left" colwidth="2*"/>
+
+          <colspec/>
+
+          <colspec align="justify" colwidth="5*"/>
+
+          <thead>
+            <row>
+              <entry>nodecode</entry>
+
+              <entry>hidden</entry>
+
+              <entry>Result</entry>
+            </row>
+          </thead>
+
+          <tbody>
+            <row>
+              <entry><property>-</property></entry>
+
+              <entry>-</entry>
+
+              <entry>All conversions take place</entry>
+            </row>
+
+            <row>
+              <entry>true</entry>
+
+              <entry>-</entry>
+
+              <entry>Structures needed for address decoding are not
+              emitted</entry>
+            </row>
+
+            <row>
+              <entry>-</entry>
+
+              <entry>true</entry>
+
+              <entry>Register definitions in this map are not
+              converted</entry>
+            </row>
+
+            <row>
+              <entry>true</entry>
+
+              <entry>false</entry>
+
+              <entry>Only register definitions are emitted, but not the
+              PerioPort structures</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+
+      <para>Some pseudo register maps are required for the decoder and system
+      map creation. These are described in the following sections.</para>
+
+      <section id="sec_mmrdef">
+        <title>MMR pseudo map</title>
+
+        <para>In order to create an address decoder, portions of the address
+        bus need to be assigned:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para>To a register space</para>
+          </listitem>
+
+          <listitem>
+            <para>To a device index, when several decoders and cores are
+            instanced, example: Which i2c controller (0..2) is
+            addressed?</para>
+          </listitem>
+
+          <listitem>
+            <para>To a unit selection index, example: Which of (UART, I2C or
+            GPIO) banks are accessed?</para>
+          </listitem>
+        </itemizedlist>
+
+        <para>This address/unit/device decoding is done using slice
+        definitions: A constant slice definition is applied to the I/O
+        address, resulting in a bit vector which is again used to decode the
+        above numbers. The following example defines the configuration space
+        slice for the generated DMA address decoder component (note: This
+        needs to be translated with the <option>--map-prefix</option> opton
+        set to a value &lt; 2)</para>
+
+        <programlisting>&lt;registermap name="MyMMR"&gt;
+    &lt;register id="addrdecode_dummy" size="2"&gt;
+        &lt;bitfield name="MMR_CFG_DMA" msb="5" lsb="1"&gt;
+        &lt;/bitfield&gt;
+     &lt;/register&gt;
+&lt;/registermap&gt;</programlisting>
+
+        <para>This needs a register space of address offset 0x00 up to 0x1e
+        for addressing and has a register width of 16 bits. It does not
+        support byte access on odd addresses, therefore the bitfield
+        definition has the address lsb set to 1. Note that the register
+        addresses in the definition of the DMA decoder are then understood as
+        16 bit wise addresses.</para>
+
+        <para>The second option is, to use the <option>--map-prefix=2</option>
+        option and explicitely use the name "MMR" for the register map:</para>
+
+        <programlisting>&lt;registermap name="MMR"&gt;
+    &lt;register id="addrdecode_dummy" size="2"&gt;
+        &lt;bitfield name="CFG_DMA" msb="5" lsb="1"&gt;
+        &lt;/bitfield&gt;
+     &lt;/register&gt;
+&lt;/registermap&gt;</programlisting>
+
+        <para>This also generates a matching BV_MMR_CFG_* definition.</para>
+
+        <para>The mechanism also allows to map legacy 8 bit decoders into 32
+        bit address space, for instance, the OC_UART16550 and OC_i2c module
+        have their own built-in address decoder and use a 8 bit data bus. On
+        some CPUs, inefficient code might be generated on non-native byte
+        boundary accesses, for example, ZPU operates best when accessing
+        addresses at a multiple of four bytes.</para>
+
+        <para>Other implementations again may contain 16 and 32 bit registers
+        mapped into the address space of a 32 bit CPU. In this case, bit 1 of
+        the address is needed. However, it might again be more elegant, to map
+        the registers into a pure 32 bit boundary address space. If the
+        <property>size</property> attribute is not specified, it is assumed
+        that the addresses are specified as pure byte boundary effective
+        addresses.</para>
+
+        <table id="tbl_addrmapping">
+          <title>Address mapping examples</title>
+
+          <tgroup cols="5">
+            <colspec align="justify" colnum="1" colwidth="4*"/>
+
+            <colspec align="left" colnum="2" colwidth="1*"/>
+
+            <colspec align="left" colnum="3" colwidth="1*"/>
+
+            <colspec align="left" colnum="4" colwidth="1*"/>
+
+            <thead>
+              <row>
+                <entry align="center">Case</entry>
+
+                <entry align="center">addr. bounds</entry>
+
+                <entry align="center">size</entry>
+
+                <entry align="center">addr unit size</entry>
+
+                <entry align="center">MMR_CFG_* LSB</entry>
+              </row>
+            </thead>
+
+            <tbody>
+              <row>
+                <entry>Legacy 8 bit core, using byte boundary addresses and
+                specifications</entry>
+
+                <entry>byte(*)</entry>
+
+                <entry>8</entry>
+
+                <entry>32</entry>
+
+                <entry>2</entry>
+              </row>
+
+              <row>
+                <entry>Legacy 8 bit core, using byte wise addressing, but 32
+                bit addresses</entry>
+
+                <entry>uint32_t</entry>
+
+                <entry>32</entry>
+
+                <entry>32</entry>
+
+                <entry>2</entry>
+              </row>
+
+              <row>
+                <entry>Mixed 16 and 32 bit</entry>
+
+                <entry>byte</entry>
+
+                <entry>16</entry>
+
+                <entry>32</entry>
+
+                <entry>1</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </table>
+
+        <para><xref linkend="tbl_addrmapping"/> shows a few examples.</para>
+
+        <para>The (*) denotes that the 8 bit address has to be converted into
+        a 32 bit boundary address by the converter that emits the register
+        address header definitions.</para>
+
+        <warning>
+          <para>The current conversion does not make use of the
+          <property>size</property> attribute of the registermap node. The
+          register addresses should be entered with the effective memory
+          address (byte address) for easy translation to byte addresses within
+          the C source domain. Future versions of the conversion toolchain
+          might make the register addresses more portable among various bit
+          sized processors.</para>
+        </warning>
+      </section>
+
+      <section>
+        <title>Peripheral device map</title>
+
+        <para>For an automated device map creation, the address decoder
+        section needs to know which device is accessed. For the standard
+        "perio" decoder generator, there is a reserved pseudo bitfield
+        <property>MMR_SELECT_perio</property> extracting the device number
+        portion of the I/O address. Other MMR_SELECT_* nodes can be
+        implemented by the user as a selection field for different bus slaves,
+        etc.</para>
+
+        <important>
+          <para>The MMR_SELECT_perio bitfield is global per generated perio
+          map decoder. However, the device enumeration and address range of a
+          device address decoder is defined <emphasis>per</emphasis>
+          device.</para>
+        </important>
+      </section>
+
+      <section>
+        <title>Port pin pseudo register</title>
+
+        <para>Like the register map decoder's I/O ports, pseudo registers are
+        also allocated for port pin definitions. This is not elaborated any
+        further in this document for now.</para>
+      </section>
+
+      <section id="sec_addrsize">
+        <title>Address bus size</title>
+
+        <para>The full address bus width is seldom needed in a simple address
+        decoder. Since the <interfacename>mmr_perio</interfacename> mapping
+        takes care of the unit selection signals, only a slice of a few lower
+        address pins needs to be evaluated. The synthesis toolchain takes care
+        of eliminating these unused addresses, however it might be desirable
+        to restrict them from beginning. Also, there are use cases where
+        mirroring of address ranges is actually wanted. For this, there is a
+        reserved attribute in the &lt;registermap&gt; node: 'addrsize',
+        specificying the address bus width evaluated for the decoder.</para>
+
+        <para>This <property>addrsize</property> attribute is kept somewhat
+        abstract, it is effectively up to the SoC generator on what code is
+        emitted. Therefore, another type definition on the HDL side is
+        necessary to exactly determine what is finally emitted. For example,
+        when an <parameter>addrsize="13"</parameter> specification is made, a
+        corresponding definition as the one below is required:</para>
+
+        <programlisting>subtype regaddr13_t is unsigned(12 downto 0);
+</programlisting>
+
+        <para>This definition is by default put into a VHDL package:
+        <filename>hdl/periotypes_pkg.vhdl</filename>. It can be put into any
+        other platform specific package file. This package must then be
+        included using a &lt;header&gt; node statement:</para>
+
+        <para><programlisting>&lt;header language="VHDL"&gt;library work;
+use work.periotypes.all;&lt;/header&gt;
+</programlisting></para>
+      </section>
+    </section>
+  </chapter>
+
+  <chapter>
+    <title>Hardware/IP cores</title>
+
+    <xi:include href="reference/cpucores.xml" xpointer="element(/1)"
+                xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+    <section>
+      <title>Peripheral cores</title>
+
+      <para>Please see soc-beatrix.pdf for a few example cores. The IP core
+      library reference is not included in this document.</para>
+    </section>
+  </chapter>
+
   <xi:include href="reference/vendor.xml" xpointer="element(/1)"
               xmlns:xi="http://www.w3.org/2001/XInclude"/>
 
-  <chapter>
+  <appendix id="app_trouble">
     <title>Troubleshooting</title>
 
-    <para>Typical errors that may appear on your console:</para>
+    <para>Plenty of design errors can slip through, the XML style sheet does
+    only check for syntax, but not for sense. This section lists a few typical
+    errors that occur when compiling erroneous VHDL code generated from an XML
+    description. One important point is to decide beforehand which interface
+    type (see <option>--interface-type</option> option in gensoc) should be
+    used.</para>
 
-    <variablelist>
-      <varlistentry>
-        <term>/usr/bin/ld: cannot find -lslave</term>
+    <section>
+      <title>GHDL compilation errors</title>
 
-        <listitem>
-          <para>You need to install the <package>netpp-dev</package> package
-          or the full netpp source and set the <varname>NETPP</varname>
-          environment variable to it. Possibly you might have to set
-          <varname>LD_LIBRARY_PATH</varname>, if you have a custom
-          installation.</para>
-        </listitem>
-      </varlistentry>
+      <para><variablelist>
+          <varlistentry>
+            <term>no declaration for "bv_mmr_cfg_..."</term>
 
-      <varlistentry>
-        <term>virtualuart.vhdl:42:24:@0ms:(assertion failure): Failed to open
-        PTY pipe</term>
+            <listitem>
+              <para>Check if an address slice definition is present (see <xref
+              linkend="sec_mmrdef"/>). Also, check the
+              <option>--map-prefix</option> option and verify the register map
+              name.</para>
+            </listitem>
+          </varlistentry>
 
-        <listitem>
-          <para>The virtual UART is not running. Start
-          <filename>sim/init-pty.sh</filename> first, see <xref
-          linkend="sec_runsim"/>.</para>
-        </listitem>
-      </varlistentry>
+          <varlistentry>
+            <term>no declaration for "reg_size"</term>
 
-      <varlistentry>
-        <term>../hdl/plat/breakout_top.vhdl:16:9: cannot find resource library
-        "machxo2"</term>
+            <listitem>
+              <para>The register has no size attribute defined and there is no
+              default definition included.</para>
+            </listitem>
+          </varlistentry>
 
-        <listitem>
-          <para>Vendor specific library not installed, see <xref
-          linkend="sec_vendorsim"/>.</para>
-        </listitem>
-      </varlistentry>
-    </variablelist>
-  </chapter>
+          <varlistentry>
+            <term>static range violates bounds</term>
+
+            <listitem>
+              <para>Check if the specified register size is greater than the
+              actual data bus width</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>string length does not match that of the anonymous integer
+            subtype defined at ....</term>
+
+            <listitem>
+              <para>Check if the register 'addr' attribute has the correct
+              address specification and that the &lt;default&gt; node value
+              matches its length</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>can't match character literal 'x' with type
+            std_ulogic</term>
+
+            <listitem>
+              <para>You mave have an 'x' at the wrong position in your
+              &lt;default&gt; node. Check corresponding bit field
+              definition.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>full constant must appear in package body</term>
+
+            <listitem>
+              <para>Possible duplicate bitfield name. Either rename the bit
+              field or move the unit into a separate driver file and generate
+              a separate perio package for it.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>duplicate choice with choice at ...</term>
+
+            <listitem>
+              <para>Possibly, registers inside a registermap node have an
+              address clash. Also check readonly/writeonly concept.</para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>../hdl/plat/breakout_top.vhdl:16:9: cannot find resource
+            library "machxo2"</term>
+
+            <listitem>
+              <para>Vendor specific library not installed, see <xref
+              linkend="sec_vendorsim"/>.</para>
+            </listitem>
+          </varlistentry>
+        </variablelist></para>
+    </section>
+
+    <section>
+      <title>Simulation errors</title>
+
+      <variablelist>
+        <varlistentry>
+          <term>virtualuart.vhdl:42:24:@0ms:(assertion failure): Failed to
+          open PTY pipe</term>
+
+          <listitem>
+            <para>The virtual UART is not running. Start sim/init-pty.sh
+            first, see <xref linkend="sec_runsim"/>.</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </section>
+
+    <section>
+      <title>Linker errors</title>
+
+      <variablelist>
+        <varlistentry>
+          <term>./libminimal.so: undefined reference to `g_t_fifo'</term>
+
+          <listitem>
+            <para>The 'DevicePerio Simulator' device entry might be missing
+            from the device file</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>/usr/bin/ld: cannot find -lslave</term>
+
+          <listitem>
+            <para>You need to install a netpp slave package or the full netpp
+            source and set the NETPP environment variable to it</para>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </section>
+
+    <section>
+      <title>Cross clock domain issues</title>
+
+      <para>Note that all bus decoding activity runs at one single bus clock.
+      Peripherals running at a different clock providing their own registers
+      (like counters) require some clock domain crossing logic for safely
+      transferring a value to the register decoding logic. If false values are
+      received, check for this classical problem.</para>
+
+      <important>
+        <para>The implementation of clock synchronization logic is entirely up
+        to the system developer!</para>
+      </important>
+    </section>
+
+    <section>
+      <title>Documentation errors</title>
+
+      <para>Some errors may occur during documentation processing. Typical
+      errors are missing references. These errors can appear in the XML check
+      itself, or in the generated LaTeX document.</para>
+
+      <section>
+        <title>XML errors</title>
+
+        <para><variablelist>
+            <varlistentry>
+              <term>reference to non-existent ID ...</term>
+
+              <listitem>
+                <para>A xref node exists with pointer to a node id that might
+                not be included in the document</para>
+              </listitem>
+            </varlistentry>
+          </variablelist></para>
+      </section>
+
+      <section>
+        <title>LaTeX errors</title>
+
+        <para><variablelist>
+            <varlistentry>
+              <term>File `../device_properties.tex' not found.</term>
+
+              <listitem>
+                <para>An xinclude reference to an external (referenced) node
+                or section is incorrect. Make sure the node output is properly
+                generated and try a Validity check inside the XML
+                editor.</para>
+              </listitem>
+            </varlistentry>
+
+            <varlistentry>
+              <term>LaTeX Warning: Hyper reference `...' on page .. undefined
+              on input line ..</term>
+
+              <listitem>
+                <para>A referenced node is missing. Try the XML validity
+                check</para>
+              </listitem>
+            </varlistentry>
+          </variablelist></para>
+      </section>
+
+      <section>
+        <title>Register display</title>
+
+        <para>If a register bitfield appears marked red in the register
+        bitfield map graphics, its MSB and LSB definitions are switched. This
+        can be resolved by some code, however it should be fixed for proper
+        VHDL output.</para>
+      </section>
+    </section>
+  </appendix>
 </book>
