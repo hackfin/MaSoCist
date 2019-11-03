@@ -1,7 +1,9 @@
 
 GENERATED_XML = devicemap.xml device_properties.xml
 
-include recipes/plat/$(DEVICE_CONFIG).mk
+-include recipes/plat/$(DEVICE_CONFIG).mk
+
+DOC_MMR_BASE ?= 0xfff00000
 
 
 devicemap.xml: $(DEVICEFILE) devicemap.xsl

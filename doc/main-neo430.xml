@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"/usr/share/xml/docbook/schema/dtd/4.5/docbookx.dtd">
+<book>
+  <bookinfo>
+    <title>MaSoCist 'neo430' reference</title>
+
+    <author>
+      <firstname>Martin</firstname>
+
+      <surname>Strubel</surname>
+
+      <affiliation>
+        <orgname>section5</orgname>
+      </affiliation>
+    </author>
+
+    <pubdate>10/2018</pubdate>
+
+    <releaseinfo>v0.2-section5-develop</releaseinfo>
+
+    <revhistory>
+      <revision>
+        <date>3.11.2019</date>
+
+        <authorinitials>ms</authorinitials>
+
+        <revdescription>
+          <para>Added stubs to make docs build</para>
+        </revdescription>
+      </revision>
+    </revhistory>
+  </bookinfo>
+
+  <chapter>
+    <title>Introduction</title>
+
+    <para>This documentation is more or less a skeleton and demonstrates some
+    basic auto-generated register map documentation.</para>
+  </chapter>
+
+  <chapter>
+    <title>Peripheral modules</title>
+
+    <para>The SoC peripherals are mapped automatically from the device
+    description. Several instances of peripheral modules, such as GPIO
+    controller banks, can be mapped into the MMR address space according to
+    the addressing scheme defined in a specific unit map. For register
+    reference, the absolute address of a register is calculated as the sum of
+    the following values:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>A registermap offset per device unit, listed in <xref
+        linkend="tbl_devicemap_system_map"/>.</para>
+      </listitem>
+
+      <listitem>
+        <para>A register offset, listed in the peripheral address map</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>For external Wishbone peripheral IP that is not auto-generated from
+    the device description, an address relative to the MMR_OFFSET range
+    applies, thus requiring none of the above calculations.</para>
+
+    <para>The register map reference is valid only for the following hardware
+    revision of the SoC device:</para>
+
+    <xi:include href="device_properties.xml" xpointer="rev_tag_system_map"
+                xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+    <para>Each component has some software support, or optional regression
+    test scripts to test the interface. See <xref linkend="tbl_swsupport"/>
+    for an overview on source files corresponding to a peripheral.</para>
+
+    <table id="tbl_swsupport">
+      <title>Peripheral module software support</title>
+
+      <tgroup cols="2">
+        <thead>
+          <row>
+            <entry align="center">Description</entry>
+
+            <entry align="center">C source</entry>
+          </row>
+        </thead>
+
+        <tbody>
+          <row>
+            <entry>General tests and board initialization</entry>
+
+            <entry>test_$(PLATFORM).c</entry>
+          </row>
+
+          <row>
+            <entry>Simple UART</entry>
+
+            <entry>uart.c</entry>
+          </row>
+
+          <row>
+            <entry>SPI 8 bit core</entry>
+
+            <entry>spiflash.c</entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+
+    <section id="sec_sys">
+      <title>System control</title>
+
+      <para>The system control section covers the platform specific
+      configuration properties. To synchronize the Firmware with the hardware,
+      the <property>HWVersion</property> register should be queried.
+      Typically, this revision code is generated from the system device
+      description XML. One might note that the SysCtrl map follows a different
+      naming scheme than the other agathe peripherals. The reason for this is,
+      that the SysCtrl unit is specific to the system architecture, whereas
+      the basic peripherals are per se system agnostic. For example, if a
+      system supports I/O multiplexing (GPIO and alternate functions) or cache
+      functionality, the SysCtrl unit becomes relevant.</para>
+
+      <note>
+        <para>All MaSoCist SoC instances must have at least a SysCtrl unit
+        with the XML id 'sys'.</para>
+      </note>
+
+      <para>More complex systems may have a separate I/O multiplexing
+      unit.</para>
+
+      <xi:include href="device_properties.xml" xpointer="tbl_regmap_sys"
+                  xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+      <important>
+        <para>In order to facilitate downward compatibility with respect to
+        firmware, it is mandatory for the HWVersion register to remain at the
+        end of the register map. Since the address bits are masked according
+        to the MMR_CFG_SysCtrl definition in the system map VHDL file, it is
+        ensured that queries with higher MSBs set (that are masked out on the
+        older HW revision) still receive the correct HWVersion.</para>
+      </important>
+
+      <section>
+        <title>Clock configuration</title>
+
+        <para>The agathe and beatrix configurations have a simple clock scheme
+        for the peripherals. The main system clock is simply divided by a
+        divisor value to obtain the clock for the peripheral. The system clock
+        itself depends on the FPGA hardware and oscillator frequencies used.
+        Some platforms do have a PLL, multiplying the external master clock by
+        a fractional value. The configuration of clock frequencies and
+        dividers is done by the menu configuration. The formula to obtain the
+        system clock (see also <filename>sw/driver.h</filename>):</para>
+
+        <?latex \begin{equation}
+SYSCLK = CLOCK\_FREQUENCY * \frac{CONFIG\_PLL\_MUL}{CONFIG\_PLL\_DIV}
+\end{equation}?>
+
+        <note>
+          <para>You can output the current system clock in Hz within the GNU
+          debugger by <command>print g_sysclk</command> when using the
+          standard test firmware.</para>
+        </note>
+
+        <para>For platforms without PLL and missing CONFIG_PLL variables you
+        can assume DIV and MUL = 1. Some FPGAs have internal oscillators whose
+        frequencies may not be arbitrary. These have their own CONFIG
+        variables. Handle with care, do not reconfigure those clocks freely or
+        your system may stop to operate correctly.</para>
+
+        <para>The software library support coming with your board supply
+        package typically takes care of the clock configuration.</para>
+      </section>
+    </section>
+
+    <section id="sec_dmem">
+      <title>Data memory</title>
+
+      <para>The neo430 data memory in this configuration is an 8 bit wide
+      memory, byte-adressable. It is currently used as single port memory,
+      however it can be extended to use DMA.</para>
+
+      <para><remark>DMA support is experimental and undocumented for
+      now.</remark></para>
+    </section>
+
+    <xi:include href="reference/spi.xml" xpointer="element(/1)"
+                xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+    <xi:include href="reference/uartsimple.xml" xpointer="element(/1)"
+                xmlns:xi="http://www.w3.org/2001/XInclude"/>
+  </chapter>
+
+  <appendix>
+    <title>Register map reference</title>
+
+    <section>
+      <title>Device peripheral map</title>
+
+      <para><xref linkend="tbl_devicemap_system_map"/> shows the address map
+      offsets for the peripheral units in this SoC.<xi:include
+      href="devicemap.xml" xpointer="tbl_devicemap_system_map"
+      xmlns:xi="http://www.w3.org/2001/XInclude"/></para>
+    </section>
+
+    <xi:include href="device_properties.xml" xpointer="sec_reg_system_map"
+                xmlns:xi="http://www.w3.org/2001/XInclude"/>
+  </appendix>
+
+  <appendix id="app_custom">
+    <title>Custom maps</title>
+
+    <section>
+      <title>Custom mapping</title>
+
+      <para>This section currently is a stub</para>
+
+      <para><remark>FIXME: implement SIC mapping (stub)</remark></para>
+    </section>
+  </appendix>
+</book>

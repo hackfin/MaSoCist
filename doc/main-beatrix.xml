@@ -832,7 +832,7 @@ SYSCLK = CLOCK\_FREQUENCY * \frac{CONFIG\_PLL\_MUL}{CONFIG\_PLL\_DIV}
     <section>
       <title>Firmware</title>
 
-      <xi:include href="../../masocist/doc/software.xml"
+      <xi:include href="software.xml"
                   xpointer="sec_overlay"
                   xmlns:xi="http://www.w3.org/2001/XInclude"/>
     </section>
