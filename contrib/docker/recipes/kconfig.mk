@@ -20,12 +20,6 @@ dry-run:
 install-kconfig: build/kconfig-frontends/frontends/kconfig
 	$(SUDO) $(MAKE) -C $(dir $<)/.. install
 
-$(KCONFIG_TAR):
-	wget http://ymorin.is-a-geek.org/download/kconfig-frontends/$(KCONFIG_TAR)
-
-# src/$(KCONFIG_DIR)/configure: $(KCONFIG_TAR)
-# 	tar xfj $(KCONFIG_TAR) -C src
-
 build/kconfig-frontends/Makefile: src/$(KCONFIG_DIR)/configure
 	[ -e build ] || mkdir build
 	[ -e build/kconfig-frontends ] || mkdir build/kconfig-frontends

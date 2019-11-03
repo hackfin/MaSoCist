@@ -1,6 +1,6 @@
 #!/bin/bash
 
-wget section5.ch/downloads/masocist_sfx.sh -nc && \
+wget https://section5.ch/downloads/masocist_sfx.sh -nc && \
 	sh masocist_sfx.sh
 
 # Create pipe for testing, explicitely. Don't rely on

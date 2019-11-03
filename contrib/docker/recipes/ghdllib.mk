@@ -4,7 +4,7 @@
 include config.mk
 
 # GHDLLIB_URL = $(REPO_SERVER)/ghdllib.git
-GHDLLIB_URL = http://section5.ch/downloads/ghdllib-devel.tgz
+GHDLLIB_URL = https://section5.ch/downloads/ghdllib-devel.tgz
 
 # We depend on ghdlex:
 GHDLEX ?= $(VHDL)/ghdlex
