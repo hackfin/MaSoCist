@@ -14,13 +14,14 @@ The MaSoCist distribution enables you to quickly design, maintain,
 document and automatically create a family of Soft core featured System
 on Chip solutions. It may therefore hurt less for you.
 
-The MaSoCist is currently supported as docker image for local or cloud deployment only
-(previous LXC support dropped). This opensource-version currently supports:
+The MaSoCist is currently supported as docker image for local or
+cloud deployment only (previous LXC support dropped). This opensource-version
+currently supports:
 
   * Co-Simulation with GHDL
   * A limited set of virtual boards and CPU architectures
   * Compiling source code for various architectures
-  * Simple, hand-woven continous integration testing for hardware/software
+  * Simple, hand-woven continuous integration testing for hardware/software
 
 Synthesis in the cloud is not yet supported. Integration is planned, once VHDL
 open source synthesis is sufficiently tested.
@@ -29,17 +30,18 @@ However, all VHDL code is synthesizeable for typical FPGA scenarios.
 Quick evaluation
 ------------------
 
-Here's a short howto to set up an environment ready to play with. For example, running
-a virtual RISC-V with a virtual UART console.
+Here's a short howto to set up an environment ready to play with. For example,
+running a virtual instance of a RISC-V with UART console.
 
 You can try this (for instance) in the browser at
 
 https://labs.play-with-docker.com
 
-Register yourself a Docker account login and just playing in your online sandbox
-(time limit applies). You'll need to build and copy some files from contrib/docker
-to the remote Docker machine instance.
-Add a new machine instance in the left panel. Then use the two-liner:
+Register yourself a Docker account login and start playing in your online
+sandbox (time limit applies). You'll need to build and copy some files from
+contrib/docker to the remote Docker machine instance.
+
+Add a new machine instance in the left panel. Then run the container:
 
     docker run -it hackfin/masocist
 
@@ -47,21 +49,30 @@ Add a new machine instance in the left panel. Then use the two-liner:
 
     wget https://section5.ch/downloads/masocist_sfx.sh && sh masocist_sfx.sh && make all run-pyrv32
     
-After building the relevant tools, the virtual processor will boot and the terminal is fired
-up to talk to it. When you see the 'Booting beatrix' message, you should get a prompt. Try the
-'h' command followed by return to get help:
+After building the relevant tools, the virtual processor will boot and the
+terminal is fired up to talk to it. When you see the 'Booting beatrix'
+message, you should get a prompt. Try the 'h' command followed by return
+to get help:
 
     # h
 
 When you exit minicom by hitting `Ctrl+A`, then `q`, the simulation will be
 terminated.
+Because it is a cycle accurate hardware description of synthesizeable
+hardware, it will run a few thousand times slower than a real CPU.
+
+The benefit: You can trace down to each little bit what the entire SoC
+is doing. If you forget to initialize something in software (which is a
+classic error to lead to random behaviour in the real world) you will see
+it immediately in the trace waveforms.
 
 
 Building from scratch
 -----------------------
 
-Because dependencies have become complex, the only supported method to build the
-MaSoCist environment is currently using the Dockerfile supplied in contrib/docker.
+Because dependencies have become complex, the only supported method to build
+the MaSoCist environment is currently using the Dockerfile supplied in
+contrib/docker.
 
 Run 'make dist' inside contrib/docker, this will create a file `masocist_sfx.sh`
 Copy the following files to the Docker working directory (in the above docker playground
@@ -71,7 +82,7 @@ this works by dragging them onto the Playground browser shell window):
 
 Build the container and run it:
 
-    docker build . -t masocist .
+    docker build . -t masocist
 
     docker run -it -v/root:/usr/local/src masocist
 
@@ -103,7 +114,7 @@ Again, use `Ctrl+A` followed by `q` to terminate the console and simulation.
 Building a (virtual) board
 -------------------------------
 
-Enter the masocist source directory, typically in $HOME/src/vhdl/masocist.
+Enter the masocist source directory, typically in `$HOME/src/vhdl/masocist`.
 
 1. Choose a configuration from an available set:
 
@@ -125,9 +136,9 @@ worst case twice, if the kconfig tool decides to reconfigure):
 
 3.  Build files for synthesis:
 
-    make -C syn clean all
+        make -C syn clean all
 
-4. Open the project in syn/<FPGA_VENDOR>/<PLATFORM>
+4. Open the project in `syn/$(FPGA\_VENDOR)/$(PLATFORM)`
 
 If files need to be added, you may use the TCL scripts that are generated
 when running 'make' for synthesis.
