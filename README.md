@@ -14,26 +14,58 @@ The MaSoCist distribution enables you to quickly design, maintain,
 document and automatically create a family of Soft core featured System
 on Chip solutions. It may therefore hurt less for you.
 
+The MaSoCist is currently supported as docker image for local or cloud deployment only
+(previous LXC support dropped). This opensource-version currently supports:
 
-Prerequisites
+  * Co-Simulation with GHDL
+  * A limited set of virtual boards and CPU architectures
+  * Compiling source code for various architectures
+  * Simple, hand-woven continous integration testing for hardware/software
+
+Synthesis in the cloud is not yet supported. Integration is planned, once VHDL
+open source synthesis is sufficiently tested.
+However, all VHDL code is synthesizeable for typical FPGA scenarios.
+
+Quick evaluation
 ------------------
 
-You need the build environment. Because dependencies have become complex,
-a Dockerfile plus various build recipes to build the environment for you is
-supplied in contrib/docker.
+Here's a short howto to set up an environment ready to play with. For example, running
+a virtual RISC-V with a virtual UART console.
 
-Here's a short howto to set up an environment ready to play with.
-You can try this online at
+You can try this (for instance) in the browser at
 
-https://labs.play-with-docker.com, for example.
+https://labs.play-with-docker.com
 
-Just register yourself a Docker account, login and start playing in your
-online sandbox. You'll need to build and copy some files from contrib/docker
+Register yourself a Docker account login and just playing in your online sandbox
+(time limit applies). You'll need to build and copy some files from contrib/docker
 to the remote Docker machine instance.
+Add a new machine instance in the left panel. Then use the two-liner:
+
+    docker run -it hackfin/masocist
+
+(wait a bit, then when you see the Virtual COM message, proceed:)
+
+    wget https://section5.ch/downloads/masocist_sfx.sh && sh masocist_sfx.sh && make all run-pyrv32
+    
+After building the relevant tools, the virtual processor will boot and the terminal is fired
+up to talk to it. When you see the 'Booting beatrix' message, you should get a prompt. Try the
+'h' command followed by return to get help:
+
+    # h
+
+When you exit minicom by hitting `Ctrl+A`, then `q`, the simulation will be
+terminated.
+
+
+Building from scratch
+-----------------------
+
+Because dependencies have become complex, the only supported method to build the
+MaSoCist environment is currently using the Dockerfile supplied in contrib/docker.
 
 Run 'make dist' inside contrib/docker, this will create a file `masocist_sfx.sh`
-Copy the following files to the Docker playground by dragging them onto
-the Playground browser shell window:
+Copy the following files to the Docker working directory (in the above docker playground
+this works by dragging them onto the Playground browser shell window):
 
  `Dockerfile init-pty.sh run-tests.sh`
 
@@ -66,21 +98,20 @@ shell, for example, you can dump the content of the virtual SPI flash by:
 
     s 0 1
 
-When you exit minicom by hitting `Ctrl+A`, then `q`, the simulation will be
-terminated.
+Again, use `Ctrl+A` followed by `q` to terminate the console and simulation.
 
-Quick start
-------------
+Building a (virtual) board
+-------------------------------
 
 Enter the masocist source directory, typically in $HOME/src/vhdl/masocist.
 
 1. Choose a configuration from an available set:
 
-    make which
+       make which
 
 2. select a configuration, e.g. 'virtualboard':
 
-    make virtualboard
+       make virtualboard
 
 This would build all `$(BUILD_DUTIES)`, which are typically 'sim' for
 Simulation:
