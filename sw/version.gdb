@@ -43,6 +43,9 @@ define print_socinfo
 		if $fam == 0x40
 			printf "PyPS architecture rev%d\n", $rev
 		end
+		if $fam == 0x50
+			printf "RiscV architecture rev%d\n", $rev
+		end
 	end
 end
 
@@ -76,6 +79,9 @@ define config_detect
 	end
 	if $v == 0x24
 		printf "Alpha 'dombert' configuration\n"
+	end
+	if $v == 0x35
+		printf "Development 'emil' configuration\n"
 	end
 	if $v == 0x40
 		printf "Development 'lemuel' configuration\n"
