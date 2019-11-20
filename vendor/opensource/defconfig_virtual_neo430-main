@@ -31,7 +31,7 @@ CONFIG_PLAT_EXTENSION="main"
 # NEO430 hardware configuration
 #
 CONFIG_NEO430_DMEM_WIDTH=10
-# CONFIG_NEO430_DADD is not set
+# CONFIG_NEO430_BOOTLOADER is not set
 # CONFIG_NEO430_BOOTLD is not set
 # CONFIG_NEO430_IMEM_RO is not set
 
@@ -106,8 +106,6 @@ CONFIG_VIRTUAL_UART=y
 # TAP configuration
 #
 CONFIG_TAPCLK_PERIOD="50 ns"
-# CONFIG_VTAP_DEBUG is not set
-# CONFIG_VTAP is not set
 # CONFIG_DUMMYTAP is not set
 CONFIG_GHDLEX_DEFAULT=y
 

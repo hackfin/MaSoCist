@@ -164,7 +164,6 @@ begin
 
 	neo430_cpu_inst: neo430_cpu
 	generic map (
-		DADD_USE		=> CONFIG_NEO430_DADD,
 		BOOTLD_USE	=> CONFIG_NEO430_DADD,
 		IMEM_AS_ROM => CONFIG_NEO430_IMEM_RO
 	)

@@ -20,8 +20,8 @@ config NEO430_DMEM_WIDTH
 	help
 	  Data mem width, size = 2**DMEM_WIDTH
 
-config NEO430_DADD
-	bool "DADD"
+config NEO430_BOOTLOADER
+	bool "Use boot loader"
 	default "n"
 
 config NEO430_MULDIV
