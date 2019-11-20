@@ -21,7 +21,7 @@ COREFILES = $(MODULES:%=$(NEO430_DIR)/rtl/core/neo430_%.vhd)
 
 NEO430_DIR = $(SRC)/neo430/neo430
 
-MAYBE_NEO430-$(CONFIG_NEO430) = # $(SRC)/neo430/neo430.patched
+MAYBE_NEO430-$(CONFIG_NEO430) = $(SRC)/neo430/neo430.checked_out
 MAYBE_NEO430-$(CONFIG_NEO430) += $(WORKDIR)/neo430-obj$(VHDL_STD_SUFFIX).cf
 
 # Note: this is the default rule, as it is included early:
