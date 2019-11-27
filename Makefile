@@ -14,7 +14,7 @@ Kconfig = ./Kconfig
 TMPDIR = /tmp
 
 Q ?= @
-QUIET ?= >/dev/null
+QUIET ?= >/dev/null 2>/dev/null
 
 # Minimum duty is to build simulation:
 BUILD_DUTIES ?= sim
@@ -82,7 +82,7 @@ clean:
 	$(Q)$(MAKE) -C syn clean $(QUIET)
 	$(Q)$(MAKE) -C sw clean $(QUIET)
 	$(Q)$(MAKE) -C sim clean $(QUIET)
-	$(Q)-[ -e doc/Makefile ] && $(MAKE) -C doc clean
+	$(Q)-[ -e doc/Makefile ] && $(MAKE) -C doc clean $(QUIET)
 
 
 dist:

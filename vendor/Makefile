@@ -38,7 +38,7 @@ QUIET ?= >/dev/null
 	@echo ---------------------------------------------------------
 	@echo -e "\e[36mRunning test for '$*' \e[0m"
 	@echo ---------------------------------------------------------
-	$(MAKE) -C .. test $(QUIET) 2> /tmp/$*.log || \
+	@$(MAKE) -C .. test $(QUIET) 2> /tmp/$*.log || \
 	( echo -e "!! \e[41mREGTEST FAILED\e[0m, see /tmp/$*.log"; false )
 	@touch $@
 
@@ -66,11 +66,4 @@ test_all: $(REGRESS_TEST_STAMPS)
 
 clean:
 	rm -f *.stamp
-
-dist_all: build_all
-	@for i in $(DIST_PLATFORMS); do \
-		$(MAKE) -f dist.mk simdist VENDOR=$(VENDOR) && \
-		$(MAKE) -f dist.mk dist SYNTHESIS=y VENDOR=$(VENDOR) && \
-		$(MAKE) -f dist.mk dist VENDOR=$(VENDOR); \
-	done;
 

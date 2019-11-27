@@ -14,7 +14,7 @@ DIST_PLATFORMS = $(CONFIG_FILES:defconfig_%=%)
 
 DIST_PLATFORMS = $(CONFIG_FILES:defconfig_%=%)
 
-TEST_PLATFORMS = virtual-demo virtual_riscv-main virtual_neo430-main
+TEST_PLATFORMS = virtual-main virtual_riscv-main virtual_neo430-main
 
 ############################################################################
 

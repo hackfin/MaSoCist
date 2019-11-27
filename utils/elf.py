@@ -194,6 +194,7 @@ class ELFObject:
 		self.e_entry, self.e_phoff, self.e_shoff,
 		self.e_flags, self.e_ehsize, self.e_phentsize, self.e_phnum,
 		self.e_shentsize, self.e_shnum, self.e_shstrndx) = [0]*14
+		self.detected_endian = default_endian
 
 	def fromFile(self, fileobj):
 		"""read all relevant data from fileobj.
@@ -335,11 +336,13 @@ class ELFObject:
 		if symtab and strtab:
 			n = len(symtab.data) / m
 
+
+
 			lookupdict = {}
 			s0 = 0
 			s1 = m
 			for i in range(n):
-				s = Elf32_Sym()
+				s = Elf32_Sym(self.detected_endian)
 				s.fromString(symtab.data[s0:s1])
 				i = strtab.data.find('\0', s.st_name)
 				s.name = strtab.data[s.st_name : i]
@@ -361,19 +364,20 @@ class ELFObject:
 class Elf32_Sym:
 	"""Elf32 Symbol class"""
 
-	structformat = "<IIIBBH"
+	structformat = "IIIBBH"
 	
-	def __init__(self):
+	def __init__(self, endian = "<"):
 		self.name = ""
 		self.st_name = 0
 		self.st_value = 0x00000000
 		self.st_info = 0
 		self.st_other = 0
 		self.st_shndx = 0
+		self.fmt = endian + self.structformat
 
 	def fromString(self, s):
 		(self.st_name, self.st_value, self.st_size, self.st_info,
-		self.st_other, self.st_shndx) = struct.unpack(self.structformat, s)
+		self.st_other, self.st_shndx) = struct.unpack(self.fmt, s)
 
 	def __repr__(self):
 		return "<'%s' nm: %d val:0x%x sz:%d info:%d other:%d shndx:%d>" % (self.name, self.st_name, self.st_value, self.st_size, self.st_info, self.st_other, self.st_shndx)	

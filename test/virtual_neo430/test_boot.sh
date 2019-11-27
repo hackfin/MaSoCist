@@ -13,6 +13,9 @@ CAT_PID=$!
 echo Running test bench ...
 ./$1 --stop-time=8ms >/dev/null
 kill $CAT_PID
+if [ $? != 0 ]; then
+	exit 1
+fi
 out=`cat output.txt | grep Booting | cut -d " " -f 1,2`
 if [ "$out" = "Booting neo430" ]; then
 	echo -e "\e[42mPASS\e[0m"

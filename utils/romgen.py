@@ -498,3 +498,7 @@ def load_elf(elffile, imemory = None, dmemory = None):
 		ret = None
 
 	return ret
+
+def load_symbols(elffile):
+	e = open_elf(elffile)
+	return e.parseSymbols()

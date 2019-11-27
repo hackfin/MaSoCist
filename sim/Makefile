@@ -156,7 +156,10 @@ MY_DUTIES += $(WORKDIR)/ghdlex-obj$(VHDL_STD_SUFFIX).cf
 endif
 
 ifdef MODULE_TAPLIB
+# Only build when not using default
+ifndef CONFIG_GHDLEX_DEFAULT
 MY_DUTIES += $(LIBSIM)
+endif
 endif
 
 ifdef REQUIRE_LIBSLAVE

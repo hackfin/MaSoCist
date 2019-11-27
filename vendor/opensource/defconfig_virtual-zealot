@@ -91,9 +91,10 @@ CONFIG_VIRTUAL_RAM=y
 #
 CONFIG_TAPCLK_PERIOD="50 ns"
 # CONFIG_VTAP_DEBUG is not set
-# CONFIG_VTAP is not set
+CONFIG_VTAP=y
 # CONFIG_DUMMYTAP is not set
-CONFIG_GHDLEX_DEFAULT=y
+# CONFIG_GHDLEX_DEFAULT is not set
+# CONFIG_VTAP_JTAG is not set
 
 #
 # Software options
