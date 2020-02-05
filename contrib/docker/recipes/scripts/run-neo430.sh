@@ -6,7 +6,7 @@
 MASOCIST=$HOME/src/vhdl/masocist-opensource
 
 # In case we use the default GHDLEX lib:
-export LD_LIBRARY_PATH=$GHDLEX/src:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$GHDLEX/src:$MASOCIST/sim:$LD_LIBRARY_PATH
 
 cd $MASOCIST/sim
 if [ -e $1 ]; then

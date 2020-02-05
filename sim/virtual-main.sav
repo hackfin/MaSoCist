@@ -1,21 +1,22 @@
 [*]
 [*] GTKWave Analyzer v3.3.70 (w)1999-2016 BSI
-[*] Fri Nov 22 12:49:18 2019
+[*] Fri Dec 20 14:32:22 2019
 [*]
 [dumpfile] "(null)"
 [savefile] "/home/strubi/src/vhdl/masocist-work/sim/virtual-main.sav"
-[timestart] 11120000000
-[size] 1018 446
-[pos] 502 296
-*-32.995106 43660000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[timestart] 14000000000
+[size] 1018 661
+[pos] 388 24
+*-37.905811 789220000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] tb_virtual.
 [treeopen] tb_virtual.uut.
 [treeopen] tb_virtual.uut.soc.
 [treeopen] tb_virtual.uut.soc.perio.
 [treeopen] tb_virtual.uut.soc.perio.inst_dev_spi.
 [treeopen] tb_virtual.uut.soc.zpucore.
-[sst_width] 38
+[sst_width] 196
 [signals_width] 174
-[sst_expanded] 0
+[sst_expanded] 1
 [sst_vpaned_height] 188
 @c08022
 tb_virtual.uut.soc.zpucore.pc[14:0]
@@ -62,5 +63,10 @@ tb_virtual.uut.soc.spi_cs
 tb_virtual.uut.soc.spi_miso
 tb_virtual.uut.soc.spi_mosi
 tb_virtual.uut.soc.spi_sclk
+tb_virtual.uut.soc.zpucore.tap_emuexec
+@22
+tb_virtual.uut.soc.zpucore.tap_emuir[7:0]
+@28
+tb_virtual.uut.soc.zpucore.tap_emurdy
 [pattern_trace] 1
 [pattern_trace] 0

@@ -136,13 +136,13 @@ Later, these slice defines will be moved to the iomap definitions for the entire
     </registermap>
 
     <group name="Auxiliaries">
-      <property name="Reset" type="REGISTER">
+      <property name="Reset" type="BOOL">
         <info>Direct access of reset bit</info>
 
         <regref bits="CORE_RESET" ref="TAP_EMUCTRL"/>
       </property>
 
-      <property access="RO" name="Break" type="REGISTER" volatile="true">
+      <property access="RO" name="Break" type="BOOL" volatile="true">
         <info>Direct access of break signal</info>
 
         <regref bits="EMURDY" ref="TAP_EMUSTAT"/>
@@ -174,13 +174,13 @@ It does not require any extra handshake logic.</info>
           <regref bits="EMUMASK" ref="TAP_EMUCTRL"/>
         </property>
 
-        <property access="RO" name="Ready" type="BOOL">
+        <property access="RO" name="Ready" type="BOOL" volatile="true">
           <info>'1' when emulation ready</info>
 
           <regref bits="EMURDY" ref="TAP_EMUSTAT"/>
         </property>
 
-        <property access="RO" name="Ack" type="BOOL">
+        <property access="RO" name="Ack" type="BOOL" volatile="true">
           <info>'1' when in emulation mode</info>
 
           <regref bits="EMUACK" ref="TAP_EMUSTAT"/>
@@ -204,20 +204,20 @@ It does not require any extra handshake logic.</info>
           <regref ref="TAP_EMUIR"/>
         </property>
 
-        <property access="RO" name="Data" type="REGISTER">
+        <property access="RO" name="Data" type="REGISTER" volatile="true">
           <info>Return emulation data from the core</info>
 
           <regref ref="TAP_EMUDATA"/>
         </property>
 
-        <property access="RO" name="PC" type="REGISTER">
+        <property access="RO" name="PC" type="REGISTER" volatile="true">
           <info>Current Program counter of core. Valid only when in emulation.</info>
 
           <regref ref="TAP_EMUPC"/>
         </property>
       </struct>
 
-      <property name="SimSleepCycles" type="INT">
+      <property name="SimSleepCycles" type="REGISTER">
         <info>Set 1 to throttle simulation</info>
 
         <regref ref="SIM_SLEEPCYCLES"/>
@@ -265,7 +265,8 @@ It does not require any extra handshake logic.</info>
       </struct>
 
       <struct hidden="true" id="ghdlex_ram" name="RAM">
-        <property access="RW" id="rambuf" name="Buffer" type="BUFFER">
+        <property access="RW" id="rambuf" name="Buffer" type="BUFFER"
+                  volatile="true">
           <!--A buffer object that is handled via a handler function. See handler.c
 (Function get_fifo()/set_fifo() for details.)-->
 
