@@ -46,7 +46,7 @@ architecture behaviour of spi_core is
 	signal state : spi_state_t := S_IDLE;
 
 	signal phase    : unsigned(2-1 downto 0);
-	signal counter  : unsigned(16-1 downto 0) := (others => '0');
+	-- signal counter  : unsigned(16-1 downto 0) := (others => '0');
 
 	signal cbits   : unsigned(NBITS_POWER-1 downto 0);
 	signal cfg_nbits   : unsigned(ctrl.nbits'length-1 downto 0);

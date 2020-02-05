@@ -20,6 +20,7 @@ CONFIG_RISCV_PYRV32=y
 # CONFIG_virtual_neo430 is not set
 CONFIG_virtual_rv32ui=y
 # CONFIG_papilio is not set
+# CONFIG_versa_ecp5 is not set
 # CONFIG_xo2starter is not set
 CONFIG_PLAT_EXTENSION="main"
 CONFIG_HAVE_VTAP=y
@@ -128,3 +129,7 @@ CONFIG_NATIVE=y
 # CONFIG_EMULATE_PLATFORM_IP is not set
 CONFIG_USE_PLATFORM_IP_LIBRARY=y
 CONFIG_LIBSIM="test"
+
+#
+# Synthesis options
+#

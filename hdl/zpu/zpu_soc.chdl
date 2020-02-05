@@ -152,6 +152,32 @@ vram: VirtualDualPortRAM
 
 #else
 
+#ifdef SYNTHESIS_GHDL
+
+	a_write <= ( others => '0');
+
+ram: DPRAM_init_hex
+	generic map (
+		ADDR_W => CONFIG_BRAM_ADDR_WIDTH-2, -- 32 bit wide, LSB 0 aligned
+		DATA_W => 32
+	)
+	port map (
+		clk       => clk,
+		a_ce      => '1',
+		a_we      => a_we,
+		a_addr    => a_addr,
+		a_write   => a_write,
+		a_read    => a_read,
+		--
+		b_ce      => '1',
+		b_we      => b_we,
+		b_addr    => b_addr,
+		b_write   => b_write,
+		b_read    => b_read
+	);
+
+#else
+
 rom: DPRAM32_init
 	generic map (
 		ADDR_W => CONFIG_BRAM_ADDR_WIDTH-2, -- 32 bit wide, LSB 0 aligned
@@ -172,6 +198,8 @@ rom: DPRAM32_init
 	);
 
 #endif
+
+#endif // !SYNTHESIS_GHDL
 
 #ifdef CONFIG_WISHBONE
 
@@ -224,12 +252,13 @@ busy_check:
 
 -- IRQ mapping 
 -- FIXME: Use HAVE-defines in vendor/<vendor>/config.mk
+#ifdef CONFIG_SIC
 #if defined(HAVE_UARTIRQ)
 #	ifdef CONFIG_UART
 	irq_input(B_PINMAP_IRQ_UART0) <= uart_rxirq;
 #	endif
 	-- Only timer 0-2 can interrupt:
-#	if CONFIG_NUM_TMR > 2
+#	if defined(CONFIG_TIMER) && CONFIG_NUM_TMR > 2
 	irq_input(BV_PINMAP_IRQ_TIMER) <=
 		unsigned(pwm_irq(CONFIG_NUM_TMR-1 downto CONFIG_NUM_TMR-3));
 #	endif
@@ -265,6 +294,7 @@ busy_check:
 #	ifdef CONFIG_DMA
 	irq_input(BV_PINMAP_IRQ_DMA) <= dma_irq;
 #	endif
+#endif // CONFIG_SIC
 
 #	ifdef CONFIG_ZPUNG
 	-- Fire exception when trying to access lower program memory:
@@ -278,12 +308,14 @@ busy_check:
 
 --------------------------------------------------------------
 
+#ifdef CONFIG_SIC
 #ifdef CONFIG_SCACHE
 	nmi <= scache_irq or sysio_exc;
 	exc <= scache_irq; -- Make it a high prio exception
 #else
 	nmi <= sysio_exc;
 	exc <= nmi;
+#endif
 #endif
 
 #include "../core/common/perio.chdl"
@@ -377,14 +409,15 @@ count_exec_pulses:
 
 #if defined(CONFIG_versa_ecp5) 
 	led_cpustat <=
+					emurdy &
 	                dbg_exstat(B_ZPU_INRESET - 8) &
-	                dbg_exstat(B_ZPU_MEMBUSY - 8) &
-	                dbg_exstat(B_ZPU_EXCEPT - 8) &
 	                dbg_exstat(B_ZPU_BREAK - 8) &
-	                "0" &
+	                dbg_exstat(B_ZPU_EXCEPT - 8) &
 	                dbg_exstat(B_ZPU_IN_UCODE - 8) &
-	                dbg_exstat(B_ZPU_IRQLAT - 8) &
-	                dbg_exstat(B_ZPU_IRQACK - 8);
+	                dbg_exstat(B_ZPU_MEMBUSY - 8) &
+	                dbg_exstat(B_ZPU_IRQACK - 8) &
+	                dbg_exstat(B_ZPU_IRQLAT - 8) ;
+					
 
 #elif defined(CONFIG_netpp_node)
 /* LED order on v0.1: BLUE YELLOW GREEN RED  (Adapted to population mistake)
@@ -409,7 +442,11 @@ zpucore: entity work.ZPUng
 		reset         => reset,
 		irq           => irq,
 		override      => irq_override,
+#ifdef CONFIG_SIC
 		exc           => exc,
+#else
+		exc           => '0',
+#endif
 		cache_wait    => cache_wait,
 		evaddr        => ivaddr,
 		imem_write	  => b_we,
@@ -443,6 +480,7 @@ zpucore: entity work.ZPUng
 	tout.emudata <= dbg_emudata_o;
 	tout.dbgpc <= dbg_curpc;
 	tout.count <= x"0000" & exec_count;
+	tout.break <= dbg_exstat(B_ZPU_BREAK - 8);
 	tout.exstat <= dbg_exstat;
 #endif
 
@@ -472,6 +510,7 @@ zpucore : ZPUSmallCore
 
 	tout.emudata <= dbg.stk_a;
 	tout.dbgpc <= dbg.pc;
+	tout.break <= break; -- No break bit exported
 	tout.count <= x"0000" & dbgcount;
 	dbgstat(B_ZPU_IDIM - 8)    <= dbg.idim;
 	dbgstat(B_ZPU_MEMBUSY - 8) <= '0';

@@ -23,25 +23,29 @@ use work.ram.all;
 
 entity SoC is
 	port (
-		clk			 : in  std_ulogic; -- global clock, rising edge
-		reset			 : in  std_ulogic; -- global reset, async, LOW-active
+		clk			    : in  std_ulogic; -- global clock, rising edge
 
 #ifdef CONFIG_UART
-		uartio_tx       : out    std_logic;
-		uartio_rx       : in     std_logic;
-		uartio_rxirq    : out    std_logic;
+		uart_tx         : out    std_logic;
+		uart_rx         : in     std_logic;
+		-- uartio_rxirq    : out    std_logic;
 #endif
 
 #ifdef CONFIG_SPI
-		spio_cs         : out    std_logic;
-		spio_sclk       : out    std_logic;
-		spio_mosi       : out    std_logic;
-		spio_miso       : in     std_logic;
+		spi_cs         : out    std_logic;
+		spi_sclk       : out    std_logic;
+		spi_mosi       : out    std_logic;
+		spi_miso       : in     std_logic;
+#endif
+
+#ifdef CONFIG_GPIO
+		gpio           : inout  unsigned(CONFIG_NUM_GPIO * 16-1 downto 0);
 #endif
 
 		-- Interrupts:
-		irq_i			 : in  std_ulogic; -- external interrupt request line
-		irq_ack_o  : out std_ulogic  -- external interrupt request acknowledge
+		nmi_i          : in  std_ulogic; -- external interrupt request line
+		-- irq_ack_o   : out std_ulogic  -- external interrupt request acknowledge
+		reset          : in  std_ulogic -- global reset, async, LOW-active
 	);
 end SoC;
 
@@ -53,11 +57,16 @@ architecture neo430_top_rtl of SoC is
 	signal ext_rst			: std_ulogic;
 	signal sys_rst			: std_ulogic;
 	signal wdt_rst			: std_ulogic;
-	signal timer_cg_en	: std_ulogic;
-	signal usart_cg_en	: std_ulogic;
+	-- signal timer_cg_en	: std_ulogic;
+	-- signal usart_cg_en	: std_ulogic;
 	signal wdt_cg_en		: std_ulogic;
-	signal pwm_cg_en		: std_ulogic;
+	-- signal pwm_cg_en		: std_ulogic;
 
+#ifdef CONFIG_GPIO
+	signal gpio_dir        : std_logic_vector(CONFIG_NUM_GPIO * 16-1 downto 0);
+	signal gpio_in         : std_logic_vector(CONFIG_NUM_GPIO * 16-1 downto 0);
+	signal gpio_out        : std_logic_vector(CONFIG_NUM_GPIO * 16-1 downto 0);
+#endif
 
 	subtype ramaddr16_t is unsigned(CONFIG_BRAM_ADDR_WIDTH-2 downto 1);
 
@@ -71,9 +80,9 @@ architecture neo430_top_rtl of SoC is
 
 	-- main CPU communication bus --
 	signal cpu_bus	: cpu_bus_t;
-	signal io_acc		: std_ulogic;
-	signal io_wr_en : std_ulogic;
-	signal io_rd_en : std_ulogic;
+	-- signal io_acc		: std_ulogic;
+	-- signal io_wr_en : std_ulogic;
+	-- signal io_rd_en : std_ulogic;
 
 	-- Wishbone interfacing:
 
@@ -90,13 +99,13 @@ architecture neo430_top_rtl of SoC is
 	-- Program+rodata+stack BRAM
 	-- Port A
 	signal imem_a_we     : std_logic := '0';
-	signal imem_a_addr   : ramaddr16_t;
+	signal imem_a_addr   : ramaddr16_t := (others => '0');
 	signal imem_a_write  : unsigned(WORD_SIZE-1 downto 0) := (others => 'X');
 	signal imem_a_read   : unsigned(WORD_SIZE-1 downto 0);
 	-- Port B
-	signal imem_b_we     : std_logic;
+	-- signal imem_b_we     : std_logic := '0';
 	signal imem_b_addr   : ramaddr16_t;
-	signal imem_b_write  : unsigned(WORD_SIZE-1 downto 0);
+	-- signal imem_b_write  : unsigned(WORD_SIZE-1 downto 0) := (others => 'X');
 	signal imem_b_read   : unsigned(WORD_SIZE-1 downto 0);
 
 	-- Data (volatile) memory
@@ -112,25 +121,16 @@ architecture neo430_top_rtl of SoC is
 --	signal dmem_b_read   : unsigned(WORD_SIZE-1 downto 0);
 
 	-- read-back data buses --
-	signal rom_rdata			 : std_ulogic_vector(15 downto 0);
-	signal ram_rdata			 : std_ulogic_vector(15 downto 0);
-	signal muldiv_rdata		 : std_ulogic_vector(15 downto 0);
-	signal boot_rdata			 : std_ulogic_vector(15 downto 0);
 	signal wdt_rdata			 : std_ulogic_vector(15 downto 0);
-	signal timer_rdata		 : std_ulogic_vector(15 downto 0);
-	signal usart_rdata		 : std_ulogic_vector(15 downto 0);
-	signal gpio_rdata			 : std_ulogic_vector(15 downto 0);
-	signal crc_rdata			 : std_ulogic_vector(15 downto 0);
-	signal cfu_rdata			 : std_ulogic_vector(15 downto 0);
-	signal pwm_rdata			 : std_ulogic_vector(15 downto 0);
-	signal trng_rdata			 : std_ulogic_vector(15 downto 0);
+	-- signal timer_rdata		 : std_ulogic_vector(15 downto 0);
+	-- signal usart_rdata		 : std_ulogic_vector(15 downto 0);
 
 	-- interrupt system --
 	signal irq			 : std_ulogic_vector(03 downto 0);
 	signal irq_ack	 : std_ulogic_vector(03 downto 0);
-	signal timer_irq : std_ulogic;
-	signal usart_irq : std_ulogic;
-	signal gpio_irq  : std_ulogic;
+	-- signal timer_irq : std_ulogic;
+	-- signal usart_irq : std_ulogic;
+	-- signal gpio_irq  : std_ulogic;
 	signal xirq_sync : std_ulogic_vector(01 downto 0);
 
 	-- misc --
@@ -161,7 +161,6 @@ begin
 	sys_rst <= ext_rst and wdt_rst;
 
 
-
 	neo430_cpu_inst: neo430_cpu
 	generic map (
 		BOOTLD_USE	=> CONFIG_NEO430_DADD,
@@ -169,37 +168,68 @@ begin
 	)
 	port map (
 		-- global control --
-		clk_i			 => clk,						-- global clock, rising edge
-		rst_i			 => sys_rst,					-- global reset, low-active, async
+		clk_i			 => clk,
+		rst_i			 => sys_rst,
 		-- memory interface --
-		mem_rd_o   => cpu_bus.rd_en,		-- memory read
-		mem_imwe_o => imem_up_en,				-- allow writing to IMEM
-		mem_wr_o   => cpu_bus.wr_en,		-- memory write
-		mem_addr_o => cpu_bus.addr,			-- address
-		mem_data_o => cpu_bus.wdata,		-- write data
-		mem_data_i => cpu_bus.rdata,		-- read data
+		mem_rd_o   => cpu_bus.rd_en,    -- memory read
+		mem_imwe_o => imem_up_en,       -- allow writing to IMEM
+		mem_wr_o   => cpu_bus.wr_en,    -- memory write
+		mem_addr_o => cpu_bus.addr,	    -- address
+		mem_data_o => cpu_bus.wdata,    -- write data
+		mem_data_i => cpu_bus.rdata,    -- read data
 		-- interrupt system --
-		irq_i			 => irq,							-- interrupt request lines
-		irq_ack_o  => irq_ack						-- IRQ acknowledge
+		irq_i      => irq,             -- interrupt request lines
+		irq_ack_o  => irq_ack	       -- IRQ acknowledge
 	);
 
-imem: entity work.DPRAM16_init
+#ifdef SYNTHESIS_GHDL
+
+imem: DPRAM16_init_hex_ce
+	generic map (
+		ADDR_W => CONFIG_BRAM_ADDR_WIDTH-2
+		-- INIT_DATA => ram16_init_t(BOOTROM_INIT)
+	)
+	port map (
+		a_clk     => clk,
+		a_ce      => '1',
+		a_we      => '0', -- Write not supported
+		a_addr    => imem_a_addr,
+		a_write   => (others => 'X'),
+		a_read    => imem_a_read,
+		--
+		b_clk     => clk,
+		b_ce      => '1',
+		b_we      => '0',
+		b_addr    => imem_b_addr,
+		b_write   => (others => 'X'),
+		b_read    => imem_b_read
+	);
+
+#else
+
+imem: DPRAM16_init_ce
 	generic map (
 		ADDR_W => CONFIG_BRAM_ADDR_WIDTH-2,
 		INIT_DATA => ram16_init_t(BOOTROM_INIT)
 	)
 	port map (
 		clk       => clk,
-		a_we      => imem_a_we,
+		a_ce      => '1',
+		a_we      => '0', -- Write not supported
 		a_addr    => imem_a_addr,
-		a_write   => imem_a_write,
+		a_write   => (others => 'X'),
 		a_read    => imem_a_read,
 		--
-		b_we      => imem_b_we,
+		b_ce      => '1',
+		b_we      => '0',
 		b_addr    => imem_b_addr,
-		b_write   => imem_b_write,
+		b_write   => (others => 'X'),
 		b_read    => imem_b_read
 	);
+
+
+
+#endif
 
 -- dmem: entity work.DPRAM_sync
 -- 	generic map (
@@ -236,6 +266,7 @@ imem: entity work.DPRAM16_init
 	-- HI and LO byte WE's are ORed
 	bus_we <= cpu_bus.wr_en(0) or cpu_bus.wr_en(1);
 
+
 bus_bridge:
 	entity work.wb2zpu
 	generic map (WORD_SIZE => 16)
@@ -265,18 +296,37 @@ perio:
 		ce              => perio_ce,
 		byte_we_high    => cpu_bus.wr_en(1),
 		byte_we_low     => cpu_bus.wr_en(0),
-		uartio_tx       => uartio_tx,
-		uartio_rx       => uartio_rx,
-		uartio_rxirq    => uartio_rxirq,
-		spio_cs         => spio_cs,
-		spio_sclk       => spio_sclk,
-		spio_mosi       => spio_mosi,
-		spio_miso       => spio_miso,
+		uartio_tx       => uart_tx,
+		uartio_rx       => uart_rx,
+		uartio_rxirq    => open,
 
+#ifdef CONFIG_GPIO
+		mio_gpio_in     => gpio_in,
+		mio_gpio_out    => gpio_out,
+		mio_gpio_dir    => gpio_dir,
+#endif
+
+#ifdef CONFIG_SPI
+		spio_cs         => spi_cs,
+		spio_sclk       => spi_sclk,
+		spio_mosi       => spi_mosi,
+		spio_miso       => spi_miso,
+#endif
 		reset           => '0',
 		clk             => clk
 
 	);
+
+#ifdef CONFIG_GPIO
+
+	gpio_in <= std_logic_vector(gpio);
+
+gpio_direction:
+	for i in 0 to CONFIG_NUM_GPIO*16-1 generate
+		gpio(i) <= gpio_out(i) when gpio_dir(i) = '1' else 'Z';
+	end generate;
+#endif
+
 
 perio_select_delay:
 	process(clk)
@@ -292,7 +342,7 @@ perio_select_delay:
 	external_irq_sync: process(clk)
 	begin
 		if rising_edge(clk) then
-			xirq_sync <= xirq_sync(0) & irq_i;
+			xirq_sync <= xirq_sync(0) & nmi_i;
 		end if;
 	end process external_irq_sync;
 
@@ -303,14 +353,14 @@ perio_select_delay:
 	irq(3) <= xirq_sync(1); -- external interrupt request (lowest priority)
 
 	-- external interrupt acknowledge --
-	irq_ack_o <= irq_ack(3); -- the internal irq sources do not require an acknowledge
+	-- irq_ack_o <= irq_ack(3); -- the internal irq sources do not require an acknowledge
 
 
 
 
-	io_acc	 <= '1' when (cpu_bus.addr(15 downto index_size_f(io_size_c)) = io_base_c(15 downto index_size_f(io_size_c))) else '0';
-	io_rd_en <= cpu_bus.rd_en and io_acc;
-	io_wr_en <= (cpu_bus.wr_en(0) or cpu_bus.wr_en(1)) and io_acc;
+	-- io_acc	 <= '1' when (cpu_bus.addr(15 downto index_size_f(io_size_c)) = io_base_c(15 downto index_size_f(io_size_c))) else '0';
+	-- io_rd_en <= cpu_bus.rd_en and io_acc;
+	-- io_wr_en <= (cpu_bus.wr_en(0) or cpu_bus.wr_en(1)) and io_acc;
 
 
 	wdt_rdata <= (others => '0');

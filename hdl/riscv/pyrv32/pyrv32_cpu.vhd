@@ -188,8 +188,8 @@ type t_enum_t_state_1 is (
 	S_HOLD_DELAY,
 	S_RESUME,
 	S_BRANCH_SYNC,
-	S_BRANCH_DELAY,
-	S_EXC
+	S_BRANCH_DELAY
+	-- S_EXC
 	);
 
 signal evt_brk: std_logic;
@@ -410,8 +410,8 @@ begin
         if (regd_we = '1') then
             if (regd_addr /= 0) then
                 
-                regbank_tri0_regs(to_integer(signed(resize(regd_addr, 6)) - 1)) <= regd_data;
-                regbank_tri0_regt(to_integer(signed(resize(regd_addr, 6)) - 1)) <= regd_data;
+                regbank_tri0_regs(to_integer(unsigned(resize(regd_addr, 6)) - 1)) <= regd_data;
+                regbank_tri0_regt(to_integer(unsigned(resize(regd_addr, 6)) - 1)) <= regd_data;
             else
                 
             end if;
@@ -422,14 +422,14 @@ begin
             elsif ((reg_s1 = regd_addr) and (regd_we = '1')) then
                 regbank_tri0_data_s <= regd_data;
             else
-                regbank_tri0_data_s <= regbank_tri0_regs(to_integer(signed(resize(reg_s1, 6)) - 1));
+                regbank_tri0_data_s <= regbank_tri0_regs(to_integer(unsigned(resize(reg_s1, 6)) - 1));
             end if;
             if (reg_s2 = 0) then
                 regbank_tri0_data_t <= to_unsigned(0, 32);
             elsif ((reg_s2 = regd_addr) and (regd_we = '1')) then
                 regbank_tri0_data_t <= regd_data;
             else
-                regbank_tri0_data_t <= regbank_tri0_regs(to_integer(signed(resize(reg_s2, 6)) - 1));
+                regbank_tri0_data_t <= regbank_tri0_regs(to_integer(unsigned(resize(reg_s2, 6)) - 1));
             end if;
         end if;
     end if;
@@ -622,8 +622,6 @@ begin
                 if (evt_irq = '1') then
                     state <= S_IRQ;
                 end if;
-            when others =>
-                assert False report "ValueError" severity note;
         end case;
     end if;
 end process PYRV32_CPU_STATE_WORKER;
@@ -897,7 +895,6 @@ begin
                     when "011110100010" =>
                         execute0_csr0_csrreg_dscratch0 <= execute0_csr0_data;
                     when others =>
-                        assert False report "ValueError" severity note;
                 end case;
             end if;
         end if;
@@ -908,7 +905,7 @@ PYRV32_CPU_EXECUTE0_CSR0_READ: process (clk) is
 begin
     if rising_edge(clk) then
         if (execute0_csr0_illegal_csr = '1') then
-            assert False report "ValueError" severity note;
+            -- assert False report "ValueError" severity note;
         end if;
         if bool(execute0_csr0_csr_re) then
             execute0_reg_out <= execute0_csr0_reg;
@@ -956,6 +953,8 @@ begin
             execute0_csr0_data <= (execute0_reg_in or execute0_csr0_reg);
         elsif (mode = CP_CLR) then
             execute0_csr0_data <= (execute0_reg_in and (not execute0_csr0_reg));
+		else
+            execute0_csr0_data <= (others => '0');
         end if;
     elsif bool(action_dbg_wr) then
         execute0_csr0_data <= tap_idata;
@@ -985,10 +984,13 @@ begin
                 execute0_csr0_csr_re <= '1';
                 execute0_csr0_csr_we <= '1';
             when CP_CLR =>
-                assert False report "ValueError" severity note;
+                execute0_csr0_csr_re <= '0';
+                execute0_csr0_csr_we <= '0';
             when others =>
                 null;
         end case;
+	else
+		execute0_csr0_csr_addr <= (others => '0');
     end if;
 end process PYRV32_CPU_EXECUTE0_CSR0_HANDLE_CSR_OP;
 

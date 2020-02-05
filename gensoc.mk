@@ -46,12 +46,13 @@ endif
 # Choose decoder entities to build:
 GENSOC_OPTIONS += --decoder=$(GENSOC_DECODER_LIST)
 
+BUS_FILES = $(GENSOC_PREFIX)_bus_iomap_pkg.vhdl
+
 SOC_FILES = $(GENSOC_DECODERS:%=$(GENSOC_PREFIX)_%_decode.vhdl)
 SOC_FILES += $(GENSOC_PREFIX)_iomap_pkg.vhdl
 SOC_FILES += $(GENSOC_PREFIX)_mmr_perio.vhdl
 PLAT_FILE = $(GENSOC_PREFIX)_$(PLATFORM)_iomap_pkg.vhdl
 
-BUS_FILES = $(GENSOC_PREFIX)_bus_iomap_pkg.vhdl
 
 ifdef GENSOC
 

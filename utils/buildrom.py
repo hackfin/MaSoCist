@@ -8,7 +8,6 @@ IGNORE_SECTIONS = [ ".fini", ".jcr", ".eh_frame", ".bss", ".sdram.bss" ]
 DEFAULT_ISIZE = 0x2000
 DEFAULT_DSIZE = 0x2000
 
-import intelhex
 import elf
 import sys
 from romgen import Romgen_MIPS, Romgen_RISCV, Romgen_ZPU, Romgen_MSP430
@@ -63,13 +62,6 @@ def process_sections(e, romgen):
 			print "Dropping %s, no LOAD flag" % p.name
 
 
-def gen_hex(e, isize = DEFAULT_ISIZE, dsize = DEFAULT_DSIZE):
-	romgen = Romgen_HEX(isize, dsize)
-
-	process_sections(e, romgen)
-
-	romgen.finish()
-
 KNOWN_ARCHITECTURES = {
 	0x08 : (Romgen_MIPS, "MIPS"),
 	0x6a : (Romgen_ZPU, "ZPU"),
@@ -99,6 +91,7 @@ def gen_file(e, prefix, isize = DEFAULT_ISIZE, dsize = DEFAULT_DSIZE):
 	# Don't pad, use "OTHERS" clause
 	romgen.finish()
 
+	romgen.dump_hex("bootrom")
 
 	print 76 * '-'
 
@@ -114,6 +107,5 @@ if __name__ == "__main__":
 	dsize = size # XXX size currently not used
 	e = open_elf(infile)
 	gen_file(e, sys.argv[2], size, dsize)
-	# gen_hex(e, size, dsize)
 
 

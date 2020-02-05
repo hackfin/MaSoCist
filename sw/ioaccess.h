@@ -101,7 +101,7 @@ typedef volatile uint16_t *MMRBase;
 		(_resolve_devindex(pre, name)))]
 
 #define device_mmr_base(name, base, x) \
-	base[(x - name##_Offset) >> 2]
+	base[(x - name##_Offset) >> 1]
 
 #else
 #error "Undefined MMR access for this architecture"

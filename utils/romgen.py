@@ -27,65 +27,16 @@ HEADER = """----------------------------------------------------------------
 -- Start at: 0x%08x
 ----------------------------------------------------------------------------\n"""
 
-def write_imem(memory, data, addr):
-	ds = ">L"
-	l = len(data)
-	i = 0
-	c = addr & 0xffff
-	m = l % 4
-	if m:
-		m = 4-m
-		data += "\0" * m
-		l += m
-
-
-	while i < l:
-		chunk = data[i:i+4]
-		words = elf.struct.unpack(ds, chunk)
-		# print "Write %x <- %08x" % (c, words[0])
-		memory[c] = words[0]
-		c += 1
-		i += 4
-
-	return c
-
-def write_imem2(memA, memB, data, addr):
-	ds = ">H"
-	l = len(data)
-	i = 0
-	c = addr & 0xffff
-	m = l % 2
-	if m:
-		m = 2-m
-		data += "\0" * m
-		l += m
-
-	while i < l:
-		chunk = data[i:i+2]
-		words = elf.struct.unpack(ds, chunk)
-		print "Write LWORD %x <- %08x" % (c, words[0])
-		memA[c] = words[0]
-		i += 2
-
-		chunk = data[i:i+2]
-		words = elf.struct.unpack(ds, chunk)
-		print "Write UWORD %x <- %08x" % (c, words[0])
-		memB[c] = words[0]
-
-		i += 2
-		c += 1
-
-	return c
-
 class Romgen_AllData:
 	def __init__(self, isize, dsize):
 		self.data = intelhex.IntelHex()
+		self.endian = ">"
 
 	def write_segment(self, addr, data):
-		self.alldata.puts(addr, data)
+		self.data.puts(addr, data)
 
 	def dump(self, data):
-		ds = ">I"
+		ds = self.endian + "I"
 
 		f = open(self.fname, "w")
 
@@ -113,13 +64,30 @@ class Romgen_AllData:
 		f.close()
 
 	def to_buffer(self):
-		return self.alldata.tobinstr()
+		return self.data.tobinstr()
 
 	def finish(self):
-		# print dir(self.alldata)
-		
-		data = self.alldata.tobinstr()
+		data = self.data.tobinstr()
 		self.dump(data)
+
+	def dump_hex(self, prefix):
+		ds = self.endian + "L"
+		data = self.data.tobinstr()
+
+		l = len(data)
+		i = 0
+
+		hexfile = open(prefix + "32.hex", "w")
+
+		s = ""
+		while (i < l):
+			chunk = data[i:i+4]
+			words = elf.struct.unpack(ds, chunk)
+			s += '%08x\n' % words
+			i += 4
+
+		hexfile.write(s)
+		hexfile.close()
 
 class Romgen_ProgData:
 	PROG_SECTIONS = [".text", ".init", ".fixed_vectors" ]
@@ -159,8 +127,9 @@ class Romgen_ZPU(Romgen_AllData):
 	".ctors", ".dtors" ]
 
 	def __init__(self, prefix):
-		self.alldata = intelhex.IntelHex()
+		self.data = intelhex.IntelHex()
 		self.fname = prefix + "_data.tmp"
+		self.endian = ">"
 
 	def handle(self, p):
 		l = len(p.data)
@@ -258,6 +227,39 @@ class Romgen_imem_dmem:
 		self.write_data(self.datafile, data)
 		self.datafile.close()
 		self.textfile.close()
+
+	def dump_hex(self, prefix):
+		ds = self.endian + "H"
+		data = self.text.tobinstr()
+
+		l = len(data)
+		i = 0
+
+		hexfile = open(prefix + "16.hex", "w")
+
+		s = ""
+		while (i < l):
+			chunk = data[i:i+2]
+			words = elf.struct.unpack(ds, chunk)
+			s += '%04x\n' % words
+			i += 2
+
+		hexfile.write(s)
+		# Append data segment:
+		data = self.data.tobinstr()
+
+		l = len(data)
+		i = 0
+
+		s = ""
+		while (i < l):
+			chunk = data[i:i+2]
+			words = elf.struct.unpack(ds, chunk)
+			s += '%04x\n' % words
+			i += 2
+
+		hexfile.write(s)
+		hexfile.close()
 
 def pad(data, n):
 	m = len(data) % n
@@ -360,6 +362,51 @@ class Romgen_Mem2x16i_4x8d:
 		self.fda.close()
 		self.fdb.close()
 
+	def dump_byte_hex(self, prefix, data):
+		ds = ">BBBB"
+		l = len(data)
+		i = 0
+		s = ["", "", "", ""]
+		while (i < l):
+			chunk = data[i:i+4]
+			words = elf.struct.unpack(ds, chunk)
+			for j in range(4):
+				s[j] += '%02x\n' % words[j]
+			i += 4
+
+		for j in range(4):
+			fdata = open(prefix + "_data_b%d.hex" % j, "w")
+			fdata.write(s[j])
+			fdata.close()
+
+		return l
+
+	def dump_hex(self, prefix):
+		low = open(prefix + "_l.hex", "w")
+		high = open(prefix + "_h.hex", "w")
+		data = self.text.tobinstr()
+
+		ds = "<HH"
+		l = len(data)
+		i = 0
+
+		s = ["", ""]
+		while (i < l):
+			chunk = data[i:i+4]
+			words = elf.struct.unpack(ds, chunk)
+			for j in range(2):
+				s[j] += '%04x\n' % words[j]
+			i += 4
+
+		low.write(s[0])
+		high.write(s[1])
+
+		low.close()
+		high.close()
+
+		a = self.data_a.tobinstr()
+		a = pad(a, 4)
+		self.dump_byte_hex(prefix, a)
 
 class Romgen_MIPS(Romgen_Mem2x16i_4x8d):
 	"MIPS/RISCV style memory layout"
@@ -421,6 +468,7 @@ class Romgen_MSP430(Romgen_imem_dmem):
 			print LOADTXT % (p.name, p.sh_addr, l)
 		else:
 			print SKIPTXT % (p.name, p.sh_addr, l)
+
 
 
 ############################################################################

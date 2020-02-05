@@ -194,4 +194,14 @@ config SIM_BREAK
 
 endmenu
 
+menu "Synthesis options"
+
+config GHDL_SYNTH
+	bool "Enable GHDL synthesis"
+	depends on ECP5
+	default n
+	help
+	  Enable ghdl synthesis, when available
+
+endmenu
 

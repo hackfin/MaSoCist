@@ -110,6 +110,16 @@ use work.periotypes.all;</header>
         </bitfield>
       </register>
 
+      <register addr="0x02" id="mio" size="2">
+        <info>GPIO I/O out</info>
+
+        <bitfield access="RO" lsb="0" msb="15" name="gpio_in"/>
+
+        <bitfield access="WO" lsb="0" msb="15" name="gpio_out"/>
+
+        <bitfield access="WO" lsb="0" msb="15" name="gpio_dir"/>
+      </register>
+
       <register addr="0x00" id="byte_we">
         <info>Byte write enable port</info>
 
@@ -144,10 +154,18 @@ use work.periotypes.all;</header>
           <info>Address space reserved for the System Config module</info>
         </bitfield>
 
+        <bitfield lsb="0" msb="3" name="MMR_CFG_gpio">
+          <info>GPIO configuration address space</info>
+        </bitfield>
+
         <!--Reserved bitfield names: Those are the fields specifying the unit number and bus number-->
 
         <bitfield lsb="12" msb="14" name="MMR_SELECT_perio">
           <info>The select bit for the perio unit (max. 4 units)</info>
+        </bitfield>
+
+        <bitfield lsb="10" msb="10" name="MMR_SELECT_DEVINDEX_GPIO">
+          <info>The bit field to select the GPIO controller index</info>
         </bitfield>
 
         <bitfield lsb="10" msb="11" name="MMR_SELECT_DEVINDEX_SPAD">
@@ -375,6 +393,34 @@ DO NOT move them to the bottom without checking CFG_sys!-->
       </register>
     </registermap>
 
+    <registermap endian="LITTLE" id="gpio" name="GPIO" size="16">
+      <info>A simple GPIO controller</info>
+
+      <register access="RW" addr="0x00" id="GPIO_DIR" size="2">
+        <info>IO direction register. '1': Output, '0': input</info>
+
+        <default>0000</default>
+      </register>
+
+      <register access="RO" addr="0x02" id="GPIO_IN" size="2">
+        <info>GPIO input (read) value</info>
+      </register>
+
+      <register access="RW" addr="0x04" id="GPIO_OUT" size="2" volatile="true">
+        <!--This is volatile, because this out value is applied externally, when written-->
+
+        <info>GPIO output value</info>
+      </register>
+
+      <register access="WO" addr="0x06" id="GPIO_SET" size="2" volatile="true">
+        <info>Write 1 to set</info>
+      </register>
+
+      <register access="WO" addr="0x08" id="GPIO_CLR" size="2" volatile="true">
+        <info>Write 1 to clear</info>
+      </register>
+    </registermap>
+
     <registermap addrsize="16" endian="LITTLE" id="dmem" name="RAM_DMEM"
                  nodecode="true" size="16">
       <info>Data memory, volatile</info>
@@ -393,6 +439,12 @@ DO NOT move them to the bottom without checking CFG_sys!-->
         <regref bits="MMR_SELECT_perio" ref="adec_common"/>
 
         <choice>
+          <item name="gpio">
+            <info>Selection value for the GPIO bank</info>
+
+            <value>3</value>
+          </item>
+
           <item name="dmem">
             <info>Scratch pad memory</info>
 
@@ -432,6 +484,10 @@ DO NOT move them to the bottom without checking CFG_sys!-->
           <regref bits="MMR_CFG_sys" ref="adec_common"/>
         </property>
 
+        <property name="gpio" type="REGISTER">
+          <regref bits="MMR_CFG_gpio" ref="adec_common"/>
+        </property>
+
         <property name="uart" type="REGISTER">
           <regref bits="MMR_CFG_uart" ref="adec_common"/>
         </property>
@@ -444,6 +500,10 @@ DO NOT move them to the bottom without checking CFG_sys!-->
       <struct name="SelectDevice">
         <property name="dmem" type="REGISTER">
           <regref bits="MMR_SELECT_DEVINDEX_SPAD" ref="adec_common"/>
+        </property>
+
+        <property name="gpio" type="REGISTER">
+          <regref bits="MMR_SELECT_DEVINDEX_GPIO" ref="adec_common"/>
         </property>
       </struct>
     </group>
@@ -475,6 +535,25 @@ MMR addresses
             </choice>
           </property>
         </struct>
+      </array>
+
+      <array name="gpio">
+        <?config CONFIG_GPIO?>
+
+        <!--Multiple instances of a GPIO controller (each 16 I/O):
+
+Does not work with gensoc < v0.13
+-->
+
+        <info>GPIO bank controller</info>
+
+        <size>
+          <value>CONFIG_NUM_GPIO</value>
+        </size>
+
+        <property access="RW" name="export" type="REGISTER">
+          <regref ref="mio"/>
+        </property>
       </array>
 
       <property name="spi" type="REGISTER">

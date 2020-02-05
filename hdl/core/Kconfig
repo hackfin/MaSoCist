@@ -36,5 +36,3 @@ endmenu
 # 	depends on ZPUNG
 # 	default n
 
-# Include all vendor specific CPUs in their Kconfig now
-# include pyps/Kconfig

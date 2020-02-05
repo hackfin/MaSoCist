@@ -118,7 +118,7 @@ entity SoC is
 #ifdef HAVE_EXTENDED_SYSIO
 		sysconfig  : in std_logic_vector(7 downto 0);
 #else
-#ifdef CONFIG_TIMER
+#if defined(CONFIG_TIMER) && !defined(CONFIG_PWM_NONE)
 		pwm       : out std_logic_vector(CONFIG_NUM_TMR-1 downto 0);
 #endif
 #endif

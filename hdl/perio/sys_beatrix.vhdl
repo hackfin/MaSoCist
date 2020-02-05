@@ -50,6 +50,9 @@ begin
 	stat.rev_major <= to_unsigned(HWREV_system_map_MAJOR, 8);
 	stat.rev_minor <= to_unsigned(HWREV_system_map_MINOR, 8);
 
+-- GHDL_SYNTH_FAILURE:
+-- synthesis translate_off
+
 maybe_crc16:
 	if CONFIG_CRC16 generate
 	crc16_core: entity work.crc16
@@ -63,6 +66,17 @@ maybe_crc16:
 	);
 
 	end generate;
+
+
+-- synthesis translate_on
+
+maybe_not_crc16:
+	if not CONFIG_CRC16 generate
+		stat.crc16_value <= (others => '0');
+	end generate;
+
+	stat.dbg1 <= (others => '0');
+	stat.dbg2 <= (others => '0');
 
 -- mux_gpio:
 -- 	for i in 0 to 15 generate

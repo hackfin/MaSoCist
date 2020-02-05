@@ -101,6 +101,13 @@ config papilio
 	help
 	  Xilinx Spartan3E-250 based Papilio board
 
+config versa_ecp5
+	bool "Versa ECP5 eval board"
+	select ECP5
+	help
+	  ECP5 based eval board. Note that there is also an ECP5G version of it
+	  See SYNTHESIS options.
+
 config xo2starter
 	bool "MACHXO2-7000 starter breakout board"
 	select MACHXO2

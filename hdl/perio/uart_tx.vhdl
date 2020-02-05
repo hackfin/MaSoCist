@@ -43,11 +43,13 @@ begin
 sync_state_advance:
 	process (clk)
 	begin
-		if falling_edge(clk) and txclken = '1' then
-			if reset = '1' then
-				state <= S_IDLE;
-			else
-				state <= nextstate;
+		if falling_edge(clk) then
+			if txclken = '1' then
+				if reset = '1' then
+					state <= S_IDLE;
+				else
+					state <= nextstate;
+				end if;
 			end if;
 		end if;
 	end process;
@@ -84,13 +86,15 @@ state_decode:
 bitcounter:
 	process (clk)
 	begin
-		if rising_edge(clk) and txclken = '1' then
-			case state is
-			when S_SHIFT =>
-				bitcount <= bitcount + 1;
-			when others =>
-				bitcount <= "000";
-			end case;
+		if rising_edge(clk) then
+			if txclken = '1' then
+				case state is
+				when S_SHIFT =>
+					bitcount <= bitcount + 1;
+				when others =>
+					bitcount <= "000";
+				end case;
+			end if;
 		end if;
 	end process;
 

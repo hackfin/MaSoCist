@@ -51,7 +51,7 @@ dmem_2x8_generate:
 	for i in 0 to 1 generate
 
 mem_unit:
-	entity work.bram_2psync
+	bram_2psync
 	generic map (ADDR_W => MEM_HIGH_ADDR_BIT-1, DATA_W => 8)
 	port map (
 		clk     => clk,
