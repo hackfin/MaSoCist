@@ -62,6 +62,13 @@ ifdef CONFIG_virtual_rv32ui
 PLATFORM = virtual_riscv
 endif
 
+ifdef CONFIG_versa_ecp5
+PLATFORM = versa_ecp5
+DEVICENAME = ECP5(G)
+FPGA_ARCH = ecp5
+FPGA_VENDOR = lattice
+endif
+
 # New style default rules file:
 # We no longer mess with variables, we define defaults:
 ifdef CONFIG_NEO430

@@ -1,0 +1,136 @@
+#
+# Automatically generated file; DO NOT EDIT.
+# SoC configuration
+#
+
+#
+# Generic config
+#
+CONFIG_SOCDESC="beatrix"
+
+#
+# Opensource distribution config
+#
+# CONFIG_OPENSOURCE is not set
+# CONFIG_ZEALOT is not set
+# CONFIG_RISCV_ARCH is not set
+CONFIG_ZPUNG=y
+CONFIG_ZPUNG_VHDL_ONLY=y
+# CONFIG_virtual is not set
+# CONFIG_virtual_neo430 is not set
+# CONFIG_virtual_rv32ui is not set
+# CONFIG_papilio is not set
+CONFIG_versa_ecp5=y
+# CONFIG_xo2starter is not set
+CONFIG_PLAT_EXTENSION="ghdlsynth"
+CONFIG_HAVE_VTAP=y
+
+#
+# Common Address configuration
+#
+CONFIG_ADDR_WIDTH=17
+CONFIG_BRAM_ADDR_WIDTH=14
+CONFIG_MMR_ADDR_BIT=16
+CONFIG_WISHBONE=y
+# CONFIG_LOCALBUS is not set
+# CONFIG_MACHXO2 is not set
+# CONFIG_MACHXO3 is not set
+# CONFIG_ECP3 is not set
+CONFIG_ECP5=y
+# CONFIG_SPARTAN3 is not set
+# CONFIG_SPARTAN6 is not set
+# CONFIG_VIRTUAL_SILICON is not set
+
+#
+# Clock configuration
+#
+CONFIG_SYSCLK=10000000
+
+#
+# Peripheral I/O
+#
+CONFIG_GENSOC_READ_DELAY=y
+CONFIG_GENSOC_RESET_DEFAULTS=y
+CONFIG_CRC16=y
+CONFIG_GPIO=y
+CONFIG_NUM_GPIO=2
+# CONFIG_DMA is not set
+CONFIG_SPI=y
+CONFIG_SPI_BITS_POWER=5
+CONFIG_TIMER=y
+CONFIG_NUM_TMR=8
+# CONFIG_PWM_NONE is not set
+CONFIG_PWM_SIMPLE=y
+CONFIG_SIC=y
+CONFIG_NUM_IRQSRC=4
+# CONFIG_LCDIO is not set
+# CONFIG_MAC is not set
+
+#
+# UART support
+#
+CONFIG_UART=y
+CONFIG_UART_SIMPLE=y
+CONFIG_NUM_UART=1
+# CONFIG_OC_UART16550 is not set
+CONFIG_DEFAULT_UART_BAUDRATE=500000
+CONFIG_UART_DEBUGCONSOLE=y
+
+#
+# Generic FIFO support
+#
+# CONFIG_FIFO is not set
+
+#
+# I2C support
+#
+# CONFIG_TWI is not set
+# CONFIG_I2C is not set
+# CONFIG_I2CBRIDGE is not set
+
+#
+# Virtual devices support
+#
+# CONFIG_VIRTUAL_RAM is not set
+# CONFIG_VIRTUAL_I2CSLAVE is not set
+CONFIG_VIRTUAL_UART=y
+
+#
+# TAP configuration
+#
+CONFIG_TAPCLK_PERIOD="50 ns"
+# CONFIG_VTAP_DEBUG is not set
+# CONFIG_VTAP is not set
+# CONFIG_DUMMYTAP is not set
+CONFIG_GHDLEX_DEFAULT=y
+
+#
+# Software options
+#
+CONFIG_PRINTF=y
+# CONFIG_STRICT_PRECISION is not set
+CONFIG_LIBC_NONE=y
+# CONFIG_LIBC_MINIMUM is not set
+# CONFIG_LIBC_NEWLIB is not set
+CONFIG_OPT_SIZE=y
+# CONFIG_OPT_SPEED is not set
+
+#
+# Networking
+#
+# CONFIG_FULL_REENTRANCY is not set
+# CONFIG_TASK_MANAGEMENT is not set
+
+#
+# Simulation options
+#
+CONFIG_NATIVE=y
+# CONFIG_MINGW32 is not set
+# CONFIG_EMULATE_PLATFORM_IP is not set
+CONFIG_USE_PLATFORM_IP_LIBRARY=y
+CONFIG_LIBSIM="jtagsim"
+
+#
+# Synthesis options
+#
+CONFIG_GHDL_SYNTH=y

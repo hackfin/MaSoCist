@@ -1,0 +1,298 @@
+--
+-- Versa ECP5(G) top level module
+--
+--
+-- 1/2017  Martin Strubel <strubel@section5.ch>
+--
+-- Changes to this file WILL BE VOID if it has a .vhdl extension!
+-- Edit the corresponding .chdl file instead.
+
+#include "../../include/generated/autoconf.h"
+// Hack to not substitute this one as it will not be understood:
+#undef CONFIG_TAPCLK_PERIOD
+
+#ifdef CONFIG_GHDL_SYNTH
+#define CONFIG_SIMPLE
+#endif
+
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+
+-- For some ECP5 specific entities:
+
+#ifndef CONFIG_SIMPLE
+library ECP5UM;
+	use ECP5UM.components.all;
+#endif
+
+library work;
+	use work.stdtap.all;
+	use work.global_config.all;
+	use work.system_map.all;
+
+entity versa_ecp5_top is
+	generic ( SIMULATION : boolean := false );
+	port (
+		tck         : in  std_logic;
+		tms         : in  std_logic;
+		tdi         : in  std_logic;
+		tdo         : out std_logic;
+
+		clk_out     : out  std_logic;
+
+		spi_miso  : in  std_logic;
+		spi_mosi  : out std_logic;
+		spi_cs    : out std_logic;
+
+		twi_scl  : inout std_logic;
+		twi_sda  : inout std_logic;
+
+		txd_uart    : in std_logic;	  -- FT2232 -> CPU
+		rxd_uart    : out std_logic;  -- CPU    -> FT2232
+
+		oled         : out  std_logic_vector(7 downto 0);
+		seg          : out  std_logic_vector(13 downto 0);
+		segdp        : out  std_logic;
+		dip_sw       : in   std_logic_vector(7 downto 0);
+
+		-- MAC I/O
+		phy_rgmii_txclk      : out std_logic;
+		phy_rgmii_txctl      : out std_logic;
+		phy_rgmii_txd        : out std_logic_vector(3 downto 0);
+		phy_rgmii_rxclk      : in std_logic;
+		phy_rgmii_rxctl      : in std_logic;
+		phy_rgmii_rxd        : in std_logic_vector(3 downto 0);
+		ts_mac_coremdc       : out std_logic;
+		ts_mac_coremdio      : inout std_logic;
+		eth_rst_n            : out std_logic;
+		hw_config            : out std_logic;
+
+		reset_n      : in   std_logic;
+		-- clk_serdes   : in   std_logic;
+		clk_in       : in   std_logic
+
+	);
+end entity versa_ecp5_top;
+
+
+architecture behaviour of versa_ecp5_top is
+
+	signal tap2core       : tap_out_rec;
+	signal core2tap       : tap_in_rec;
+
+--	signal sys_ctrl   : sys_WritePort;
+--	signal sys_stat   : sys_ReadPort;
+
+	signal irq_in         : std_logic := '0';
+
+	signal reset_delay    : unsigned(3 downto 0);
+
+	-- TODO
+	signal uart_iosel     : std_logic;
+	signal spi_sclk       : std_logic;
+	signal spi_sclk_en    : std_logic;
+	signal spi_ts         : std_logic;
+	signal spi_cs_int     : std_logic;
+	signal spi_gatedclk   : std_logic;
+
+	signal mclk           : std_logic;
+	signal mclk_locked    : std_logic;
+
+	-- Pixel clock:
+	signal pclk           : std_logic;
+
+	signal comb_reset     : std_logic;
+	signal delayed_reset  : std_logic;
+	signal phy_reset      : std_logic;
+	signal cpu_reset      : std_logic;
+	signal tap_reset      : std_logic;
+
+	-- GPIOs:
+	-- Set to defined state for simulation:
+	signal gpio           : unsigned(15 downto 0);
+	signal cfg            : std_logic_vector(7 downto 0);
+
+	signal led            : unsigned(7 downto 0);
+
+	-- Debugging:
+	signal uart_loopback  : std_logic;
+
+	-- MAC clocks:
+	signal mac_clk125     : std_logic;
+	signal mac_mclk       : std_logic;
+
+
+begin
+
+	comb_reset <= (not reset_n) or (not mclk_locked);
+	hw_config <= '0';
+
+	seg <= not std_logic_vector(gpio(13 downto 0));
+	segdp <= not gpio(14);
+
+	clk_out <= mclk;
+
+#ifndef CONFIG_SIMPLE
+	gsr_inst: GSR port map (reset_n);
+#endif
+
+-- We run a delayed reset for the CPU, as there might be race conditions
+-- with the TAP.
+
+delayed_cpu_reset:
+	process (comb_reset, mclk)
+	begin
+		if comb_reset = '1' then
+			reset_delay	<= x"f";
+			delayed_reset <= '1';
+		elsif rising_edge(mclk) then
+			if reset_delay /= x"0" then
+				reset_delay <= reset_delay - 1;
+			else
+				delayed_reset <= '0';
+			end if;
+		end if;
+	end process;
+
+clk_pll1: entity work.pll_mac
+    port map (
+        CLKI    =>  clk_in,
+        CLKOP   =>  mac_clk125,
+        CLKOS   =>  mac_mclk, -- 25 Mhz
+        CLKOS2  =>  mclk,
+        CLKOS3  =>  pclk,
+        LOCK    =>  mclk_locked
+	);
+
+-- clk_video: entity work.rtp_pll
+--     port map (
+--         CLKI    =>  clk_serdes,
+--         CLKOP   =>  pclk
+-- 	);
+
+
+----------------------------------------------------------------------------
+-- SoC CPU
+
+#ifndef CONFIG_SIMPLE
+
+maybe_hwtap:
+if not SIMULATION generate
+
+-- synthesis translate_on
+
+hwtap: entity work.ECP5_TAP
+	port map (
+		reset       => '0', -- startup reset
+		tck         => tck,
+		tms         => tms,
+		tdi         => tdi,
+		tdo         => tdo,
+		-- Core <-> TAP signals:
+		tin         => core2tap,
+		tout        => tap2core
+	);
+
+end generate;
+
+-- synthesis translate_off
+
+maybe_swtap:
+if SIMULATION generate
+	swtap: VirtualTAP_DIRECT
+	generic map ( IDCODE => CONFIG_TAP_ID,
+		INS_NOP => x"0000000b",
+		TCLK_PERIOD => CONFIG_TAPCLK_PERIOD )
+	port map (
+		-- Core <-> TAP signals:
+		tin         => core2tap,
+		tout        => tap2core
+	);
+end generate;
+
+#endif
+
+-- synthesis translate_on
+
+	cpu_reset <= tap2core.core_reset or delayed_reset;
+	tap_reset <= comb_reset;
+
+soc: entity work.SoC
+	port map (
+		clk        => mclk,
+		tap_reset  => tap_reset,
+		reset      => cpu_reset,
+		nmi_i      => '0',
+
+		pclk        => pclk,
+
+		perio_rst  => '0',
+
+		-- Emulation pins:
+		tin          => tap2core,
+		tout         => core2tap,
+
+		irq0       => irq_in,
+--XXXX		gpio      => gpio,
+		-- pwm       => pwm(CONFIG_NUM_TMR-1 downto 0),
+
+		spi_sclk         => spi_sclk,
+		spi_cs           => spi_cs_int,
+		spi_mosi         => spi_mosi,
+		spi_miso         => spi_miso,
+		twi_sda          => twi_sda,
+		twi_scl          => twi_scl,
+		video_resetn     => open,
+
+#ifdef CONFIG_MAC
+		mac_mclk         => mac_mclk,
+		mac_clk125       => mac_clk125,
+		mac_gbit_en      => open,
+
+		macio_rgmii_txclk  => phy_rgmii_txclk,
+		macio_rgmii_txd   => phy_rgmii_txd,
+		macio_rgmii_tc   => phy_rgmii_txctl,
+		macio_rgmii_rxclk   => phy_rgmii_rxclk,
+		macio_rgmii_rxd   => phy_rgmii_rxd,
+		macio_rgmii_rc   => phy_rgmii_rxctl,
+		macio_mdc        => ts_mac_coremdc,
+		macio_mdio       => ts_mac_coremdio,
+		macio_phyrst     => phy_reset,
+
+		mii_col    => '0',
+		mii_crs    => '0',
+#endif
+
+#ifdef HAVE_EXTENDED_SYSIO
+		sysconfig     => cfg,
+#endif
+		led_status    => led,
+
+		uart_tx => rxd_uart,
+		uart_rx => txd_uart,
+		uart_iosel => uart_iosel
+	);
+
+	spi_ts <= spi_cs_int; -- Use CS for tristate
+	spi_cs <= spi_cs_int;
+
+#ifndef CONFIG_SIMPLE
+-- User SPI access via USRMCLK ECP5 primitive:
+	usrmclk_inst: USRMCLK
+		port map (usrmclki => spi_sclk, usrmclkts => spi_ts);
+#endif
+
+	-- Use master clock for pixel clock
+	-- pclk <= mclk;
+
+	cfg <= not dip_sw;
+	eth_rst_n <= not phy_reset;
+
+	oled <= not std_logic_vector(led);
+
+	-- oled <= not std_logic_vector(core2tap.exstat);
+
+	
+
+end behaviour;

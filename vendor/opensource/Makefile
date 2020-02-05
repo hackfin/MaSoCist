@@ -10,3 +10,6 @@
 # search for libs in $HOME/lib:
 
 GHDL_LDFLAGS += -Wl,-L$(HOME)/lib
+
+
+SIM_SRCFILES-$(CONFIG_versa_ecp5) += hdl/plat/versa_ecp5/pll_mac.vhd
