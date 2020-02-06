@@ -87,10 +87,10 @@ vuart: entity work.VirtualUART
 uut: entity work.versa_ecp5_top
 	generic map ( SIMULATION => true)
 	port map (
-		tck              => tck,
-		tms              => tms,
-		tdi              => tdi,
-		tdo              => tdo,
+--		tck              => tck,
+--		tms              => tms,
+--		tdi              => tdi,
+--		tdo              => tdo,
 
 		clk_out          => open,
 
@@ -108,14 +108,14 @@ uut: entity work.versa_ecp5_top
 		oled             => led,
 		dip_sw           => "00110001",
 
-		phy_rgmii_txclk  => macio_mii_txclk,
-		phy_rgmii_txctl  => macio_rgmii_tc,
-		phy_rgmii_txd    => macio_mii_txd,
-		phy_rgmii_rxclk  => macio_mii_rxclk,
-		phy_rgmii_rxctl  => macio_rgmii_rc,
-		phy_rgmii_rxd    => macio_mii_rxd,
-		ts_mac_coremdc   => macio_mdc,
-		ts_mac_coremdio  => macio_mdio,
+--		phy_rgmii_txclk  => macio_mii_txclk,
+--		phy_rgmii_txctl  => macio_rgmii_tc,
+--		phy_rgmii_txd    => macio_mii_txd,
+--		phy_rgmii_rxclk  => macio_mii_rxclk,
+--		phy_rgmii_rxctl  => macio_rgmii_rc,
+--		phy_rgmii_rxd    => macio_mii_rxd,
+--		ts_mac_coremdc   => macio_mdc,
+--		ts_mac_coremdio  => macio_mdio,
 
 
  		reset_n          => reset_n,

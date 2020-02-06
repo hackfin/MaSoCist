@@ -1,9 +1,6 @@
 # Module configuration for distribution:
 #
 
-
-# GHDLEX cosimulation module:
-
 ############################################################################
 
 DEFCONFIGS = $(wildcard $(VENDOR)/defconfig_*)
@@ -25,13 +22,17 @@ GHDLEX_VERSION    = sim-0.1dev
 # We have the tap library:
 MODULE_TAPLIB = $(CONFIG_HAVE_VTAP)
 
+MODULE_GENSOC = $(CONFIG_HAVE_GENSOC)
+
+# Use pre-installed gensoc
+GENSOC = gensoc
+
 # The build duties - in the opensource, we only build sw and sim
-BUILD_DUTIES = sw sim
+BUILD_DUTIES = sw sim syn
 
 # Simulation library uses a default:
 BUILD_SIMLIB_OPTIONS = DEVICEFILE=boards/test.xml
 BUILD_SIMLIB_OPTIONS += all-libsim 
-
 
 DISTFILES += $(TOPDIR)/syn/lattice/breakout/breakout-opensource.ldf
 DISTFILES += $(TOPDIR)/syn/lattice/breakout/breakout.lpf
@@ -64,9 +65,12 @@ endif
 
 ifdef CONFIG_versa_ecp5
 PLATFORM = versa_ecp5
-DEVICENAME = ECP5(G)
+DEVICENAME = ECP5
 FPGA_ARCH = ecp5
 FPGA_VENDOR = lattice
+FPGA_SPEC = LFE5UM5G-45F
+PACKAGE = CABGA381
+NEXTPNR_FLAGS=--um5g-45k --freq 100
 endif
 
 # New style default rules file:

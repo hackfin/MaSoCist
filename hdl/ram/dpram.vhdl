@@ -56,10 +56,12 @@ dualport_proc:
 
 			if b_we = '1' then
 				if a_we = '1' then
+-- synthesis translate_off
 					if index_a = index_b then
 						assert false report "Write violation"
 						severity failure;
 					end if;
+-- synthesis translate_on
 					ram(index_a) := a_write;
 					a_read <= a_write;
 				end if;

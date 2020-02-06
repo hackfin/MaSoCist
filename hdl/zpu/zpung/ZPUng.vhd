@@ -1142,7 +1142,8 @@ ZPUNG_INST_DECODE_WORKER: process (insn) is
     variable op: unsigned(7 downto 0);
 begin
     m := M_NOP;
-    im := to_integer(signed(insn(7-1 downto 0)));
+	im := 0;
+    -- im := to_integer(signed(insn(7-1 downto 0)));
     func <= resize(insn(OPMODE_GEN), 3);
     if (insn(OPMODE_IM) = '1') then
         m := M_IMM;

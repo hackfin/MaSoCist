@@ -119,7 +119,7 @@ entity SoC is
 		sysconfig  : in std_logic_vector(7 downto 0);
 #else
 #ifdef CONFIG_TIMER
-		pwm       : out std_logic_vector(CONFIG_NUM_TMR-1 downto 0);
+		-- pwm       : out std_logic_vector(CONFIG_NUM_TMR-1 downto 0);
 #endif
 #endif
 #if defined(CONFIG_versa_ecp5) || defined (CONFIG_netpp_node)

@@ -481,6 +481,8 @@ zpucore : ZPUSmallCore
 	tout.exstat <= unsigned(dbgstat);
 
 #ifdef CONFIG_SIM_BREAK
+
+-- synthesis translate_off
 break_term:
 	process (clk)
 	begin
@@ -491,6 +493,9 @@ break_term:
 			end if;
 		end if;
 	end process;
+
+-- synthesis translate_on
+
 #endif
 
 

@@ -59,8 +59,8 @@ architecture riscv32_top_rtl of SoC is
 	signal tap_stat   : secondary_tapregs_ReadPort;
 #endif
 	signal tap_data_reg      : SLV(31 downto 0);
-	signal tap_data_mux_out  : SLV(31 downto 0);
-	signal chipreg_re        : std_ulogic;
+	-- signal tap_data_mux_out  : SLV(31 downto 0);
+	-- signal chipreg_re        : std_ulogic;
 
  	-- Data memory signals:
 	signal dmem_data_in		  : SLV(31 downto 0);
@@ -100,11 +100,9 @@ architecture riscv32_top_rtl of SoC is
 #endif
 	signal dmem_busy          : std_logic;
 	signal dmem_delay         : std_logic;
-	signal dmem_delay_d       : std_logic;
+	-- signal dmem_delay_d       : std_logic;
 	signal dmem_read_req	  : std_logic;
-	signal dmem_read_ack	  : std_logic;
 	signal dmem_write_req	  : std_ulogic;
-	signal dmem_write_ack	  : std_ulogic;
 
 
 	signal l1_data_re		  : std_logic;
@@ -123,6 +121,8 @@ architecture riscv32_top_rtl of SoC is
 	-- Wishbone signals:
 	signal dmem_if_inputs	: wishbone_master_inputs;
 	signal dmem_if_outputs : wishbone_master_outputs;
+	signal dmem_read_ack	  : std_logic;
+	signal dmem_write_ack	  : std_ulogic;
 
 	signal m1_inputs, m2_inputs   : wishbone_master_inputs;
 	signal m1_outputs, m2_outputs : wishbone_master_outputs;
@@ -162,9 +162,8 @@ architecture riscv32_top_rtl of SoC is
 	signal b_re     : std_logic;
 	signal b_we     : std_logic;
 	signal b_addr   : ramaddr32_t;
-	signal b_write  : unsigned(WORD_SIZE-1 downto 0);
+	signal b_write  : unsigned(WORD_SIZE-1 downto 0) := (others => '0');
 	signal b_read   : unsigned(WORD_SIZE-1 downto 0);
-
 
 begin
 
@@ -306,6 +305,7 @@ debug_imem_write_access:
 	tout.dbgpc <= dbg_curpc;
 	-- tout.count <= x"0000" & std_logic_vector(exec_count);
 	tout.exstat <= dbg_exstat;
+	tout.break <= '0'; -- no break bit exported to TAP
 
 	imem_req <= imem_rd;
 	imem_dreq <= b_re or b_we;
@@ -343,14 +343,19 @@ bus_bridge:
 	dmem_data_in_mux <= dmem_data_in when perio_mux = '0' or l1_data_ready = '1'
 		else perio_data_in;
 
-	perio_read_ack <= wb_perio_rd.ack;
-	perio_write_ack <= wb_perio_rd.ack;
+	wb_perio_rd.sel <= (others => '0');
+	wb_perio_rd.dat <= (others => '0');
+	wb_perio_rd.ack <= '0';
+	wb_perio_rd.inta <= '0';
 
 	-- L1 data is always ready:
 
 #if defined(CONFIG_RISCV_POTATO)
 	dmem_read_ack <= perio_read_ack when perio_ce_d = '1' else '1';
 	dmem_write_ack <= perio_write_ack when perio_ce_d = '1' else '1';
+#else
+	perio_read_ack <= wb_perio_rd.ack;
+	perio_write_ack <= wb_perio_rd.ack;
 #endif
 		
 	perio_read_req <= dmem_read_req when is_mmr = '1' else '0';
@@ -416,6 +421,7 @@ vram_h: VirtualDualPortRAM_ce
 
 #else
 
+#ifndef CONFIG_GHDL_SYNTH
 rom_l: DPRAM16_init_ce
 	generic map (
 		ADDR_W => CONFIG_BRAM_ADDR_WIDTH-2, -- 32 bit wide, LSB 0 aligned
@@ -456,8 +462,10 @@ rom_h: DPRAM16_init_ce
 		b_read	  => b_read(HIGH_WORD)
 	);
 
+#endif
 #endif // VIRTUAL_RAM
 
+#ifndef CONFIG_GHDL_SYNTH
 data_memory_bank_a:
 	entity work.lb_dma_memory
 	generic map (
@@ -482,6 +490,7 @@ data_memory_bank_a:
 
 	);
 
+#endif
 
 	l1_data_re <= dmem_read_req and not perio_ce;
 	l1_data_we <= dmem_write_req and not perio_ce;

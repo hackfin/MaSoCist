@@ -219,21 +219,21 @@ gen_direct:
 	iready <= not int_full;
 
 
--- synopsys translate off
+-- synthesis translate_off
 
 -- Synplify barfs on this, we need to comment out the whole shlorm.
 
--- errguard:
--- 	process(clk)
--- 	begin
--- 		if rising_edge(clk) then
--- 			if over = '1' then
--- 				assert false report "FIFO overrun in " & behaviour'path_name
--- 				severity failure;
--- 			end if;
--- 		end if;
--- 	end process;
+errguard:
+	process(clk)
+	begin
+		if rising_edge(clk) then
+			if over = '1' then
+-- XXX				assert false report "FIFO overrun in " & behaviour'path_name
+-- XXX				severity failure;
+			end if;
+		end if;
+	end process;
 
--- synopsys translate on
+-- synthesis translate_on
 
 end behaviour;

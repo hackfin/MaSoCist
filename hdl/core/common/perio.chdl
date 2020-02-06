@@ -1,5 +1,45 @@
 // File for inclusion only
 
+#ifdef CONFIG_GHDL_SYNTH
+	spi_sclk <= '0';
+	spi_cs <= '1';
+	spi_mosi <= '0';
+	uart_tx <= 'Z';
+
+	emuexec_d <= '0';
+	exec <= '0';
+	sysio_exc <= '0';
+	xs_ucode <= '0';
+	xs_unaligned <= '0';
+	clken <= '0';
+	pwm_enable_register <= (others => '0');
+	exc <= '0';
+	l1_data_ready <= '0';
+	a_re <= '0';
+	a_we <= '0';
+	nmi <= '0';
+	uart_rxirq <= '0';
+	irq_override <= '0';
+	pwm_irq <= (others => '0');
+	tap_secondary_addr <= (others => '0');
+	tap_data_reg <= (others => '0');
+	l1_data_out <= (others => '0');
+	wb_slv_sel <= (others => '0');
+	wb_slv_adr <= (others => '0');
+	a_write <= (others => '0');
+	b_read <= (others => '0');
+	a_read <= (others => '0');
+	wb_slv_dat <= (others => '0');
+	-- wb_perio_rd <= '0';
+	ivaddr <= (others => '0');
+	pwmout <= (others => '0');
+	irq_input <= (others => '0');
+	irq_evt <= '0';
+	led_cpustat <= (others => '0');
+	gpio_out <= (others => '0');
+	gpio_dir <= (others => '0');
+
+#else
 perio:
 	entity work.mmr_perio
 	port map (
@@ -181,4 +221,15 @@ perio:
 		ce            => perio_ce,
 		clk           => clk
 	);
+
+#endif // CONFIG_GHDL_SYNTH
+
+#ifndef CONFIG_VIDEO
+	video_resetn <= '0';
+#endif
+
+#ifndef CONFIG_TWI
+		twi_sda  <= 'H';
+		twi_scl  <= 'H';
+#endif
 

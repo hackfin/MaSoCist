@@ -44,8 +44,10 @@ architecture behaviour of DPRAMc2_init is
 	impure function ram_init (data : in ram16_init_t) return dpram_t is
 		variable r : dpram_t;
 	begin
-		assert (dpram_t'length = data'length) report "Init data size mismatch"
-			severity failure;
+-- synthesis translate_off
+	-- XXX	assert (dpram_t'length = data'length) report "Init data size mismatch"
+	-- XXX		severity failure;
+-- synthesis translate_on
 		for i in dpram_t'range loop
 			r(i) := data(i)(DATA_W-1 downto 0);
 		end loop;

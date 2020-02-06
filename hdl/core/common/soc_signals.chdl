@@ -21,8 +21,8 @@
 	 -- Address bit to determine this is an I/O
 	constant IO_BIT     : integer := CONFIG_MMR_ADDR_BIT;
 
-#ifdef CONFIG_UART
-	signal uart_rxirq   :  std_logic;  -- UART Rx IRQ
+#if defined (CONFIG_UART) && !defined(HAVE_EXTENDED_SYSIO)
+	signal uart_rxirq   :  std_logic := '0';  -- UART Rx IRQ
 #endif
 
 #if defined(CONFIG_GPIO) && !defined(HAVE_EXTENDED_SYSIO)
