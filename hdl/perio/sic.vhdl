@@ -139,6 +139,7 @@ for i in 0 to NUM_CHANNELS-1 generate
 			-- IRQ channel assignment:
 			if rising_edge(clk) then
 				imap(i) <= (others => '0');
+-- GHDL_SYNTH_FAILURE:
 				imap(i)(to_integer(ctrl.iar(i*2+1 downto i*2))) <= ipend(i);
 			end if;
 		end process;

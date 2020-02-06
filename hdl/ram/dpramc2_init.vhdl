@@ -45,8 +45,8 @@ architecture behaviour of DPRAMc2_init is
 		variable r : dpram_t;
 	begin
 -- synthesis translate_off
-	-- XXX	assert (dpram_t'length = data'length) report "Init data size mismatch"
-	-- XXX		severity failure;
+	assert (dpram_t'length = data'length) report "Init data size mismatch"
+		severity failure;
 -- synthesis translate_on
 		for i in dpram_t'range loop
 			r(i) := data(i)(DATA_W-1 downto 0);

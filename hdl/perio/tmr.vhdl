@@ -47,6 +47,7 @@ begin
 	end process;
 
 	pwm_clken <= '1' when counter = COUNT_ZERO else '0';
+	stat.timer_status <= (others => '0');
 
 clkdiv:
 	process (clk)

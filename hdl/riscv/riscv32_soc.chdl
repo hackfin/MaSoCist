@@ -343,10 +343,10 @@ bus_bridge:
 	dmem_data_in_mux <= dmem_data_in when perio_mux = '0' or l1_data_ready = '1'
 		else perio_data_in;
 
-	wb_perio_rd.sel <= (others => '0');
-	wb_perio_rd.dat <= (others => '0');
-	wb_perio_rd.ack <= '0';
-	wb_perio_rd.inta <= '0';
+--	wb_perio_rd.sel <= (others => '0');
+--	wb_perio_rd.dat <= (others => '0');
+--	wb_perio_rd.ack <= '0';
+--	wb_perio_rd.inta <= '0';
 
 	-- L1 data is always ready:
 

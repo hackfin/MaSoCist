@@ -174,6 +174,9 @@ ram:
 -- This section appends a little pre-read unit to the FIFO
 -- to allow higher speed on most architectures.
 
+-- GHDL_SYNTH_FAILURE
+-- synthesis translate_off
+
 gen_register:
 	if EXTRA_REGISTER generate
 
@@ -215,6 +218,13 @@ gen_direct:
 		odata <= rdata;
 		oready <= dready;
 	end generate;
+
+-- synthesis translate_on
+		int_full <= '1' when state = S_FULL else '0';
+		int_rden <= rden;
+		int_rden_d <= int_rden;
+		odata <= rdata;
+		oready <= dready;
 
 	iready <= not int_full;
 

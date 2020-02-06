@@ -1096,7 +1096,7 @@ Does not work with gensoc < v0.13
       </property>
 
       <array name="pwm">
-        <?config CONFIG_TIMER?>
+        <?config CONFIG_PWM?>
 
         <info>PWM controller (Simple)</info>
 

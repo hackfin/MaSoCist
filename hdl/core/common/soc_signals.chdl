@@ -90,15 +90,14 @@
 #endif
 
 #ifdef CONFIG_SIC
-	signal nmi        : std_logic;
 	signal exc        : std_logic;
-	signal irq_evt    : std_logic;
 	signal irq_input  : unsigned(CONFIG_NUM_IRQSRC-1 downto 0) :=
 		(others => '0');
+#endif
+	signal nmi        : std_logic;
 	signal irq_override : std_logic;
 	signal ivaddr   : ramaddr8_t;
-
-#endif
+	signal irq_evt    : std_logic;
 
 -- TAP signals:
 	signal emuack, emurdy : std_logic;
@@ -111,14 +110,16 @@
 #ifdef CONFIG_TIMER
 	constant LAST_TMR_INDEX : natural := CONFIG_NUM_TMR-1;
 
-	signal pwm_enable_register : unsigned(CONFIG_NUM_TMR-1 downto 0);
-	signal clken      : std_logic;
+#ifndef CONFIG_PWM_NONE
+	signal clken      : std_logic := '0';
 	signal pwm_clken  : std_logic_vector(CONFIG_NUM_TMR-1 downto 0);
+	signal pwm_enable_register : unsigned(CONFIG_NUM_TMR-1 downto 0);
 	signal pwm_enable : std_logic_vector(CONFIG_NUM_TMR-1 downto 0);
 	signal pwm_irq    : std_logic_vector(CONFIG_NUM_TMR-1 downto 0);
 	signal pwm_clks   : std_logic_vector(CONFIG_NUM_TMR-1 downto 0);
 
 	signal pwmout     :    std_logic_vector(CONFIG_NUM_TMR-1 downto 0);
+#endif
 
 #endif
 
