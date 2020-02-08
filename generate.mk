@@ -33,10 +33,8 @@ endif
 
 SOFTWARE ?= ../sw
 
-$(ROMFILE):
+$(ROMFILE): $(SOFTWARE)/main.elf
 	@echo Build ROM for platform: $(PLATFORM)
 	make -C $(SOFTWARE) all USE_CACHE=n $(IS_SIM) PLATFORM=$(PLATFORM) \
 	ROMFILE=$(ROMFILE)
-
-.PHONY: $(ROMFILE)
 

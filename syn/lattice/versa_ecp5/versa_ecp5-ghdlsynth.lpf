@@ -2,9 +2,8 @@ FREQUENCY NET "clk_in" 100.000000 MHz ;
 IOBUF PORT "clk_in" IO_TYPE=LVDS DIFFRESISTOR=100 ;
 # FREQUENCY NET "clk_serdes_c" 156.250000 MHz ;
 IOBUF PORT "clk_serdes" IO_TYPE=LVDS DIFFRESISTOR=100 ;
-LOCATE COMP "clk_in" SITE "P3" ;// on-board oscillator
-LOCATE COMP "reset_n" SITE "T1" ;
-IOBUF PORT "reset_n" ;
+# On board oscillator:
+LOCATE COMP "clk_in" SITE "P3" ;
 LOCATE COMP "dip_sw[7]" SITE "K20" ;
 LOCATE COMP "dip_sw[6]" SITE "J19" ;
 LOCATE COMP "dip_sw[5]" SITE "K18" ;
@@ -92,11 +91,7 @@ LOCATE COMP "hw_config" SITE "T17" ;
 ############################################################################
 # BLOCK JTAGPATHS ;
 # SYSCONFIG SLAVE_SPI_PORT=DISABLE CONFIG_MODE=JTAG CONFIG_SECURE=OFF TRANSFR=OFF MASTER_SPI_PORT=DISABLE SLAVE_PARALLEL_PORT=DISABLE MCCLK_FREQ=38.8 BACKGROUND_RECONFIG=OFF ;
-# User code for ZPUng TAP:
 IOBUF PORT "spi_miso" IO_TYPE=LVCMOS25 ;
-IOBUF PORT "tck" IO_TYPE=LVCMOS33 ;
-IOBUF PORT "tdi" IO_TYPE=LVCMOS33 ;
-IOBUF PORT "tms" IO_TYPE=LVCMOS33 ;
 IOBUF PORT "rxd_uart" IO_TYPE=LVCMOS33 ;
 IOBUF PORT "txd_uart" IO_TYPE=LVCMOS33 ;
 # BLOCK NET "soc/perio/rx_reset" ;
@@ -111,10 +106,17 @@ DEFINE PORT GROUP "rgmii_in" "phy_rgmii_rxctl"
 LOCATE COMP "clk_serdes" SITE "A4" ;
 
 # JTAG pins:
+# LOCATE COMP "tck" SITE "T5" ;
+# LOCATE COMP "tdi" SITE "R5" ;
+# LOCATE COMP "tms" SITE "U5" ;
+# LOCATE COMP "tdo" SITE "V4" ;
+
+LOCATE COMP "reset_n" SITE "T1" ;
+# IOBUF PORT "reset_n" ;
+
 IOBUF PORT "tck" IO_TYPE=LVCMOS33 ;
 IOBUF PORT "tdi" IO_TYPE=LVCMOS33 ;
 IOBUF PORT "tms" IO_TYPE=LVCMOS33 ;
-IOBUF PORT "rxd_uart" IO_TYPE=LVCMOS33 ;
-IOBUF PORT "txd_uart" IO_TYPE=LVCMOS33 ;
 
-USERCODE HEX "CAFE1020" ; 
+# User code for rv32 TAP:
+USERCODE HEX "CAFE1022" ; 

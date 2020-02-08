@@ -238,8 +238,8 @@ errguard:
 	begin
 		if rising_edge(clk) then
 			if over = '1' then
--- XXX				assert false report "FIFO overrun in " & behaviour'path_name
--- XXX				severity failure;
+				assert false report "FIFO overrun in " & behaviour'path_name
+				severity failure;
 			end if;
 		end if;
 	end process;

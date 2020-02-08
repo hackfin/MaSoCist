@@ -429,13 +429,6 @@ vram_h: VirtualDualPortRAM_ce
 
 	a_write <= (others => '0');
 
-#if 0
-
-	a_read <= (others => '0');
-	b_read <= (others => '0');
-
-#else
-
 	a_read <= a_read_h & a_read_l;
 	b_read <= b_read_h & b_read_l;
 
@@ -482,9 +475,6 @@ rom_h: DPRAM16_init_hex_ce
 		b_write   => b_write(HIGH_WORD),
 		b_read	  => b_read_h
 	);
-
-
-#endif
 
 #else
 

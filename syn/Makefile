@@ -32,6 +32,7 @@ show-duties:
 	@echo PLATFORM: $(PLATFORM) VENDOR : $(VENDOR)
 	@echo =========================================
 	@echo
+	@echo ROMFILE: $(ROMFILE)
 	@echo PROJECTFILES: $(PROJECTFILES)
 	@echo LIBRARYFILES: $(SYN_LIBFILES-y)
 	@echo TCL SCRIPTS: $(SYN_SCRIPTS)

@@ -66,7 +66,7 @@ package ram is
 			ADDR_W      : natural := 6;
 			DATA_W      : natural := 16;
 			INIT_DATA   : string  := "mem.hex";
-			SYN_RAMTYPE : string := "block_ram"
+			SYN_RAMTYPE : string  := "block_ram"
 		);
 		port (
 			-- Port A

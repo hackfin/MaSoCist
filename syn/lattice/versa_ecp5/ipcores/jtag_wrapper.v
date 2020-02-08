@@ -27,14 +27,14 @@ JTAGG #(.ER1		("ENABLED"),
         // .DECRYPTION	(1)
 ) jtag_i (
 /*
- JTAG currently disabled because of:
-
-Warning: Failed to find a route for arc 4 of net $PACKER_GND_NET.
-
+ *
+ * When these are disabled, toolchain won't complain.
+ * TODO: Verify if it's implicitely routed/connected.
 	.TCK    (tck),
 	.TMS    (tms),
 	.TDI    (tdi),
 	.TDO    (tdo),
+*/
 	.JTDO1  (jtdo1),
 	.JTDO2  (jtdo2),
 	.JTDI   (jtdi),
@@ -42,10 +42,9 @@ Warning: Failed to find a route for arc 4 of net $PACKER_GND_NET.
 	.JRTI1  (jrti1),
 	.JRTI2  (jrti2),
 	.JSHIFT (jshift),
-	.JUPDATE(jupdat),
+	.JUPDATE(jupdate),
 	.JRSTN  (jrstn),
 	.JCE1   (jce1),
 	.JCE2   (jce2)
-*/
 );
 endmodule

@@ -83,8 +83,12 @@ $(PLATFORM).config: $(PLATFORM).json $(LPF)
 	--lpf-allow-unconstrained \
 	--package $(PACKAGE)  2>&1 | tee $(LOGFILE_PNR)
 
+
+# Usercode cafe1050
 $(PLATFORM).bit: $(PLATFORM).config
-	$(ECPPACK) --svf $(PLATFORM).svf $< $@
+	$(ECPPACK) --svf $(PLATFORM).svf \
+		$< $@ \
+	--usercode 3405647952
 
 
 OPENOCD_JTAG_CONFIG = $(FPGA_VENDOR)/$(PLATFORM)/openocd.cfg

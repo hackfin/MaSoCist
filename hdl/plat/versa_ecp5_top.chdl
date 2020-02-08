@@ -11,10 +11,6 @@
 // Hack to not substitute this one as it will not be understood:
 #undef CONFIG_TAPCLK_PERIOD
 
-#ifdef CONFIG_GHDL_SYNTH
-#define CONFIG_SIMPLE
-#endif
-
 library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
@@ -22,7 +18,7 @@ use IEEE.numeric_std.all;
 -- For some ECP5 specific entities:
 #define USE_SOC
 
-#ifdef CONFIG_SIMPLE
+#ifdef CONFIG_GHDL_SYNTH
 library work;
 	use work.bb_components.all;
 #else
@@ -38,7 +34,7 @@ library work;
 entity versa_ecp5_top is
 	generic ( SIMULATION : boolean := false );
 	port (
-#ifndef CONFIG_GHDL_SYNTH
+#ifndef CONFIG_GHDL_SYNTH_XX
 		tck         : in  std_logic;
 		tms         : in  std_logic;
 		tdi         : in  std_logic;
@@ -86,7 +82,7 @@ architecture behaviour of versa_ecp5_top is
 	signal mclk           : std_logic;
 	signal mclk_locked    : std_logic;
 
-#ifdef CONFIG_GHDL_SYNTH
+#ifdef CONFIG_GHDL_SYNTH_XX
 	signal tck         :  std_logic := '0';
 	signal tms         :  std_logic := '0';
 	signal tdi         :  std_logic := '0';
@@ -138,7 +134,8 @@ architecture behaviour of versa_ecp5_top is
 
 begin
 
-	comb_reset <= (not reset_n) or (not mclk_locked);
+	-- comb_reset <= (not reset_n) or (not mclk_locked);
+	comb_reset <= (not mclk_locked);
 	hw_config <= '0';
 
 	seg <= (others => '1');
@@ -273,7 +270,7 @@ soc: entity work.SoC
 	-- spi_cs <= spi_cs_int;
 	spi_cs <= '1';
 
-#ifndef CONFIG_SIMPLE
+#ifndef CONFIG_GHDL_SYNTH
 -- User SPI access via USRMCLK ECP5 primitive:
 	usrmclk_inst: USRMCLK
 		port map (usrmclki => spi_sclk, usrmclkts => spi_ts);
@@ -305,7 +302,13 @@ soc: entity work.SoC
 
 
 #endif
-	oled <= not std_logic_vector(led);
+	oled(7) <= not led(7); -- std_logic_vector(led);
+	oled(6 downto 4) <= "111";
+	oled(3) <= not tap_reset;
+	oled(2) <= not mclk_locked;
+	oled(1) <= not tap2core.core_reset;
+	oled(0) <= not cpu_reset;
+
 
 	-- oled <= not std_logic_vector(core2tap.exstat);
 

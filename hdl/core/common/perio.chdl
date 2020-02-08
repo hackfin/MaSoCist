@@ -24,24 +24,6 @@
 	-- a_write <= (others => '0');
 	irq_override <= '0';
 
-#ifdef CONFIG_GHDL_SYNTH_XXX
-	spi_sclk <= '0';
-	spi_cs <= '1';
-	spi_mosi <= '0';
-	uart_tx <= 'Z';
-
-	clken <= '0';
-	pwm_enable_register <= (others => '0');
-	uart_rxirq <= '0';
-	pwm_irq <= (others => '0');
-	-- wb_perio_rd <= '0';
-	pwmout <= (others => '0');
-#ifdef CONFIG_GPIO
-	gpio_out <= (others => '0');
-	gpio_dir <= (others => '0');
-#endif
-
-#else
 perio:
 	entity work.mmr_perio
 	port map (
@@ -224,7 +206,6 @@ perio:
 		clk           => clk
 	);
 
-#endif // CONFIG_GHDL_SYNTH
 
 #ifndef CONFIG_VIDEO
 	video_resetn <= '0';
