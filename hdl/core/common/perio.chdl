@@ -18,14 +18,10 @@
 	tap_data_reg <= (others => '0');
 	a_re <= '0';
 	a_we <= '0';
-	b_read <= (others => '0');
-	a_read <= (others => '0');
-	l1_data_ready <= '0';
-	l1_data_out <= (others => '0');
 	wb_slv_sel <= (others => '0');
 	wb_slv_adr <= (others => '0');
 	wb_slv_dat <= (others => '0');
-	a_write <= (others => '0');
+	-- a_write <= (others => '0');
 	irq_override <= '0';
 
 #ifdef CONFIG_GHDL_SYNTH_XXX

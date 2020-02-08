@@ -4,7 +4,6 @@ include ../config.mk
 include $(TOPDIR)/vendor/$(VENDOR)/config.mk
 
 # These need to be defined for some 'common duties'
-VHDL_STD_SUFFIX = 93
 
 GENSOC_OUTPUT       = ../gen/syn-$(PLATFORM)
 SYNDIR              ?= .

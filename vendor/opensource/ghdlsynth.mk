@@ -46,6 +46,8 @@ VHDL_STD = 93c
 
 YOSYS     = $(DOCKER) $(DOCKERARGS) ghdl/synth:beta yosys
 
+YOSYS_INTERACTIVE     = $(DOCKER) $(DOCKERARGS) -it  ghdl/synth:beta yosys
+
 LIB_CREATE     = $(DOCKER) $(DOCKERARGS) ghdl/synth:beta \
 	make -C /src/lib-devel VHDL_STD=$(VHDL_STD) SYNTHESIS=yes \
 	LATTICE_DIR=/src/diamond_lib
@@ -69,7 +71,7 @@ READ_BB_WRAPPERS = read_verilog $(VERILOG_BB_WRAPPERS-y);
 endif
 
 SYN_ARGS = ghdl --std=$(VHDL_STD) $(GHDL_GENERICS) \
-	$(GHDL_LIBFLAGS) $(GHDL_FLAGS) $(PROJECTFILES) -e $(TOPLEVEL); \
+	$(GHDL_LIBFLAGS) $(GHDL_FLAGS) $^ -e $(TOPLEVEL); \
 	$(READ_BB_WRAPPERS) \
 	synth_ecp5 -top $(TOPLEVEL)_0 -json
 
@@ -91,6 +93,30 @@ OPENOCD_DEVICE_CONFIG = $(FPGA_VENDOR)/openocd/$(FPGA_SPEC).cfg
 download: $(PLATFORM).svf
 	$(OPENOCD) -f $(OPENOCD_JTAG_CONFIG) -f $(OPENOCD_DEVICE_CONFIG) \
 	-c "transport select jtag; init; svf $<; exit"
+
+
+RAMTEST = ../hdl/ram/pck_myhdl_011.vhd
+RAMTEST += ../hdl/ram/dpram_test.vhd
+RAMTEST += ../hdl/ram/dpram.vhd
+
+RAM_VERILOG = single_raw.v dual_raw.v dual_raw_sc.v
+
+VERILOG_FILES = $(RAM_VERILOG:%=../hdl/ram/%) dpram_test.v
+
+RAM_TOP = dpram_test
+
+RAM_SYN_ARGS = ghdl --std=$(VHDL_STD) $(GHDL_GENERICS) \
+	$(GHDL_LIBFLAGS) $(GHDL_FLAGS) $(RAMTEST) -e dpram; \
+	read_verilog $(VERILOG_FILES); \
+	synth_ecp5 -top $(RAM_TOP) -json
+
+rt: $(VERILOG_FILES) ram.json
+
+dpram_test.v: ../hdl/ram/ramgen.py
+	python $<
+
+ram.json: $(VERILOG_FILES)
+	$(YOSYS) -m $(GHDLSYNTH) -p "$(RAM_SYN_ARGS) $@" 2>&1 | tee ram.txt
 
 
 synlib:

@@ -29,7 +29,8 @@ SRCFILES-$(CONFIG_PYPS) += ram/dpramc2_init.vhdl
 SRCFILES-$(CONFIG_RISCV_ARCH) += ram/pkg_ram.vhdl
 ifdef CONFIG_GHDL_SYNTH
 SRCFILES-$(CONFIG_RISCV_ARCH) += ram/dpram_init_ghdlsynth.vhdl
-# SRCFILES-$(CONFIG_RISCV_ARCH) += ram/memmap_data_ghdlsynth.vhdl
+# SRCFILES-$(CONFIG_RISCV_ARCH) += ram/bram_ghdlsynth.vhdl
+SRCFILES-$(CONFIG_RISCV_ARCH) += ram/memmap_data_ghdlsynth.vhdl
 else
 # Unsupported by GHDL synthesis:
 SRCFILES-$(CONFIG_RISCV_ARCH) += ram/bram.vhdl

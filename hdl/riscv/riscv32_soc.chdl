@@ -158,12 +158,16 @@ architecture riscv32_top_rtl of SoC is
 	signal a_addr   : ramaddr32_t;
 	signal a_write  : unsigned(WORD_SIZE-1 downto 0);
 	signal a_read   : unsigned(WORD_SIZE-1 downto 0);
+	signal a_read_l : unsigned(WORD_SIZE/2-1 downto 0);
+	signal a_read_h : unsigned(WORD_SIZE/2-1 downto 0);
 	-- Port B
 	signal b_re     : std_logic;
 	signal b_we     : std_logic;
 	signal b_addr   : ramaddr32_t;
 	signal b_write  : unsigned(WORD_SIZE-1 downto 0) := (others => '0');
 	signal b_read   : unsigned(WORD_SIZE-1 downto 0);
+	signal b_read_l : unsigned(WORD_SIZE/2-1 downto 0);
+	signal b_read_h : unsigned(WORD_SIZE/2-1 downto 0);
 
 begin
 
@@ -421,7 +425,69 @@ vram_h: VirtualDualPortRAM_ce
 
 #else
 
-#ifndef CONFIG_GHDL_SYNTH
+#ifdef CONFIG_GHDL_SYNTH
+
+	a_write <= (others => '0');
+
+#if 0
+
+	a_read <= (others => '0');
+	b_read <= (others => '0');
+
+#else
+
+	a_read <= a_read_h & a_read_l;
+	b_read <= b_read_h & b_read_l;
+
+rom_l: DPRAM16_init_hex_ce
+	generic map (
+		ADDR_W => CONFIG_BRAM_ADDR_WIDTH-2, -- 32 bit wide, LSB 0 aligned
+		INIT_DATA => "bootrom_l.hex"
+	)
+	port map (
+		a_clk	  => clk,
+		a_ce      => imem_req,
+		a_we	  => a_we,
+		a_addr	  => a_addr,
+		a_write   => a_write(LOW_WORD),
+		a_read	  => a_read_l,
+		--
+		b_clk     => clk,
+		b_ce	  => imem_dreq,
+		b_we	  => b_we,
+		b_addr	  => b_addr,
+		b_write   => b_write(LOW_WORD),
+		b_read	  => b_read_l
+	);
+
+
+
+rom_h: DPRAM16_init_hex_ce
+	generic map (
+		ADDR_W => CONFIG_BRAM_ADDR_WIDTH-2, -- 32 bit wide, LSB 0 aligned
+		INIT_DATA => "bootrom_h.hex"
+	)
+	port map (
+		a_clk	  => clk,
+		a_ce	  => imem_req,
+		a_we	  => a_we,
+		a_addr	  => a_addr,
+		a_write   => a_write(HIGH_WORD),
+		a_read	  => a_read_h,
+		--
+		b_clk	  => clk,
+		b_ce	  => imem_dreq,
+		b_we	  => b_we,
+		b_addr	  => b_addr,
+		b_write   => b_write(HIGH_WORD),
+		b_read	  => b_read_h
+	);
+
+
+#endif
+
+#else
+
 rom_l: DPRAM16_init_ce
 	generic map (
 		ADDR_W => CONFIG_BRAM_ADDR_WIDTH-2, -- 32 bit wide, LSB 0 aligned
@@ -465,7 +531,6 @@ rom_h: DPRAM16_init_ce
 #endif
 #endif // VIRTUAL_RAM
 
-#ifndef CONFIG_GHDL_SYNTH
 data_memory_bank_a:
 	entity work.lb_dma_memory
 	generic map (
@@ -489,8 +554,6 @@ data_memory_bank_a:
 		dma_we			=> '0'
 
 	);
-
-#endif
 
 	l1_data_re <= dmem_read_req and not perio_ce;
 	l1_data_we <= dmem_write_req and not perio_ce;

@@ -61,6 +61,31 @@ package ram is
 		);
 	end component DPRAM16_init_ce;
 
+	component DPRAM16_init_hex_ce is
+		generic (
+			ADDR_W      : natural := 6;
+			DATA_W      : natural := 16;
+			INIT_DATA   : string  := "mem.hex";
+			SYN_RAMTYPE : string := "block_ram"
+		);
+		port (
+			-- Port A
+			a_clk   : in  std_logic;
+			a_ce    : in  std_logic;
+			a_we    : in  std_logic;
+			a_addr  : in  unsigned(ADDR_W-1 downto 0);
+			a_write : in  unsigned(DATA_W-1 downto 0);
+			a_read  : out unsigned(DATA_W-1 downto 0);
+			-- Port B
+			b_clk   : in  std_logic;
+			b_ce    : in  std_logic;
+			b_we    : in  std_logic;
+			b_addr  : in  unsigned(ADDR_W-1 downto 0);
+			b_write : in  unsigned(DATA_W-1 downto 0);
+			b_read  : out unsigned(DATA_W-1 downto 0)
+		);
+	end component DPRAM16_init_hex_ce;
+
 	component DPRAM32_init is
 		generic (
 			ADDR_W      : natural := 6;
