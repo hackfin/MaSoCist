@@ -1,8 +1,6 @@
 // File for inclusion only
 
-	sysio_exc <= '0';
-	led_cpustat <= (others => '0');
-	nmi <= '0';
+
 #ifdef CONFIG_SIC
 	irq_input <= (others => '0');
 	exc <= '0';
@@ -10,6 +8,8 @@
 	ivaddr <= (others => '0');
 	irq_evt <= '0';
 #endif
+
+#ifdef SYNTHESIS_GHDL
 	exec <= '0';
 	emuexec_d <= '0';
 	xs_ucode <= '0';
@@ -23,6 +23,10 @@
 	wb_slv_dat <= (others => '0');
 	-- a_write <= (others => '0');
 	irq_override <= '0';
+	sysio_exc <= '0';
+	led_cpustat <= (others => '0');
+	nmi <= '0';
+#endif
 
 perio:
 	entity work.mmr_perio

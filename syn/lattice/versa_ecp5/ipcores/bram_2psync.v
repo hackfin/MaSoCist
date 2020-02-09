@@ -1,6 +1,6 @@
-module bram_2psync_7_8_69bea9a803033c3ab6453d6a7ac1ed0aa4a7bece #(
+module bram_2psync_10_8_69bea9a803033c3ab6453d6a7ac1ed0aa4a7bece #(
 	parameter DATA = 8,
-	parameter ADDR = 7
+	parameter ADDR = 10
 ) (
 	input	wire				clk,
 
@@ -23,27 +23,49 @@ module bram_2psync_7_8_69bea9a803033c3ab6453d6a7ac1ed0aa4a7bece #(
 //	$readmemh("../build/nuc.hex", mem);
 //  end
 
-	dual_raw ram(
-		.a_we(a_we),
-		.a_addr(a_addr),
-		.a_clk(clk),
-		.a_read(a_read),
-		.a_ce(1'b1),
-		.a_write(a_write),
-		.b_we(b_we),
-		.b_addr(b_addr),
-		.b_clk(clk),
-		.b_read(b_read),
-		.b_ce(1'b1),
-		.b_write(b_write)
+reg [ADDR-1:0] addr_b;
+reg [ADDR-1:0] addr_a;
 
-	);
+
+(* ramstyle = "block_ram" *) reg [DATA-1:0] mem [(2**ADDR)-1:0] /* synthesis syn_ramstyle="block_ram" */;
+
+assign a_read = mem[addr_a];
+assign b_read = mem[addr_b];
+
+always @(posedge clk) begin: DUAL_RAW_PORT_B_PROC
+    addr_b <= b_addr;
+end
+
+
+always @(posedge clk) begin: DUAL_RAW_PORT_A_PROC
+    addr_a <= a_addr;
+    if (a_we) begin
+        mem[a_addr] <= a_write;
+    end
+end
+
+
+//	dual_raw ram(
+//		.a_we(a_we),
+//		.a_addr(a_addr),
+//		.a_clk(clk),
+//		.a_read(a_read),
+//		.a_ce(1'b1),
+//		.a_write(a_write),
+//		.b_we(b_we),
+//		.b_addr(b_addr),
+//		.b_clk(clk),
+//		.b_read(b_read),
+//		.b_ce(1'b1),
+//		.b_write(b_write)
+//
+//	);
 
 endmodule
 
-module bram_2psync_7_8_59fe624214af9b8daa183282288d5eb56b321f14 #(
+module bram_2psync_10_8_59fe624214af9b8daa183282288d5eb56b321f14 #(
 	parameter DATA = 8,
-	parameter ADDR = 7
+	parameter ADDR = 10
 ) (
 	input	wire				clk,
 
@@ -66,21 +88,43 @@ module bram_2psync_7_8_59fe624214af9b8daa183282288d5eb56b321f14 #(
 //	$readmemh("../build/nuc.hex", mem);
 //  end
 
-	dual_raw ram(
-		.a_we(a_we),
-		.a_addr(a_addr),
-		.a_clk(clk),
-		.a_read(a_read),
-		.a_ce(1'b1),
-		.a_write(a_write),
-		.b_we(b_we),
-		.b_addr(b_addr),
-		.b_clk(clk),
-		.b_read(b_read),
-		.b_ce(1'b1),
-		.b_write(b_write)
+reg [ADDR-1:0] addr_b;
+reg [ADDR-1:0] addr_a;
 
-	);
+
+(* ramstyle = "block_ram" *) reg [DATA-1:0] mem [(2**ADDR)-1:0] /* synthesis syn_ramstyle="block_ram" */;
+
+assign a_read = mem[addr_a];
+assign b_read = mem[addr_b];
+
+always @(posedge clk) begin: DUAL_RAW_PORT_B_PROC
+    addr_b <= b_addr;
+end
+
+
+always @(posedge clk) begin: DUAL_RAW_PORT_A_PROC
+    addr_a <= a_addr;
+    if (a_we) begin
+        mem[a_addr] <= a_write;
+    end
+end
+
+
+//	dual_raw ram(
+//		.a_we(a_we),
+//		.a_addr(a_addr),
+//		.a_clk(clk),
+//		.a_read(a_read),
+//		.a_ce(1'b1),
+//		.a_write(a_write),
+//		.b_we(b_we),
+//		.b_addr(b_addr),
+//		.b_clk(clk),
+//		.b_read(b_read),
+//		.b_ce(1'b1),
+//		.b_write(b_write)
+//
+//	);
 
 endmodule
 

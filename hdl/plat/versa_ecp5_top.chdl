@@ -19,10 +19,9 @@ use IEEE.numeric_std.all;
 #define USE_SOC
 
 -- FIXME: We should make a legal clone of the components file
-#ifdef CONFIG_GHDL_SYNTH
 library work;
 	use work.bb_components.all;
-#else
+#ifndef SYNTHESIS_GHDL
 library ECP5UM;
 	use ECP5UM.components.all;
 #endif
@@ -35,12 +34,10 @@ library work;
 entity versa_ecp5_top is
 	generic ( SIMULATION : boolean := false );
 	port (
-#ifndef CONFIG_GHDL_SYNTH_XX
 		tck         : in  std_logic;
 		tms         : in  std_logic;
 		tdi         : in  std_logic;
 		tdo         : out std_logic;
-#endif
 		-- clk_out     : out  std_logic;
 
 		spi_miso  : in  std_logic;
@@ -83,13 +80,6 @@ architecture behaviour of versa_ecp5_top is
 	signal mclk           : std_logic;
 	signal mclk_locked    : std_logic;
 
-#ifdef CONFIG_GHDL_SYNTH_XX
-	signal tck         :  std_logic := '0';
-	signal tms         :  std_logic := '0';
-	signal tdi         :  std_logic := '0';
-	signal tdo         :  std_logic;
-#endif
-
 	-- Pixel clock:
 	signal pclk           : std_logic;
 
@@ -99,14 +89,15 @@ architecture behaviour of versa_ecp5_top is
 
 	constant CLK_FREQUENCY : integer := 12500000;
 
-#ifdef USE_SOC
 	signal tap2core       : tap_out_rec;
 	signal core2tap       : tap_in_rec;
 
 	signal uart_iosel     : std_logic;
 	signal spi_sclk       : std_logic;
 	-- signal spi_sclk_en    : std_logic;
-	-- signal spi_ts         : std_logic;
+#ifndef SYNTHESIS_GHDL
+	signal spi_ts         : std_logic;
+#endif
 	signal spi_cs_int     : std_logic;
 	-- signal spi_gatedclk   : std_logic;
 
@@ -118,9 +109,6 @@ architecture behaviour of versa_ecp5_top is
 	-- signal phy_reset      : std_logic;
 	signal cpu_reset      : std_logic;
 	signal tap_reset      : std_logic;
-#else
-
-#endif
     -- signal counter : integer range 0 to CLK_FREQUENCY;
 
 	-- GPIOs:
@@ -143,7 +131,7 @@ begin
 
 	-- clk_out <= mclk;
 
-	gsr_inst: GSR port map (reset_n);
+	-- gsr_inst: GSR port map (reset_n);
 
 -- We run a delayed reset for the CPU, as there might be race conditions
 -- with the TAP.
@@ -220,7 +208,6 @@ end generate;
 -- synthesis translate_on
 
 
-#ifdef USE_SOC
 	cpu_reset <= tap2core.core_reset or delayed_reset;
 	tap_reset <= comb_reset;
 
@@ -262,13 +249,12 @@ soc: entity work.SoC
 		uart_iosel => uart_iosel
 	);
 
-#endif
+	 spi_cs <= spi_cs_int;
 
-	-- spi_ts <= spi_cs_int; -- Use CS for tristate
-	-- spi_cs <= spi_cs_int;
+#ifdef SYNTHESIS_GHDL
 	spi_cs <= '1';
-
-#ifndef CONFIG_GHDL_SYNTH
+#else
+	spi_ts <= spi_cs_int; -- Use CS for tristate
 -- User SPI access via USRMCLK ECP5 primitive:
 	usrmclk_inst: USRMCLK
 		port map (usrmclki => spi_sclk, usrmclkts => spi_ts);
@@ -292,14 +278,6 @@ soc: entity work.SoC
 --        end if;
 --    end process;
 
-#ifndef USE_SOC
-	twi_sda <= 'H';
-	twi_scl <= 'H';
-	rxd_uart <= 'H';
-	spi_mosi <= 'H';
-
-
-#endif
 	-- Note LED are low active
 	oled(7) <= not cpu_reset;
 	oled(6) <= not tap2core.core_reset;

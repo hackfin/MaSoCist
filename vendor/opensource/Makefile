@@ -11,11 +11,10 @@
 
 GHDL_LDFLAGS += -Wl,-L$(HOME)/lib
 
-
 PLATFORM_IPCORES = lattice/$(PLATFORM)/ipcores
 
 # Emulation files for simulation:
 SIM_SRCFILES-$(CONFIG_versa_ecp5) += hdl/plat/versa_ecp5/black_boxes.vhdl
 SYN_SRCFILES-$(CONFIG_versa_ecp5) += $(PLATFORM_IPCORES)/black_boxes.vhdl
 
-
+SIM_SRCFILES-$(CONFIG_versa_ecp5) += hdl/plat/versa_ecp5/pll_mac.vhd

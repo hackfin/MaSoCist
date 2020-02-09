@@ -82,7 +82,7 @@ class Romgen_AllData:
 		self.data = intelhex.IntelHex()
 
 	def write_segment(self, addr, data):
-		self.alldata.puts(addr, data)
+		self.data.puts(addr, data)
 
 	def dump(self, data):
 		ds = ">I"
@@ -113,12 +113,10 @@ class Romgen_AllData:
 		f.close()
 
 	def to_buffer(self):
-		return self.alldata.tobinstr()
+		return self.data.tobinstr()
 
 	def finish(self):
-		# print dir(self.alldata)
-		
-		data = self.alldata.tobinstr()
+		data = self.data.tobinstr()
 		self.dump(data)
 
 	def dump_hex(self, prefix):
@@ -168,7 +166,7 @@ class Romgen_ZPU(Romgen_AllData):
 	".ctors", ".dtors" ]
 
 	def __init__(self, prefix):
-		self.alldata = intelhex.IntelHex()
+		self.data = intelhex.IntelHex()
 		self.fname = prefix + "_data.tmp"
 
 	def handle(self, p):

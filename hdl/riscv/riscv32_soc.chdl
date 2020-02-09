@@ -425,7 +425,7 @@ vram_h: VirtualDualPortRAM_ce
 
 #else
 
-#ifdef CONFIG_GHDL_SYNTH
+#ifdef SYNTHESIS_GHDL
 
 	a_write <= (others => '0');
 

@@ -21,6 +21,10 @@ clean::
 	rm -fr $(CLEANUP_DUTIES)
 	rm -fr $(SYN_SCRIPTS)
 
+ifdef CONFIG_GHDL_SYNTH
+CHDL_FLAGS += -DSYNTHESIS_GHDL
+endif
+
 SYNTHESIS = yes
 COMMON_BUILD_RULES = yes   # Use common rules
 include $(SRC)/project.mk

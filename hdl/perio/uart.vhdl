@@ -10,7 +10,7 @@ library work;
 
 entity uart_core is
 	generic (
-		FIFO_DEPTH : natural := 7;
+		FIFO_DEPTH : natural := 10;
 		SYN_RAMTYPE  : string  := "distributed"
 	);
 	port (
@@ -159,7 +159,11 @@ rxfifo:
 	
 txfifo:
 	FifoBuffer
-	generic map ( DATA_W => 8, ADDR_W => FIFO_DEPTH)
+	generic map (
+		DATA_W => 8,
+		ADDR_W => FIFO_DEPTH,
+		SYN_RAMTYPE => SYN_RAMTYPE
+	)
 	port map (
 		wren      => txfifo_wren,
 		idata     => ctrl.uart_txr,
