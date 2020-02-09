@@ -373,15 +373,12 @@ class Romgen_Mem2x16i_4x8d:
 		ds = ">BBBB"
 		l = len(data)
 		i = 0
-		c = 0
-
 		s = ["", "", "", ""]
 		while (i < l):
 			chunk = data[i:i+4]
 			words = elf.struct.unpack(ds, chunk)
 			for j in range(4):
 				s[j] += '%02x\n' % words[j]
-			c += 1
 			i += 4
 
 		for j in range(4):
@@ -394,15 +391,23 @@ class Romgen_Mem2x16i_4x8d:
 	def dump_hex(self, prefix):
 		low = open(prefix + "_l.hex", "w")
 		high = open(prefix + "_h.hex", "w")
-		a = self.text.tobinarray()
-		for i, e in enumerate(a):
-			if (i%4) == 0:
-				out = low
-			elif (i%4) == 2:
-				out = high
-			out.write("%02x" % e)
-			if (i%2) == 1:
-				out.write("\n")
+		data = self.text.tobinstr()
+
+		ds = "<HH"
+		l = len(data)
+		i = 0
+
+		s = ["", ""]
+		while (i < l):
+			chunk = data[i:i+4]
+			words = elf.struct.unpack(ds, chunk)
+			for j in range(2):
+				s[j] += '%04x\n' % words[j]
+			i += 4
+
+		low.write(s[0])
+		high.write(s[1])
+
 		low.close()
 		high.close()
 

@@ -87,12 +87,12 @@ vuart: entity work.VirtualUART
 uut: entity work.versa_ecp5_top
 	generic map ( SIMULATION => true)
 	port map (
---		tck              => tck,
---		tms              => tms,
---		tdi              => tdi,
---		tdo              => tdo,
+		tck              => tck,
+		tms              => tms,
+		tdi              => tdi,
+		tdo              => tdo,
 
-		clk_out          => open,
+		-- clk_out          => open,
 
 		spi_miso         => spi_miso,
 		spi_mosi         => spi_mosi,

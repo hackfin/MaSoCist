@@ -18,6 +18,7 @@ use IEEE.numeric_std.all;
 -- For some ECP5 specific entities:
 #define USE_SOC
 
+-- FIXME: We should make a legal clone of the components file
 #ifdef CONFIG_GHDL_SYNTH
 library work;
 	use work.bb_components.all;
@@ -120,11 +121,11 @@ architecture behaviour of versa_ecp5_top is
 #else
 
 #endif
-    signal counter : integer range 0 to CLK_FREQUENCY;
+    -- signal counter : integer range 0 to CLK_FREQUENCY;
 
 	-- GPIOs:
 	-- Set to defined state for simulation:
---	signal gpio           : unsigned(15 downto 0);
+	signal gpio           : unsigned(31 downto 0);
 	signal cfg            : std_logic_vector(7 downto 0);
 
 	signal led            : unsigned(7 downto 0);
@@ -134,14 +135,11 @@ architecture behaviour of versa_ecp5_top is
 
 begin
 
-	-- comb_reset <= (not reset_n) or (not mclk_locked);
-	comb_reset <= (not mclk_locked);
+	comb_reset <= (not reset_n) or (not mclk_locked);
 	hw_config <= '0';
 
-	seg <= (others => '1');
-	-- seg <= not std_logic_vector(gpio(13 downto 0));
-	-- segdp <= not gpio(14);
-	segdp <= '1';
+	seg <= not std_logic_vector(gpio(13 downto 0));
+	segdp <= not gpio(14);
 
 	-- clk_out <= mclk;
 
@@ -243,7 +241,7 @@ soc: entity work.SoC
 		tout         => core2tap,
 
 		irq0       => '0',
---XXXX		gpio      => gpio,
+		gpio      => gpio,
 		-- pwm       => pwm(CONFIG_NUM_TMR-1 downto 0),
 
 		spi_sclk         => spi_sclk,
@@ -257,7 +255,7 @@ soc: entity work.SoC
 #ifdef HAVE_EXTENDED_SYSIO
 		sysconfig     => cfg,
 #endif
-		led_status    => open, -- led,
+		led_status    => led,
 
 		uart_tx => rxd_uart,
 		uart_rx => txd_uart,
@@ -283,16 +281,16 @@ soc: entity work.SoC
 	-- eth_rst_n <= not phy_reset;
 
 
-    process(mclk)
-    begin
-        if rising_edge(mclk) then
-            counter <= counter + 1;
-            if counter = CLK_FREQUENCY then
-                led <= not led;
-                counter <= 0;
-            end if;
-        end if;
-    end process;
+--    process(mclk)
+--    begin
+--        if rising_edge(mclk) then
+--            counter <= counter + 1;
+--            if counter = CLK_FREQUENCY then
+--                led <= not led;
+--                counter <= 0;
+--            end if;
+--        end if;
+--    end process;
 
 #ifndef USE_SOC
 	twi_sda <= 'H';
@@ -302,12 +300,12 @@ soc: entity work.SoC
 
 
 #endif
-	oled(7) <= not led(7); -- std_logic_vector(led);
-	oled(6 downto 4) <= "111";
-	oled(3) <= not tap_reset;
-	oled(2) <= not mclk_locked;
-	oled(1) <= not tap2core.core_reset;
-	oled(0) <= not cpu_reset;
+	-- Note LED are low active
+	oled(7) <= not cpu_reset;
+	oled(6) <= not tap2core.core_reset;
+	oled(5 downto 1) <= not std_logic_vector(gpio(7+16 downto 3+16));
+	-- oled(5 downto 1) <= not std_logic_vector(led(7 downto 3));
+	oled(0) <= not core2tap.break;
 
 
 	-- oled <= not std_logic_vector(core2tap.exstat);

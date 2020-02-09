@@ -8,6 +8,7 @@
 #include "shell.h"
 #include "versa_ecp5.h" // generated SoC map
 #include "driver.h"
+#include "machine/endian.h"
 
 
 #ifdef CONFIG_SCACHE_INSN
@@ -27,7 +28,15 @@ int test_endian(void)
 	int c;
 
 	c = *p;
+#if defined (LITTLE_ENDIAN)
+#warning "Little endian defined"
+	if (c != 0xad0b) BREAK;
+#elif defined(BIG_ENDIAN)
+#warning "Big endian defined"
 	if (c != 0x0bad) BREAK;
+#else
+#error "Endianness undefined"
+#endif
 
 	return p[0];
 }
@@ -46,6 +55,23 @@ void led_blink(int n, int d)
 
 #endif
 }
+
+static uint32_t s_val = 0x40;
+
+uint32_t g_dbg = 0;
+void seg_cycle(void)
+{
+#ifdef CONFIG_GPIO
+	MMRBase gpio0_base = device_base(GPIO, 0);
+#endif
+	if (s_val == 0x4000) s_val = 0x40;
+#ifdef CONFIG_GPIO
+	GPIO_MMR(gpio0_base, Reg_GPIO_OUT) = s_val;
+#endif
+	g_dbg++;
+	s_val <<= 1;
+}
+
 
 static volatile int g_wait = 1;
 
@@ -165,6 +191,15 @@ int board_init(void)
 {
 	int c;
 
+	MMRBase gpio0_base = device_base(GPIO, 0);
+	MMRBase gpio1_base = device_base(GPIO, 1);
+
+	GPIO_MMR(gpio0_base, Reg_GPIO_DIR) = 0xffff;
+	GPIO_MMR(gpio1_base, Reg_GPIO_DIR) = 0xffff;
+
+	GPIO_MMR(gpio0_base, Reg_GPIO_OUT) = 0x0001;
+	GPIO_MMR(gpio1_base, Reg_GPIO_OUT) = 0x0001;
+
 #ifdef CONFIG_UART
 	uart_init(0, CONFIG_SYSCLK / 16 / CONFIG_DEFAULT_UART_BAUDRATE);
 	// Initialize handler for UART events:
@@ -188,7 +223,7 @@ int board_init(void)
 	}
 	run_selftest(0);
 
-	// test_endian();
+	test_endian();
 	return 0;
 }
 
@@ -226,8 +261,15 @@ int exec_cmd(int argc, char **argv)
 	return S_IDLE;
 }
 
+static long int g_cycle = 0;
+
 int mainloop_handler(int state)
 {
+	g_cycle++;
+	if (g_cycle == 4000) {
+		g_cycle = 0;
+		seg_cycle();
+	}
 	return 0;
 }
 
