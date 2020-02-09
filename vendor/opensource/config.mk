@@ -28,7 +28,7 @@ MODULE_GENSOC = $(CONFIG_HAVE_GENSOC)
 GENSOC = gensoc
 
 # The build duties - in the opensource, we only build sw and sim
-BUILD_DUTIES = sw sim syn
+BUILD_DUTIES = sw sim
 
 # Simulation library uses a default:
 BUILD_SIMLIB_OPTIONS = DEVICEFILE=boards/test.xml
