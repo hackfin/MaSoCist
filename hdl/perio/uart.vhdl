@@ -10,7 +10,7 @@ library work;
 
 entity uart_core is
 	generic (
-		FIFO_DEPTH : natural := 10;
+		FIFO_DEPTH : natural := 6;
 		SYN_RAMTYPE  : string  := "distributed"
 	);
 	port (
@@ -28,6 +28,11 @@ architecture behaviour of uart_core is
 
 	signal count16  : unsigned(4-1 downto 0) := (others => '0');
 	signal counter  : unsigned(16-1 downto 0) := (others => '0');
+
+	signal dbgcnt   : unsigned(16-1 downto 0) := (others => '0');
+	signal dbgcnt2   : unsigned(16-1 downto 0) := (others => '0');
+	signal debug   : unsigned(16-1 downto 0) := (others => '0');
+	signal debug2  : unsigned(16-1 downto 0) := (others => '0');
 
 	signal strobe_rx     : std_logic;
 	signal rxd           : unsigned(7 downto 0);
@@ -63,6 +68,7 @@ architecture behaviour of uart_core is
 			oready    : out std_logic;
 			rden      : in  std_logic;
 			err       : out std_logic;
+			debug     : out unsigned(16-1 downto 0);
 			reset     : in  std_logic;
 			clk       : in  std_logic
 		);
@@ -119,6 +125,21 @@ uart_rx: entity work.UARTrx
 		clk              => clk
 	);
 
+-- 	process (clk)
+-- 	begin
+-- 		if rising_edge(clk) then
+-- 			if strobe_rx = '1' then
+-- 				dbgcnt <= dbgcnt + 1;
+-- 			end if;
+-- 			if ctrl.uart_reset = '1' then
+-- 				dbgcnt2 <= dbgcnt2 + 1;
+-- 			end if;
+-- 		end if;
+-- 	end process;
+
+	-- Hack to prevent state machine being optimized away
+	stat.uart_dbg  <= debug and debug2;
+
 uart_tx:
 	entity work.UARTtx
 	port map (
@@ -148,6 +169,7 @@ rxfifo:
 		oready    => rxdata_ready,
 		rden      => rxfifo_rden,
 		err       => stat.rxovr,
+		debug     => debug2,
 		reset     => ctrl.uart_reset,
 		clk       => clk
 	);
@@ -156,7 +178,7 @@ rxfifo:
 	stat.dvalid   <= rxdata_ready;
 	stat.rxready  <= rxdata_ready;
 	rxirq         <= rxdata_ready and ctrl.rx_irq_enable;
-	
+
 txfifo:
 	FifoBuffer
 	generic map (
@@ -172,6 +194,7 @@ txfifo:
 		oready    => txfifo_dready,
 		rden      => txfifo_strobe,
 		err       => stat.txovr,
+		debug     => debug,
 		reset     => ctrl.uart_reset,
 		clk       => clk
 	);

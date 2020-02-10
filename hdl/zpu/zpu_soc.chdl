@@ -409,14 +409,15 @@ count_exec_pulses:
 
 #if defined(CONFIG_versa_ecp5) 
 	led_cpustat <=
+					emurdy &
 	                dbg_exstat(B_ZPU_INRESET - 8) &
-	                dbg_exstat(B_ZPU_MEMBUSY - 8) &
-	                dbg_exstat(B_ZPU_EXCEPT - 8) &
 	                dbg_exstat(B_ZPU_BREAK - 8) &
-	                "0" &
+	                dbg_exstat(B_ZPU_EXCEPT - 8) &
 	                dbg_exstat(B_ZPU_IN_UCODE - 8) &
-	                dbg_exstat(B_ZPU_IRQLAT - 8) &
-	                dbg_exstat(B_ZPU_IRQACK - 8);
+	                dbg_exstat(B_ZPU_MEMBUSY - 8) &
+	                dbg_exstat(B_ZPU_IRQACK - 8) &
+	                dbg_exstat(B_ZPU_IRQLAT - 8) ;
+					
 
 #elif defined(CONFIG_netpp_node)
 /* LED order on v0.1: BLUE YELLOW GREEN RED  (Adapted to population mistake)
@@ -479,7 +480,7 @@ zpucore: entity work.ZPUng
 	tout.emudata <= dbg_emudata_o;
 	tout.dbgpc <= dbg_curpc;
 	tout.count <= x"0000" & exec_count;
-	tout.break <= '0'; -- No break bit exported
+	tout.break <= dbg_exstat(B_ZPU_BREAK - 8);
 	tout.exstat <= dbg_exstat;
 #endif
 
@@ -509,7 +510,7 @@ zpucore : ZPUSmallCore
 
 	tout.emudata <= dbg.stk_a;
 	tout.dbgpc <= dbg.pc;
-	tout.break <= '0'; -- No break bit exported
+	tout.break <= break; -- No break bit exported
 	tout.count <= x"0000" & dbgcount;
 	dbgstat(B_ZPU_IDIM - 8)    <= dbg.idim;
 	dbgstat(B_ZPU_MEMBUSY - 8) <= '0';

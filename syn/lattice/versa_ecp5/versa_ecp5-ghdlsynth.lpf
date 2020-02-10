@@ -30,8 +30,8 @@ IOBUF PORT "oled[5]" ;
 IOBUF PORT "oled[6]" ;
 IOBUF PORT "oled[7]" ;
 ##################################################################
-LOCATE COMP "rxd_uart" SITE "A11" ;
-LOCATE COMP "txd_uart" SITE "C11" ;
+LOCATE COMP "rxd_uart" SITE "C11" ;
+LOCATE COMP "txd_uart" SITE "A11" ;
 # Internal SPI port:
 LOCATE COMP "spi_mosi" SITE "W2" ;
 LOCATE COMP "spi_miso" SITE "V2" ;

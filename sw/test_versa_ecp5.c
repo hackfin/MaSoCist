@@ -8,6 +8,7 @@
 #include "shell.h"
 #include "versa_ecp5.h" // generated SoC map
 #include "driver.h"
+#include "cmdhelper.h"
 #ifndef CONFIG_ZPUNG
 #include "machine/endian.h"
 #endif
@@ -241,11 +242,13 @@ const char s_info[] = "\r------------- test shell -------------\n"
                         "--     type 'h' for help            --\n";
 
 const char s_help[] = "\r-------------  COMMANDS  -------------\n"
-                        " l <hex>    - Set LEDs accordingly \n";
+						CMD_DEFAULT
+                        " l <hex>          - Set LEDs accordingly \n";
 
 int exec_cmd(int argc, char **argv)
 {
 	unsigned int val[3];
+	MMRBase gpio1_base = device_base(GPIO, 1);
 
 	if (argc >= 2) parse_hex(argv[1], &val[0]);
 	if (argc >= 3) parse_hex(argv[2], &val[1]);
@@ -254,15 +257,17 @@ int exec_cmd(int argc, char **argv)
 		case 'l':
 			switch (argc) {
 				case 2:
+					GPIO_MMR(gpio1_base, Reg_GPIO_OUT) = val[0] << 3;
 					break;
 				default:
 					write_string("Usage: l <hexvalue>\n");
 			}
+			break;
 		case 'b':
 			BREAK;
 			break;
 		default:
-			return ERR_CMD;
+			return cmd_fallback(argc, argv);
 	}
 
 	return S_IDLE;

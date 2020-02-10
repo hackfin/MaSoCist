@@ -28,6 +28,7 @@ ifdef SYNTHESIS
 		SRCFILES-$(CONFIG_RISCV_ARCH) += ram/dpram_init_ghdlsynth.vhdl
 		SRCFILES-$(CONFIG_RISCV_ARCH) += ram/memmap_data_ghdlsynth.vhdl
 		SRCFILES-$(CONFIG_ZPUNG) += ram/dpram_init_ghdlsynth.vhdl
+		# SRCFILES-$(CONFIG_ZPUNG) += ram/bram_ghdlsynth.vhdl
 		SRCFILES-$(CONFIG_ZPUNG) += ram/memmap_data_ghdlsynth.vhdl
 	else
 		# Yet unsupported by GHDL synthesis:

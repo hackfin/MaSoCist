@@ -47,8 +47,8 @@ entity versa_ecp5_top is
 		twi_scl  : inout std_logic;
 		twi_sda  : inout std_logic;
 
-		txd_uart    : in std_logic;	  -- FT2232 -> CPU
-		rxd_uart    : out std_logic;  -- CPU    -> FT2232
+		rxd_uart    : in std_logic;	  -- FT2232 -> CPU
+		txd_uart    : out std_logic;  -- CPU    -> FT2232
 
 		oled         : out  std_logic_vector(7 downto 0);
 		seg          : out  std_logic_vector(13 downto 0);
@@ -244,8 +244,8 @@ soc: entity work.SoC
 #endif
 		led_status    => led,
 
-		uart_tx => rxd_uart,
-		uart_rx => txd_uart,
+		uart_tx => txd_uart,
+		uart_rx => rxd_uart,
 		uart_iosel => uart_iosel
 	);
 
@@ -266,28 +266,12 @@ soc: entity work.SoC
 	cfg <= not dip_sw;
 	-- eth_rst_n <= not phy_reset;
 
-
---    process(mclk)
---    begin
---        if rising_edge(mclk) then
---            counter <= counter + 1;
---            if counter = CLK_FREQUENCY then
---                led <= not led;
---                counter <= 0;
---            end if;
---        end if;
---    end process;
-
 	-- Note LED are low active
-	oled(7) <= not cpu_reset;
-	oled(6) <= not tap2core.core_reset;
-	oled(5 downto 1) <= not std_logic_vector(gpio(7+16 downto 3+16));
-	-- oled(5 downto 1) <= not std_logic_vector(led(7 downto 3));
-	oled(0) <= not core2tap.break;
-
+	oled <= not std_logic_vector(led);
 
 	-- oled <= not std_logic_vector(core2tap.exstat);
 
+	-- txd_uart   <= rxd_uart;
 	
 
 end behaviour;
