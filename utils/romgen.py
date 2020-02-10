@@ -120,13 +120,23 @@ class Romgen_AllData:
 		self.dump(data)
 
 	def dump_hex(self, prefix):
-		tofile = open(prefix + ".hex", "w")
-		a = self.data.tobinarray()
-		for i, e in enumerate(a):
-			tofile.write("%02x" % e)
-			if (i%2) == 1:
-				tofile.write("\n")
-		tofile.close()
+		ds = ">L"
+		data = self.data.tobinstr()
+
+		l = len(data)
+		i = 0
+
+		hexfile = open(prefix + "32.hex", "w")
+
+		s = ""
+		while (i < l):
+			chunk = data[i:i+4]
+			words = elf.struct.unpack(ds, chunk)
+			s += '%08x\n' % words
+			i += 4
+
+		hexfile.write(s)
+		hexfile.close()
 
 class Romgen_ProgData:
 	PROG_SECTIONS = [".text", ".init", ".fixed_vectors" ]
@@ -265,6 +275,10 @@ class Romgen_imem_dmem:
 		self.write_data(self.datafile, data)
 		self.datafile.close()
 		self.textfile.close()
+
+	def dump_hex(self, prefix):
+		print "Warning, dump_hex for neo430 not yet implemented"
+		return False
 
 def pad(data, n):
 	m = len(data) % n
@@ -473,6 +487,7 @@ class Romgen_MSP430(Romgen_imem_dmem):
 			print LOADTXT % (p.name, p.sh_addr, l)
 		else:
 			print SKIPTXT % (p.name, p.sh_addr, l)
+
 
 
 ############################################################################

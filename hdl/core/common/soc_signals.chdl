@@ -110,7 +110,7 @@
 #ifdef CONFIG_TIMER
 	constant LAST_TMR_INDEX : natural := CONFIG_NUM_TMR-1;
 
-#ifndef CONFIG_PWM_NONE
+#if defined(CONFIG_TIMER) && !defined(CONFIG_PWM_NONE)
 	signal clken      : std_logic := '0';
 	signal pwm_clken  : std_logic_vector(CONFIG_NUM_TMR-1 downto 0);
 	signal pwm_enable_register : unsigned(CONFIG_NUM_TMR-1 downto 0);

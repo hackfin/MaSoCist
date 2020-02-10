@@ -249,11 +249,11 @@ soc: entity work.SoC
 		uart_iosel => uart_iosel
 	);
 
-	 spi_cs <= spi_cs_int;
 
 #ifdef SYNTHESIS_GHDL
 	spi_cs <= '1';
 #else
+	spi_cs <= spi_cs_int;
 	spi_ts <= spi_cs_int; -- Use CS for tristate
 -- User SPI access via USRMCLK ECP5 primitive:
 	usrmclk_inst: USRMCLK

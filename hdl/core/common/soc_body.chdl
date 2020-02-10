@@ -3,11 +3,9 @@
 
 
 	-- Map the register values directly to enable pins:
-#ifndef CONFIG_PWM_NONE
+#if defined(CONFIG_TIMER) && !defined(CONFIG_PWM_NONE)
 	pwm_enable <= std_logic_vector(pwm_enable_register);
-#endif
 
-#ifndef CONFIG_PWM_NONE
 pwm_clocks:
 for i in 0 to LAST_TMR_INDEX generate
 	pwm_clks(i) <= clk;

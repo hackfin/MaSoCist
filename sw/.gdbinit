@@ -13,7 +13,8 @@ source exc.gdb
 source irq.gdb
 source dma.gdb
 
-mem 0 0x4000 rw 32
+# Disable for RISCV:
+# mem 0 0x4000 rw 32
 set remotetimeout 9999
 set remote memory-write-packet-size 1024
 

@@ -88,7 +88,7 @@ $(PLATFORM).config: $(PLATFORM).json $(LPF)
 $(PLATFORM).bit: $(PLATFORM).config
 	$(ECPPACK) --svf $(PLATFORM).svf \
 		$< $@ \
-	--usercode 3405647952
+	--usercode $(TAP_USERCODE_INTEGER)
 
 
 OPENOCD_JTAG_CONFIG = $(FPGA_VENDOR)/$(PLATFORM)/openocd.cfg

@@ -8,7 +8,9 @@
 #include "shell.h"
 #include "versa_ecp5.h" // generated SoC map
 #include "driver.h"
+#ifndef CONFIG_ZPUNG
 #include "machine/endian.h"
+#endif
 
 
 #ifdef CONFIG_SCACHE_INSN
@@ -35,7 +37,12 @@ int test_endian(void)
 #warning "Big endian defined"
 	if (c != 0x0bad) BREAK;
 #else
+#ifdef CONFIG_ZPUNG
+#warning "Incomplete toolchain with missing machine/endian.h, assuming Big"
+#define BIG_ENDIAN
+#else
 #error "Endianness undefined"
+#endif
 #endif
 
 	return p[0];

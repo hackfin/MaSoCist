@@ -139,6 +139,7 @@ int main(void)
 	int argc = 0;
 	static char *argv[4];
 	char c;
+	MMRBase gpio1_base = device_base(GPIO, 1);
 
 	Token t;
 
@@ -221,6 +222,8 @@ int main(void)
 				break;
 			case S_ERROR:
 				// uart_reset(0);
+				GPIO_MMR(gpio1_base, Reg_GPIO_OUT) = 0x8;
+				
 				write_string(errtostring(ret));
 				write_string("\n");
 				state = S_IDLE;
