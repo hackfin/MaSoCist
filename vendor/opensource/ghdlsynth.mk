@@ -66,12 +66,23 @@ LOGFILE_PNR = lattice/$(PLATFORM)/report_pnr.txt
 
 LPF = lattice/$(PLATFORM)/$(PLATFORM)$(EXTENSION).lpf
 
-ifneq ($(VERILOG_BB_WRAPPERS-y),)
-READ_BB_WRAPPERS = read_verilog $(VERILOG_BB_WRAPPERS-y);
+EMULATE_FIFO = y
+TAP_GLUE_BB = lattice/lattice_tap_glue.il
+
+VERILOG_BB_WRAPPERS-$(EMULATE_FIFO) += fifo.v
+
+ifdef ENABLE_TAP_BB
+READ_NETLIST = read_ilang $(TAP_GLUE_BB); 
 endif
 
-SYN_ARGS = ghdl --std=$(VHDL_STD) $(GHDL_GENERICS) \
+ifneq ($(VERILOG_BB_WRAPPERS-y),)
+READ_BB_WRAPPERS = read_verilog $(VERILOG_BB_WRAPPERS-y); 
+endif
+
+SYN_ARGS = \
+	ghdl --std=$(VHDL_STD) $(GHDL_GENERICS) \
 	$(GHDL_LIBFLAGS) $(GHDL_FLAGS) $^ -e $(TOPLEVEL); \
+	$(READ_NETLIST) \
 	$(READ_BB_WRAPPERS) \
 	synth_ecp5 -top $(TOPLEVEL)_0 -json
 
@@ -84,7 +95,7 @@ $(PLATFORM).config: $(PLATFORM).json $(LPF)
 	--package $(PACKAGE)  2>&1 | tee $(LOGFILE_PNR)
 
 
-# Usercode cafe1050
+# Build bit file with specific JTAG usercode
 $(PLATFORM).bit: $(PLATFORM).config
 	$(ECPPACK) --svf $(PLATFORM).svf \
 		$< $@ \
@@ -99,33 +110,20 @@ download: $(PLATFORM).svf
 	-c "transport select jtag; init; svf $<; exit"
 
 
-RAMTEST = ../hdl/ram/pck_myhdl_011.vhd
-RAMTEST += ../hdl/ram/dpram_test.vhd
-RAMTEST += ../hdl/ram/dpram.vhd
+-include lattice/fifotest.mk
+-include lattice/tapglue.mk
 
-RAM_VERILOG = single_raw.v dual_raw.v dual_raw_sc.v
+%.v: %.blif
+	$(YOSYS) -p 'read_blif -wideports $<; write_verilog $@'
 
-VERILOG_FILES = $(RAM_VERILOG:%=../hdl/ram/%) dpram_test.v
+help:
+	$(NEXTPNR) --help
 
-RAM_TOP = dpram_test
-
-RAM_SYN_ARGS = ghdl --std=$(VHDL_STD) $(GHDL_GENERICS) \
-	$(GHDL_LIBFLAGS) $(GHDL_FLAGS) $(RAMTEST) -e dpram; \
-	read_verilog $(VERILOG_FILES); \
-	synth_ecp5 -top $(RAM_TOP) -json
-
-rt: $(VERILOG_FILES) ram.json
-
-dpram_test.v: ../hdl/ram/ramgen.py
-	python $<
-
-ram.json: $(VERILOG_FILES)
-	$(YOSYS) -m $(GHDLSYNTH) -p "$(RAM_SYN_ARGS) $@" 2>&1 | tee ram.txt
-
+yosys:
+	$(YOSYS_INTERACTIVE)
 
 synlib:
 	$(LIB_CREATE) GHDL_TARGET_DIR=synlib
-
 
 .PHONY: synlib
 

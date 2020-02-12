@@ -29,7 +29,7 @@ SYNTHESIS = yes
 COMMON_BUILD_RULES = yes   # Use common rules
 include $(SRC)/project.mk
 
-generate: $(GENSOC_OUTPUT) $(MY_DUTIES) $(WATCH_DUTIES-y)
+generate: $(GENSOC_OUTPUT) $(MY_DUTIES) $(WATCH_DUTIES-y) $(PROJECTFILES)
 
 show-duties:
 	@echo =========================================
@@ -83,7 +83,6 @@ endif
 run-synthesis: $(SYN_DUTIES)
 
 syntcl: $(GENSOC_OUTPUT) $(MY_DUTIES) sanity-check $(SYN_SCRIPTS)
-
 
 debug:
 	@echo $(MY_DUTIES)

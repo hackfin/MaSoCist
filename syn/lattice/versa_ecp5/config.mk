@@ -1,4 +1,5 @@
 
+ENABLE_TAP_BB = y
 
 TAP_GLUE = lattice/tap_glue/hdl/tap_lattice_glue.vhdl
 
@@ -17,7 +18,9 @@ else
 TAP_USERCODE_INTEGER = 3405647952
 endif
 
+ifndef ENABLE_TAP_BB
 PROJECTFILES += $(TAP_GLUE)
+endif
 
 dual_raw.v: ../hdl/ram/ramgen.py
 	python $<

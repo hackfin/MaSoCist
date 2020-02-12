@@ -68,6 +68,10 @@ define skip
 set $pc = $pc + 1
 end
 
+define ust
+	dump_UART_UART_STATUS
+end
+
 # display g_dma
 
 # display s_rxq

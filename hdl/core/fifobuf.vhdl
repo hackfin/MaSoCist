@@ -25,7 +25,6 @@ entity FifoBuffer is
 		oready    : out std_logic;
 		rden      : in  std_logic;
 		err       : out std_logic;
-		debug     : out unsigned(16-1 downto 0);
 		reset     : in  std_logic;
 		clk       : in  std_logic
 	);
@@ -47,7 +46,11 @@ architecture behaviour of FifoBuffer is
 	signal rdata  : unsigned(DATA_W-1 downto 0);
 
 	type state_t is (S_IDLE, S_READY, S_FULL, S_ERROR);
-	signal state : state_t;
+	-- GHDLSYNTH_QUIRK
+	-- Needs this initialized, otherwise gets 'optimized away'
+	signal state : state_t := S_IDLE;
+	-- If we don't initialize, yosys feels like it wants to recode.
+	-- signal state : state_t;
 
 	signal int_full      : std_logic; -- Internal "full" flag
 	signal int_rden      : std_logic;
@@ -65,15 +68,15 @@ architecture behaviour of FifoBuffer is
 		);
 		port (
 			-- Port A
-			-- a_we    : in  std_logic;
+			a_we    : in  std_logic;
 			a_addr  : in  unsigned(ADDR_W-1 downto 0);
-			-- a_write : in  unsigned(DATA_W-1 downto 0);
+			a_write : in  unsigned(DATA_W-1 downto 0);
 			a_read  : out unsigned(DATA_W-1 downto 0);
 			-- Port B
 			b_we    : in  std_logic;
 			b_addr  : in  unsigned(ADDR_W-1 downto 0);
 			b_write : in  unsigned(DATA_W-1 downto 0);
-			-- b_read  : out unsigned(DATA_W-1 downto 0);
+			b_read  : out unsigned(DATA_W-1 downto 0);
 			clk     : in  std_logic
 		);
 	end component bram_2psync;
@@ -155,22 +158,19 @@ fsm:
 	over   <= '1' when state = S_ERROR else '0';
 	err <= over;
 
-	-- When we do this, yosys doesn't seem to optimize it away.
-	debug <= to_unsigned(state_t'pos(state), 16);
-
 ram:
 	bram_2psync
 	generic map ( ADDR_W => ADDR_W, DATA_W => DATA_W,
 		SYN_RAMTYPE => SYN_RAMTYPE)
 	port map (
-		-- a_we    => '0',
+		a_we    => '0',
 		a_addr  => optr,
-		-- a_write => INACTIVE_WRITE_PORT,
+		a_write => INACTIVE_WRITE_PORT,
 		a_read  => rdata,
 		b_we    => wren,
 		b_addr  => iptr,
 		b_write => idata,
-		-- b_read  => open,
+		b_read  => open,
 		clk => clk
 	);
 
@@ -213,18 +213,13 @@ preread:
 	end generate;
 
 
---gen_direct:
---	if not EXTRA_REGISTER generate
---		int_full <= '1' when state = S_FULL else '0';
---		int_rden <= rden;
---		odata <= rdata;
---		oready <= dready;
---	end generate;
-
+gen_direct:
+	if not EXTRA_REGISTER generate
 		int_full <= '1' when state = S_FULL else '0';
 		int_rden <= rden;
 		odata <= rdata;
 		oready <= dready;
+	end generate;
 
 	iready <= not int_full;
 
