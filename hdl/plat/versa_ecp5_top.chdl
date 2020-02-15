@@ -89,16 +89,29 @@ architecture behaviour of versa_ecp5_top is
 
 	constant CLK_FREQUENCY : integer := 12500000;
 
-	signal tap2core       : tap_out_rec;
+	signal tap2core       : tap_out_rec := (
+		tapclk => '0',
+		jtag_reset => '0',
+		core_reset => '0',
+		emuexec => '0',
+		emumask => '0',
+		emurequest => '0',
+		emudata => (others => '0'),
+		emuir => (others => '0'),
+		reg => (others => '0'),
+		craddr => (others => '0')
+	);
 	signal core2tap       : tap_in_rec;
 
 	signal uart_iosel     : std_logic;
-	signal spi_sclk       : std_logic;
+	-- signal spi_sclk       : std_logic;
 	-- signal spi_sclk_en    : std_logic;
 #ifndef SYNTHESIS_GHDL
 	signal spi_ts         : std_logic;
 #endif
+#ifdef CONFIG_SPI
 	signal spi_cs_int     : std_logic;
+#endif
 	-- signal spi_gatedclk   : std_logic;
 
 	-- signal sys_ctrl   : sys_WritePort;
@@ -113,10 +126,16 @@ architecture behaviour of versa_ecp5_top is
 
 	-- GPIOs:
 	-- Set to defined state for simulation:
-	signal gpio           : unsigned(31 downto 0);
+#ifdef CONFIG_GPIO
+	signal gpio           : unsigned(CONFIG_NUM_GPIO*16-1 downto 0) :=
+		(others => '0');
+#else
+	signal gpio           : unsigned(32-1 downto 0) :=
+		(others => '0');
+#endif
 	signal cfg            : std_logic_vector(7 downto 0);
 
-	signal led            : unsigned(7 downto 0);
+	signal led            : unsigned(7 downto 0) := (others => '0');
 
 	-- MAC clocks:
 
@@ -152,6 +171,7 @@ delayed_cpu_reset:
 	end process;
 
 
+-- Note: Slow in simulation, when CONFIG_EMULATE_PLATFORM_IP not defined
 clk_pll1: pll_mac
     port map (
         CLKI    =>  clk_in,
@@ -171,6 +191,8 @@ clk_pll1: pll_mac
 
 ----------------------------------------------------------------------------
 -- SoC CPU
+
+#ifndef CONFIG_NEO430
 
 
 maybe_hwtap:
@@ -207,6 +229,10 @@ end generate;
 
 -- synthesis translate_on
 
+#else
+	tdo <= '1';
+	tap2core.core_reset <= '0';
+#endif
 
 	cpu_reset <= tap2core.core_reset or delayed_reset;
 	tap_reset <= comb_reset;
@@ -214,50 +240,67 @@ end generate;
 
 soc: entity work.SoC
 	port map (
-		clk        => mclk,
-		tap_reset  => tap_reset,
-		reset      => cpu_reset,
-		nmi_i      => '0',
+		clk            => mclk,
+		nmi_i          => '0',
+#ifndef CONFIG_NEO430
+		tap_reset      => tap_reset,
+		perio_rst      => '0',
+		pclk           => pclk,
 
-		pclk        => pclk,
-
-		perio_rst  => '0',
+		tin            => tap2core,
+		tout           => core2tap,
+		irq0           => '0',
+		video_resetn   => open,
+		led_status     => led,
+#endif
 
 		-- Emulation pins:
-		tin          => tap2core,
-		tout         => core2tap,
 
-		irq0       => '0',
-		gpio      => gpio,
+#ifdef CONFIG_GPIO
+		gpio           => gpio,
+#endif
 		-- pwm       => pwm(CONFIG_NUM_TMR-1 downto 0),
 
-		spi_sclk         => spi_sclk,
-		spi_cs           => spi_cs_int,
-		spi_mosi         => spi_mosi,
-		spi_miso         => spi_miso,
-		twi_sda          => twi_sda,
-		twi_scl          => twi_scl,
-		video_resetn     => open,
-
-#ifdef HAVE_EXTENDED_SYSIO
-		sysconfig     => cfg,
+#ifdef CONFIG_SPI
+		spi_cs         => spi_cs_int,
+		spi_mosi       => spi_mosi,
+		spi_miso       => spi_miso,
 #endif
-		led_status    => led,
+#ifdef CONFIG_TWI
+		twi_sda        => twi_sda,
+		twi_scl        => twi_scl,
+#endif
+
 
 		uart_tx => txd_uart,
 		uart_rx => rxd_uart,
-		uart_iosel => uart_iosel
+#ifdef HAVE_EXTENDED_SYSIO
+		uart_iosel     => uart_iosel,
+		sysconfig      => cfg,
+#endif
+
+		reset          => cpu_reset
 	);
 
 
+#ifdef CONFIG_SPI
 #ifdef SYNTHESIS_GHDL
 	spi_cs <= '1';
 #else
 	spi_cs <= spi_cs_int;
 	spi_ts <= spi_cs_int; -- Use CS for tristate
 -- User SPI access via USRMCLK ECP5 primitive:
-	usrmclk_inst: USRMCLK
-		port map (usrmclki => spi_sclk, usrmclkts => spi_ts);
+	-- usrmclk_inst: USRMCLK
+	-- 	port map (usrmclki => spi_sclk, usrmclkts => spi_ts);
+#endif
+#else
+	spi_mosi  <= 'H';
+	spi_cs    <= 'H';
+#endif
+
+#ifndef CONFIG_TWI
+	twi_sda   <= 'H';
+	twi_scl   <= 'H';
 #endif
 
 	-- Use master clock for pixel clock

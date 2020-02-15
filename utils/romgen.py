@@ -27,65 +27,16 @@ HEADER = """----------------------------------------------------------------
 -- Start at: 0x%08x
 ----------------------------------------------------------------------------\n"""
 
-def write_imem(memory, data, addr):
-	ds = ">L"
-	l = len(data)
-	i = 0
-	c = addr & 0xffff
-	m = l % 4
-	if m:
-		m = 4-m
-		data += "\0" * m
-		l += m
-
-
-	while i < l:
-		chunk = data[i:i+4]
-		words = elf.struct.unpack(ds, chunk)
-		# print "Write %x <- %08x" % (c, words[0])
-		memory[c] = words[0]
-		c += 1
-		i += 4
-
-	return c
-
-def write_imem2(memA, memB, data, addr):
-	ds = ">H"
-	l = len(data)
-	i = 0
-	c = addr & 0xffff
-	m = l % 2
-	if m:
-		m = 2-m
-		data += "\0" * m
-		l += m
-
-	while i < l:
-		chunk = data[i:i+2]
-		words = elf.struct.unpack(ds, chunk)
-		print "Write LWORD %x <- %08x" % (c, words[0])
-		memA[c] = words[0]
-		i += 2
-
-		chunk = data[i:i+2]
-		words = elf.struct.unpack(ds, chunk)
-		print "Write UWORD %x <- %08x" % (c, words[0])
-		memB[c] = words[0]
-
-		i += 2
-		c += 1
-
-	return c
-
 class Romgen_AllData:
 	def __init__(self, isize, dsize):
 		self.data = intelhex.IntelHex()
+		self.endian = ">"
 
 	def write_segment(self, addr, data):
 		self.data.puts(addr, data)
 
 	def dump(self, data):
-		ds = ">I"
+		ds = self.endian + "I"
 
 		f = open(self.fname, "w")
 
@@ -120,7 +71,7 @@ class Romgen_AllData:
 		self.dump(data)
 
 	def dump_hex(self, prefix):
-		ds = ">L"
+		ds = self.endian + "L"
 		data = self.data.tobinstr()
 
 		l = len(data)
@@ -178,6 +129,7 @@ class Romgen_ZPU(Romgen_AllData):
 	def __init__(self, prefix):
 		self.data = intelhex.IntelHex()
 		self.fname = prefix + "_data.tmp"
+		self.endian = ">"
 
 	def handle(self, p):
 		l = len(p.data)
@@ -277,8 +229,37 @@ class Romgen_imem_dmem:
 		self.textfile.close()
 
 	def dump_hex(self, prefix):
-		print "Warning, dump_hex for neo430 not yet implemented"
-		return False
+		ds = self.endian + "H"
+		data = self.text.tobinstr()
+
+		l = len(data)
+		i = 0
+
+		hexfile = open(prefix + "16.hex", "w")
+
+		s = ""
+		while (i < l):
+			chunk = data[i:i+2]
+			words = elf.struct.unpack(ds, chunk)
+			s += '%04x\n' % words
+			i += 2
+
+		hexfile.write(s)
+		# Append data segment:
+		data = self.data.tobinstr()
+
+		l = len(data)
+		i = 0
+
+		s = ""
+		while (i < l):
+			chunk = data[i:i+2]
+			words = elf.struct.unpack(ds, chunk)
+			s += '%04x\n' % words
+			i += 2
+
+		hexfile.write(s)
+		hexfile.close()
 
 def pad(data, n):
 	m = len(data) % n

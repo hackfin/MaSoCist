@@ -8,10 +8,6 @@ endif
 
 SRCFILES-$(CONFIG_ZEALOT) += ram/bram.vhdl
 SRCFILES-$(CONFIG_ZEALOT) += ram/dpram_init.vhdl
-SRCFILES-$(CONFIG_NEO430) += ram/bram.vhdl
-SRCFILES-$(CONFIG_NEO430) += ram/dpram_init.vhdl
-SRCFILES-$(CONFIG_NEO430) += ram/dpram.vhdl
-SRCFILES-$(CONFIG_NEO430) += ram/dpram_wrapper.vhdl
 SRCFILES-$(CONFIG_SCRATCHPAD_RAM) += ram/dpram.vhdl
 SRCFILES-$(CONFIG_SCRATCHPAD_RAM) += ram/dpram_wrapper.vhdl
 SRCFILES-$(REQUIRE_DPRAM_CLK2) += ram/dpram_clk2.vhdl
@@ -23,6 +19,9 @@ SRCFILES-$(CONFIG_PYPS) += ram/dpram_init.vhdl
 SRCFILES-$(CONFIG_PYPS) += ram/dpramc2_init.vhdl
 
 SRCFILES-$(CONFIG_RISCV_ARCH) += ram/pkg_ram.vhdl
+
+# We need a few workarounds until dual port RAM fully synthesizes:
+
 ifdef SYNTHESIS
 	ifdef CONFIG_GHDL_SYNTH
 		SRCFILES-$(CONFIG_RISCV_ARCH) += ram/dpram_init_ghdlsynth.vhdl
@@ -42,6 +41,10 @@ else
 	SRCFILES-$(CONFIG_RISCV_ARCH) += ram/bram.vhdl
 	SRCFILES-$(CONFIG_RISCV_ARCH) += ram/dpram_init.vhdl
 	SRCFILES-$(CONFIG_RISCV_ARCH) += ram/memmap_data.vhdl
+	SRCFILES-$(CONFIG_NEO430) += ram/bram.vhdl
+	SRCFILES-$(CONFIG_NEO430) += ram/dpram_init.vhdl
+	SRCFILES-$(CONFIG_NEO430) += ram/dpram.vhdl
+	SRCFILES-$(CONFIG_NEO430) += ram/dpram_wrapper.vhdl
 endif
 SRCFILES-$(CONFIG_RISCV_ARCH) += ram/dpramc2_init.vhdl
 

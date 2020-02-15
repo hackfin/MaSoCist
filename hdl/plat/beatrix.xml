@@ -291,8 +291,7 @@ use work.global_config.all;</header>
         </bitfield>
 
         <bitfield lsb="0" msb="4" name="MMR_CFG_gpio">
-          <info>OpenCores UART16550 register address space, maps 8 bit to 32
-          boundaries</info>
+          <info>GPIO configuration address space</info>
         </bitfield>
 
         <bitfield lsb="0" msb="4" name="MMR_CFG_tmr">

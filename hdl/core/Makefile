@@ -35,7 +35,7 @@ ifdef REQUIRE_DSPALU
 include $(SRC)/core/dsp/Makefile
 endif
 
-# SRCFILES-$(REQUIRE_FIFOBUF) += core/fifobuf.vhdl
+SRCFILES-$(REQUIRE_FIFOBUF) += core/fifobuf.vhdl
 
 SRCFILES-$(CONFIG_ZEALOT) += zputap_cfg.vhdl
 SRCFILES-$(CONFIG_JPEG) += $(JPEG_CORE_FILES:%=core/jpeg/%)

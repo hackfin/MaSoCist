@@ -33,6 +33,8 @@ begin
 
 	stat.magic <= x"aa55"; -- No CPU ID
 	stat.soctype <= x"1"; -- Soc type code
+	stat.console_data <= (others => '0');
+	stat.data_valid <= '0';
 	stat.cpuarch <= to_unsigned(SOCINFO_CPU_TYPE, 4);
 	stat.cpuflags <= "00000001"; -- Experimental XXX
 	-- stat.rev_reserved <= x"ff00"; -- Experimental

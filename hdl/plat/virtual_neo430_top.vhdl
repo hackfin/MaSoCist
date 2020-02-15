@@ -111,19 +111,19 @@ soc: entity work.SoC
 
 		-- Emulation pins:
 
-		irq_i      => irq_in,
+		nmi_i      => irq_in,
 		-- gpio      => gpio,
 		-- pwm       => pwm(CONFIG_NUM_TMR-1 downto 0),
 
 -- Requires CONFIG_UART and CONFIG_SPI enabled:
-		uartio_tx       => uart_tx,
-		uartio_rx       => uart_rx,
-		uartio_rxirq    => open,
+		uart_tx       => uart_tx,
+		uart_rx       => uart_rx,
+		-- uartio_rxirq    => open,
 
-		spio_sclk   => spi_clk,
-		spio_cs     => spi_cs,
-		spio_mosi   => spi_mosi,
-		spio_miso   => spi_miso,
+		spi_sclk   => spi_clk,
+		spi_cs     => spi_cs,
+		spi_mosi   => spi_mosi,
+		spi_miso   => spi_miso,
 
 		reset      => cpu_reset
 	);

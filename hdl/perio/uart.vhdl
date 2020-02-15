@@ -195,5 +195,3 @@ txfifo:
 	);
 
 end behaviour;
-
-	

@@ -9,7 +9,7 @@
 #include "versa_ecp5.h" // generated SoC map
 #include "driver.h"
 #include "cmdhelper.h"
-#ifndef CONFIG_ZPUNG
+#if !defined(CONFIG_ZPUNG) && !defined(CONFIG_NEO430)
 #include "machine/endian.h"
 #endif
 
@@ -39,8 +39,11 @@ int test_endian(void)
 	if (c != 0x0bad) BREAK;
 #else
 #ifdef CONFIG_ZPUNG
-#warning "Incomplete toolchain with missing machine/endian.h, assuming Big"
+#warning "ZPU toolchain with missing machine/endian.h, assuming Big"
 #define BIG_ENDIAN
+#elif defined(CONFIG_NEO430)
+#warning "msp430 toolchain with missing machine/endian.h, assuming Little"
+#define LITTLE_ENDIAN
 #else
 #error "Endianness undefined"
 #endif
@@ -199,6 +202,7 @@ int board_init(void)
 {
 	int c;
 
+#ifdef CONFIG_GPIO
 	MMRBase gpio0_base = device_base(GPIO, 0);
 	MMRBase gpio1_base = device_base(GPIO, 1);
 
@@ -207,6 +211,7 @@ int board_init(void)
 
 	GPIO_MMR(gpio0_base, Reg_GPIO_OUT) = 0x0001;
 	GPIO_MMR(gpio1_base, Reg_GPIO_OUT) = 0x0001;
+#endif
 
 #ifdef CONFIG_UART
 	uart_init(0, CONFIG_SYSCLK / 16 / CONFIG_DEFAULT_UART_BAUDRATE);
@@ -221,8 +226,10 @@ int board_init(void)
 	systimer_init(&systimer);
 #endif
 
+#ifdef CONFIG_SIC
 	MMR(Reg_SIC_ILAT_W1C) =  0xffff;
 	MMR(Reg_SIC_IPEND_W1C) =  0xffff;
+#endif
 
 	c = MMR(Reg_HWVersion);
 	if ((c & 0xffff) == 0x0ace) {
@@ -235,9 +242,18 @@ int board_init(void)
 	return 0;
 }
 
+#if defined(CONFIG_RISCV_ARCH)
+#define ARCH_INFO "Risc-V"
+#elif defined(CONFIG_NEO430)
+#define ARCH_INFO "neo430"
+#elif defined(CONFIG_ZPUNG)
+#define ARCH_INFO "ZPUng"
+#endif
+
 // SECTION_RODATA
 const char s_info[] = "\r------------- test shell -------------\n"
-                        "--   ZpuSoC for Versa ECP5   --\n"
+                        "--        SoC for Versa ECP5        --\n"
+                        "           arch: " ARCH_INFO   "\n"
                         "--  (c) 2012-2020  www.section5.ch  --\n"
                         "--     type 'h' for help            --\n";
 
@@ -248,12 +264,15 @@ const char s_help[] = "\r-------------  COMMANDS  -------------\n"
 int exec_cmd(int argc, char **argv)
 {
 	unsigned int val[3];
+#ifdef CONFIG_GPIO
 	MMRBase gpio1_base = device_base(GPIO, 1);
+#endif
 
 	if (argc >= 2) parse_hex(argv[1], &val[0]);
 	if (argc >= 3) parse_hex(argv[2], &val[1]);
 
 	switch (argv[0][0]) {
+#ifdef CONFIG_GPIO
 		case 'l':
 			switch (argc) {
 				case 2:
@@ -263,6 +282,7 @@ int exec_cmd(int argc, char **argv)
 					write_string("Usage: l <hexvalue>\n");
 			}
 			break;
+#endif
 		case 'b':
 			BREAK;
 			break;

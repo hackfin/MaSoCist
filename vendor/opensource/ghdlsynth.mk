@@ -10,8 +10,8 @@ include $(TOPDIR)/vendor/default/local_config.mk
 LIBGHDL = /src/lib-devel/synlib
 
 GHDL_LIBFLAGS = -P$(LIBGHDL)/lattice/$(FPGA_ARCH)
+GHDL_LIBFLAGS += -P$(WORKDIR)
 # GHDL_LIBFLAGS += -P$(LIBGHDL)
-# GHDL_LIBFLAGS += -P$(WORKDIR)
 
 CURDIR = $(shell pwd)
 
@@ -66,7 +66,7 @@ LOGFILE_PNR = lattice/$(PLATFORM)/report_pnr.txt
 
 LPF = lattice/$(PLATFORM)/$(PLATFORM)$(EXTENSION).lpf
 
-EMULATE_FIFO = y
+# EMULATE_FIFO = y
 TAP_GLUE_BB = lattice/lattice_tap_glue.il
 
 VERILOG_BB_WRAPPERS-$(EMULATE_FIFO) += fifo.v

@@ -15,12 +15,27 @@
 
 int board_init(void)
 {
+
+#ifdef CONFIG_GPIO
+	MMRBase gpio0_base = device_base(GPIO, 0);
+	MMRBase gpio1_base = device_base(GPIO, 1);
+
+	GPIO_MMR(gpio0_base, Reg_GPIO_OUT) = 0x0001;
+	GPIO_MMR(gpio1_base, Reg_GPIO_OUT) = 0x0001;
+
+	GPIO_MMR(gpio0_base, Reg_GPIO_DIR) = 0xffff;
+	GPIO_MMR(gpio1_base, Reg_GPIO_DIR) = 0xffff;
+
+#endif
+
 #ifdef CONFIG_UART
 	uart_init(0, CONFIG_SYSCLK / 16 / CONFIG_DEFAULT_UART_BAUDRATE);
 #endif
 #ifdef CONFIG_SPI
 	spi_init(1);
 #endif
+
+
 	int c;
 	return 0;
 }
