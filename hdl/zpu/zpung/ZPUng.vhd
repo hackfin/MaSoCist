@@ -185,13 +185,13 @@ signal debug_logic0_state: t_enum_dbg_state_3;
 signal debug_logic0_emumask: std_logic;
 signal memmgr0_iomem_d: std_logic;
 signal memmgr0_sb_rdata: unsigned(31 downto 0);
-signal memmgr0_sb_addr: unsigned(10 downto 0);
+signal memmgr0_sb_addr: unsigned(8 downto 0);
 signal memmgr0_sa_we: std_logic;
 signal memmgr0_sa_wdata: unsigned(31 downto 0);
-signal memmgr0_sa_addr: unsigned(10 downto 0);
+signal memmgr0_sa_addr: unsigned(8 downto 0);
 signal memmgr0_dmem_d: std_logic;
 signal memmgr0_stackmem0_data: unsigned(31 downto 0);
-type t_array_memmgr0_stackmem0_ram is array(0 to 2048-1) of unsigned(31 downto 0);
+type t_array_memmgr0_stackmem0_ram is array(0 to 512-1) of unsigned(31 downto 0);
 signal memmgr0_stackmem0_ram: t_array_memmgr0_stackmem0_ram;
 
 function MYHDL5_wr(
@@ -948,7 +948,7 @@ begin
         if (reset = '1') then
             execute_vliw0_acc <= to_unsigned(0, 32);
             execute_vliw0_waddr <= to_unsigned(0, 15);
-            sp <= to_unsigned(4606, 15);
+            sp <= to_unsigned(4222, 15);
             execute_vliw0_in_reset <= '0';
             execute_vliw0_idst1 <= '0';
             execute_vliw0_idst0 <= '0';
@@ -1234,9 +1234,9 @@ begin
     else
         execute_vliw0_pb_rdata <= memmgr0_sb_rdata;
     end if;
-    memmgr0_sa_addr <= execute_vliw0_pa_addr(11-1 downto 0);
+    memmgr0_sa_addr <= execute_vliw0_pa_addr(9-1 downto 0);
     memmgr0_sa_wdata <= execute_vliw0_pa_wdata;
-    memmgr0_sb_addr <= execute_vliw0_pb_addr(11-1 downto 0);
+    memmgr0_sb_addr <= execute_vliw0_pb_addr(9-1 downto 0);
 end process ZPUNG_MEMMGR0_SELECT;
 
 ZPUNG_MEMMGR0_STACKMEM0_WORK: process (clk) is
