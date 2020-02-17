@@ -291,8 +291,7 @@ use work.global_config.all;</header>
         </bitfield>
 
         <bitfield lsb="0" msb="4" name="MMR_CFG_gpio">
-          <info>OpenCores UART16550 register address space, maps 8 bit to 32
-          boundaries</info>
+          <info>GPIO configuration address space</info>
         </bitfield>
 
         <bitfield lsb="0" msb="4" name="MMR_CFG_tmr">
@@ -828,6 +827,10 @@ DO NOT move them to the bottom without checking CFG_sys!-->
       <register access="WO" addr="0x08" id="UART_TXR" size="1" volatile="true">
         <info>UART transmitter register</info>
       </register>
+
+      <register access="RO" addr="0x0c" id="UART_DBG" size="2">
+        <info>UART debug register</info>
+      </register>
     </registermap>
 
     <registermap endian="LITTLE" id="lcd" name="LCDIO">
@@ -1096,7 +1099,7 @@ Does not work with gensoc < v0.13
       </property>
 
       <array name="pwm">
-        <?config CONFIG_TIMER?>
+        <?config CONFIG_PWM_SIMPLE?>
 
         <info>PWM controller (Simple)</info>
 
@@ -1142,5 +1145,4 @@ Does not work with gensoc < v0.13
       </property>
     </group>
   </device>
-
 </devdesc>

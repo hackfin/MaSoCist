@@ -74,7 +74,7 @@ SRCFILES-y += core/flagxdp.vhd
 endif
 
 # The myhdl package must be included once somewhere:
-SRCFILES-y += core/pck_myhdl_09.vhd
+SRCFILES-y += core/pck_myhdl_$(MYHDL_VERSION).vhd
 
 GENERATED_FILES-y += $(SOC_MODULE-y:%.chdl=%.vhdl)
 

@@ -348,8 +348,10 @@ fsm:
 									state <= S_IDLE;
 								when S_STOP =>
 									state <= S_IDLE;
+-- synthesis translate_off
 								when others =>
 									assert false report "Illegal state";
+-- synthesis translate_on
 							end case;
 						end if; -- }
 					end case; -- }

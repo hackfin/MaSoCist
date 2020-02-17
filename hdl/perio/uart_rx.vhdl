@@ -76,9 +76,11 @@ begin
 rx_posedge:
 	process (clk)
 	begin
-		if rising_edge(clk) and clk16en = '1' then
-			rxd <= rx;
-			rxtrigger <= rxd and (not rx);
+		if rising_edge(clk) then
+			if clk16en = '1' then
+				rxd <= rx;
+				rxtrigger <= rxd and (not rx);
+			end if;
 		end if;
 	end process;
 
@@ -92,11 +94,13 @@ rx_posedge:
 generate_rxclk_en:
 	process (clk)
 	begin
-		if rising_edge(clk) and clk16en = '1' then
-			case state is
-				when S_IDLE  => count <= (others => '0');
-				when others => count <= count + 1;
-			end case;
+		if rising_edge(clk) then
+			if clk16en = '1' then
+				case state is
+					when S_IDLE  => count <= (others => '0');
+					when others => count <= count + 1;
+				end case;
+			end if;
 		end if;
 	end process;
 
@@ -135,9 +139,11 @@ state_decode:
 shift:
 	process (clk)
 	begin
-		if rising_edge(clk) and clk16en = '1' and is_count_mid = '1' then
-			if state = S_SHIFT then
-				dsr <= rx & dsr(7 downto 1);
+		if rising_edge(clk) then
+			if clk16en = '1' and is_count_mid = '1' then
+				if state = S_SHIFT then
+					dsr <= rx & dsr(7 downto 1);
+				end if;
 			end if;
 		end if;
 	end process;
@@ -161,13 +167,15 @@ tx_strobe:
 bitcounter:
 	process (clk)
 	begin
-		if rising_edge(clk) and clk16en = '1' and is_count_begin = '1' then
-			case state is
-			when S_SHIFT =>
-				bitcount <= bitcount + 1;
-			when others =>
-				bitcount <= "000";
-			end case;
+		if rising_edge(clk) then
+			if clk16en = '1' and is_count_begin = '1' then
+				case state is
+				when S_SHIFT =>
+					bitcount <= bitcount + 1;
+				when others =>
+					bitcount <= "000";
+				end case;
+			end if;
 		end if;
 	end process;
 

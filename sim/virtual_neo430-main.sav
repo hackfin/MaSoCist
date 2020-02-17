@@ -1,23 +1,26 @@
 [*]
 [*] GTKWave Analyzer v3.3.70 (w)1999-2016 BSI
-[*] Fri Nov 22 11:31:12 2019
+[*] Sat Feb 15 17:42:02 2020
 [*]
 [dumpfile] "(null)"
 [savefile] "/home/strubi/src/vhdl/masocist-work/sim/virtual_neo430-main.sav"
-[timestart] 0
-[size] 1274 600
-[pos] 478 1159
-*-43.417233 27876750000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[timestart] 5100000000000
+[size] 1339 816
+[pos] 282 51
+*-38.390377 5809000000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tb_virtual_neo430.
 [treeopen] tb_virtual_neo430.maybe_vuart.
 [treeopen] tb_virtual_neo430.maybe_vuart.vuart.
 [treeopen] tb_virtual_neo430.uut.
 [treeopen] tb_virtual_neo430.uut.soc.
 [treeopen] tb_virtual_neo430.uut.soc.neo430_cpu_inst.
+[treeopen] tb_virtual_neo430.uut.soc.perio.
+[treeopen] tb_virtual_neo430.uut.soc.perio.gpio_multi(0).
+[treeopen] tb_virtual_neo430.uut.soc.perio.gpio_multi(1).
 [sst_width] 329
-[signals_width] 187
+[signals_width] 242
 [sst_expanded] 1
-[sst_vpaned_height] 235
+[sst_vpaned_height] 356
 @200
 -CPU
 @20000
@@ -49,12 +52,66 @@ tb_virtual_neo430.uut.soc.neo430_cpu_inst.mem_addr[15:0]
 @28
 tb_virtual_neo430.uut.uart_rx
 tb_virtual_neo430.uut.uart_tx
-@201
+@200
 -SPI
+@c00022
+tb_virtual_neo430.uut.soc.gpio[31:0]
 @28
-tb_virtual_neo430.uut.soc.spio_cs
-tb_virtual_neo430.uut.soc.spio_miso
-tb_virtual_neo430.uut.soc.spio_mosi
-tb_virtual_neo430.uut.soc.spio_sclk
++{tb_virtual_neo430.uut.soc.gpio[31]} (0)tb_virtual_neo430.uut.soc.gpio[31:0]
++{tb_virtual_neo430.uut.soc.gpio[30]} (1)tb_virtual_neo430.uut.soc.gpio[31:0]
++{tb_virtual_neo430.uut.soc.gpio[29]} (2)tb_virtual_neo430.uut.soc.gpio[31:0]
++{tb_virtual_neo430.uut.soc.gpio[28]} (3)tb_virtual_neo430.uut.soc.gpio[31:0]
++{tb_virtual_neo430.uut.soc.gpio[27]} (4)tb_virtual_neo430.uut.soc.gpio[31:0]
++{tb_virtual_neo430.uut.soc.gpio[26]} (5)tb_virtual_neo430.uut.soc.gpio[31:0]
++{tb_virtual_neo430.uut.soc.gpio[25]} (6)tb_virtual_neo430.uut.soc.gpio[31:0]
++{tb_virtual_neo430.uut.soc.gpio[24]} (7)tb_virtual_neo430.uut.soc.gpio[31:0]
++{tb_virtual_neo430.uut.soc.gpio[23]} (8)tb_virtual_neo430.uut.soc.gpio[31:0]
++{tb_virtual_neo430.uut.soc.gpio[22]} (9)tb_virtual_neo430.uut.soc.gpio[31:0]
++{tb_virtual_neo430.uut.soc.gpio[21]} (10)tb_virtual_neo430.uut.soc.gpio[31:0]
++{tb_virtual_neo430.uut.soc.gpio[20]} (11)tb_virtual_neo430.uut.soc.gpio[31:0]
++{tb_virtual_neo430.uut.soc.gpio[19]} (12)tb_virtual_neo430.uut.soc.gpio[31:0]
++{tb_virtual_neo430.uut.soc.gpio[18]} (13)tb_virtual_neo430.uut.soc.gpio[31:0]
++{tb_virtual_neo430.uut.soc.gpio[17]} (14)tb_virtual_neo430.uut.soc.gpio[31:0]
++{tb_virtual_neo430.uut.soc.gpio[16]} (15)tb_virtual_neo430.uut.soc.gpio[31:0]
++{tb_virtual_neo430.uut.soc.gpio[15]} (16)tb_virtual_neo430.uut.soc.gpio[31:0]
++{tb_virtual_neo430.uut.soc.gpio[14]} (17)tb_virtual_neo430.uut.soc.gpio[31:0]
++{tb_virtual_neo430.uut.soc.gpio[13]} (18)tb_virtual_neo430.uut.soc.gpio[31:0]
++{tb_virtual_neo430.uut.soc.gpio[12]} (19)tb_virtual_neo430.uut.soc.gpio[31:0]
++{tb_virtual_neo430.uut.soc.gpio[11]} (20)tb_virtual_neo430.uut.soc.gpio[31:0]
++{tb_virtual_neo430.uut.soc.gpio[10]} (21)tb_virtual_neo430.uut.soc.gpio[31:0]
++{tb_virtual_neo430.uut.soc.gpio[9]} (22)tb_virtual_neo430.uut.soc.gpio[31:0]
++{tb_virtual_neo430.uut.soc.gpio[8]} (23)tb_virtual_neo430.uut.soc.gpio[31:0]
++{tb_virtual_neo430.uut.soc.gpio[7]} (24)tb_virtual_neo430.uut.soc.gpio[31:0]
++{tb_virtual_neo430.uut.soc.gpio[6]} (25)tb_virtual_neo430.uut.soc.gpio[31:0]
++{tb_virtual_neo430.uut.soc.gpio[5]} (26)tb_virtual_neo430.uut.soc.gpio[31:0]
++{tb_virtual_neo430.uut.soc.gpio[4]} (27)tb_virtual_neo430.uut.soc.gpio[31:0]
++{tb_virtual_neo430.uut.soc.gpio[3]} (28)tb_virtual_neo430.uut.soc.gpio[31:0]
++{tb_virtual_neo430.uut.soc.gpio[2]} (29)tb_virtual_neo430.uut.soc.gpio[31:0]
++{tb_virtual_neo430.uut.soc.gpio[1]} (30)tb_virtual_neo430.uut.soc.gpio[31:0]
++{tb_virtual_neo430.uut.soc.gpio[0]} (31)tb_virtual_neo430.uut.soc.gpio[31:0]
+@1401200
+-group_end
+@22
+tb_virtual_neo430.uut.soc.gpio_dir[31:0]
+tb_virtual_neo430.uut.soc.gpio_out[31:0]
+tb_virtual_neo430.uut.soc.gpio_in[31:0]
+@28
+tb_virtual_neo430.uut.soc.perio.gpio_multi(0).inst_decoder_gpio.ce
+tb_virtual_neo430.uut.soc.perio.gpio_multi(0).inst_decoder_gpio.we
+@22
+tb_virtual_neo430.uut.soc.io_32_addr[31:0]
+@28
+tb_virtual_neo430.uut.soc.io_rd_en
+tb_virtual_neo430.uut.soc.io_wr_en
+tb_virtual_neo430.uut.soc.io_acc
+@29
+tb_virtual_neo430.uut.soc.perio_ce
+@22
+tb_virtual_neo430.uut.soc.perio.gpio_multi(0).inst_decoder_gpio.addr[3:0]
+@28
+tb_virtual_neo430.uut.soc.perio.gpio_multi(1).inst_decoder_gpio.ce
+tb_virtual_neo430.uut.soc.perio.gpio_multi(1).inst_decoder_gpio.we
+@22
+tb_virtual_neo430.uut.soc.perio.gpio_multi(1).inst_decoder_gpio.addr[3:0]
 [pattern_trace] 1
 [pattern_trace] 0

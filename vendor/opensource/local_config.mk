@@ -11,5 +11,6 @@ CONFIG_NETPP = y
 SIM_OPTIONS = --max-stack-alloc=256 --assert-level=error \
 	--ieee-asserts=disable
 
+VENDOR_LIBRARY_DIR = /data/src/diamond_lib
 
 DOC_EXTRA_PARAMETERS = --path $(NETPP)/xml

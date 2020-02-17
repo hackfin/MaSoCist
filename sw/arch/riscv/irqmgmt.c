@@ -53,7 +53,8 @@ void exception_handler(uint32_t cause, void * epc, void * regbase)
 #ifndef CONFIG_SIC
 		switch (cause & MCAUSE_CAUSE) {
 			case PINMAP_IRQ_TIMER0_SHFT:
-				timer_handler();
+				// Implement by user:
+				// timer_handler();
 				break;
 #ifdef PINMAP_IRQ_DMA_RX_SHFT
 			case PINMAP_IRQ_DMA_RX_SHFT:

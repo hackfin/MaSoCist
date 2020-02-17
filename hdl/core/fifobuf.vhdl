@@ -46,7 +46,11 @@ architecture behaviour of FifoBuffer is
 	signal rdata  : unsigned(DATA_W-1 downto 0);
 
 	type state_t is (S_IDLE, S_READY, S_FULL, S_ERROR);
-	signal state : state_t;
+	-- GHDLSYNTH_QUIRK
+	-- Needs this initialized, otherwise gets 'optimized away'
+	signal state : state_t := S_IDLE;
+	-- If we don't initialize, yosys feels like it wants to recode.
+	-- signal state : state_t;
 
 	signal int_full      : std_logic; -- Internal "full" flag
 	signal int_rden      : std_logic;
@@ -63,7 +67,6 @@ architecture behaviour of FifoBuffer is
 			SYN_RAMTYPE : string := "block_ram"
 		);
 		port (
-			clk     : in  std_logic;
 			-- Port A
 			a_we    : in  std_logic;
 			a_addr  : in  unsigned(ADDR_W-1 downto 0);
@@ -73,7 +76,8 @@ architecture behaviour of FifoBuffer is
 			b_we    : in  std_logic;
 			b_addr  : in  unsigned(ADDR_W-1 downto 0);
 			b_write : in  unsigned(DATA_W-1 downto 0);
-			b_read  : out unsigned(DATA_W-1 downto 0)
+			b_read  : out unsigned(DATA_W-1 downto 0);
+			clk     : in  std_logic
 		);
 	end component bram_2psync;
 
@@ -159,7 +163,6 @@ ram:
 	generic map ( ADDR_W => ADDR_W, DATA_W => DATA_W,
 		SYN_RAMTYPE => SYN_RAMTYPE)
 	port map (
-		clk => clk,
 		a_we    => '0',
 		a_addr  => optr,
 		a_write => INACTIVE_WRITE_PORT,
@@ -167,7 +170,8 @@ ram:
 		b_we    => wren,
 		b_addr  => iptr,
 		b_write => idata,
-		b_read  => open
+		b_read  => open,
+		clk => clk
 	);
 
 
@@ -208,6 +212,7 @@ preread:
 	end process;
 	end generate;
 
+
 gen_direct:
 	if not EXTRA_REGISTER generate
 		int_full <= '1' when state = S_FULL else '0';
@@ -219,21 +224,21 @@ gen_direct:
 	iready <= not int_full;
 
 
--- synopsys translate off
+-- synthesis translate_off
 
 -- Synplify barfs on this, we need to comment out the whole shlorm.
 
--- errguard:
--- 	process(clk)
--- 	begin
--- 		if rising_edge(clk) then
--- 			if over = '1' then
--- 				assert false report "FIFO overrun in " & behaviour'path_name
--- 				severity failure;
--- 			end if;
--- 		end if;
--- 	end process;
+errguard:
+	process(clk)
+	begin
+		if rising_edge(clk) then
+			if over = '1' then
+				assert false report "FIFO overrun in " & behaviour'path_name
+				severity failure;
+			end if;
+		end if;
+	end process;
 
--- synopsys translate on
+-- synthesis translate_on
 
 end behaviour;

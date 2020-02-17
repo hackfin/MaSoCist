@@ -34,7 +34,6 @@ architecture behaviour of wb2pyps is
 	signal wb_cyc   : std_logic;
 	-- signal we_buf     : std_logic;
 	signal io_req   : std_logic; -- I/O request
-	signal io_req_d : std_logic; -- delayed
 
 begin
 
@@ -53,6 +52,7 @@ begin
 
 	wb_out.dat  <= din;
 	wb_out.we   <= we;
+	wb_out.select_dat   <= '0';
 
 	dout <= unsigned(wb_in.dat);
 

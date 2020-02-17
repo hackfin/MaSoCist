@@ -1,5 +1,35 @@
 // File for inclusion only
 
+
+#ifdef CONFIG_SIC
+	irq_input <= (others => '0');
+	exc <= '0';
+#else
+	irq_evt <= '0';
+#endif
+
+#ifdef SYNTHESIS_GHDL
+	exec <= '0';
+	emuexec_d <= '0';
+	xs_ucode <= '0';
+	xs_unaligned <= '0';
+	a_we <= '0';
+#ifdef CONFIG_RISCV_ARCH
+	tap_secondary_addr <= (others => '0');
+	tap_data_reg <= (others => '0');
+	a_re <= '0';
+	wb_slv_sel <= (others => '0');
+	wb_slv_adr <= (others => '0');
+	wb_slv_dat <= (others => '0');
+	led_cpustat <= (others => '0');
+	irq_override <= '0';
+	ivaddr <= (others => '0');
+#endif
+	-- a_write <= (others => '0');
+	sysio_exc <= '0';
+	nmi <= '0';
+#endif
+
 perio:
 	entity work.mmr_perio
 	port map (
@@ -182,3 +212,16 @@ perio:
 		clk           => clk
 	);
 
+
+#if defined(CONFIG_versa_ecp5) || defined(CONFIG_hdr60) \
+	|| defined(CONFIG_virtual) || defined(CONFIG_netpp_node)
+
+#ifndef CONFIG_VIDEO
+	video_resetn <= '0';
+#endif
+
+#ifndef CONFIG_TWI
+		twi_sda  <= 'H';
+		twi_scl  <= 'H';
+#endif
+#endif

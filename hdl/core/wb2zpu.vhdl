@@ -51,6 +51,7 @@ begin
 	wb_out.dat  <= din when io_req_d = '0' else din_buf;
 	-- wb_out.we   <= we  when io_req_d = '0' else we_buf;
 	wb_out.we   <= we;
+	wb_out.select_dat <= '0';
 
 	-- Not nice: bad workaround to run correct WB timing:
 we_delay:	
