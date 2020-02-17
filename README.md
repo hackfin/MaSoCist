@@ -21,11 +21,16 @@ currently supports:
   * Co-Simulation with GHDL
   * A limited set of virtual boards and CPU architectures
   * Compiling source code for various architectures
+  * Synthesis of a few configurations using GHDL/yosys OpenSource synthesis (ECP5 and ICE40 architectures)
   * Simple, hand-woven continuous integration testing for hardware/software
 
-Synthesis in the cloud is not yet supported. Integration is planned, once VHDL
-open source synthesis is sufficiently tested.
-However, all VHDL code is synthesizeable for typical FPGA scenarios.
+Synthesis is currently not very much configureable due to GHDL limitations and unresolved
+issues with MyHDL code generation. Therefore you can only use fixed configurations
+as found when typing
+
+    make which
+
+from the top level directory.
 
 Quick evaluation
 ------------------
@@ -138,17 +143,32 @@ worst case twice, if the kconfig tool decides to reconfigure):
 
         make -C syn clean all
 
-4. Open the project in `syn/$(FPGA\_VENDOR)/$(PLATFORM)`
-
-If files need to be added, you may use the TCL scripts that are generated
-when running 'make' for synthesis.
-
-5. Synthesize and hope for success :-)
-
 Important: The build procedure for simulation builds the source differently
 than for synthesis (-DSIMULATION flag). Make sure to rebuild explicitely
 for synthesis, otherwise your system may boot up incorrectly with the
 simulation specific program code.
+
+Synthesis support (preliminary)
+---------------------------------
+
+GHDL synthesis support is enabled for the ghdl-synth debian package
+and currently integrated for Lattice ECP5 based platforms only.
+Note: Modifying parameters in this release is currently unstable and will
+likely result in synthesis failures.
+
+1. Choose a configuration that supports ghdl synthesis (`CONFIG_GHDL_SYNTH`
+   enabled):
+
+        make versa_ecp5-zpu-ghdlsynth
+
+2. Build firmware and SVF file:
+
+        make sw syn
+   
+3. Download bit file (upon success) to the target:
+
+        make -C syn download
+
 
 ----------------------------------------------------------------------------
 LICENSING NOTES
