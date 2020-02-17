@@ -95,12 +95,11 @@ $(PLATFORM).config: $(PLATFORM).json $(LPF)
 	--package $(PACKAGE)  2>&1 | tee $(LOGFILE_PNR)
 
 
-# Build bit file with specific JTAG usercode
-$(PLATFORM).bit: $(PLATFORM).config
-	$(ECPPACK) --svf $(PLATFORM).svf \
-		$< $@ \
-	--usercode $(TAP_USERCODE_INTEGER)
-
+# Build SVF file with specific JTAG usercode
+$(PLATFORM).svf: $(PLATFORM).config
+	$(ECPPACK) --usercode $(TAP_USERCODE_INTEGER)  \
+		--input $< --svf $@ \
+	
 
 OPENOCD_JTAG_CONFIG = $(FPGA_VENDOR)/$(PLATFORM)/openocd.cfg
 OPENOCD_DEVICE_CONFIG = $(FPGA_VENDOR)/openocd/$(FPGA_SPEC).cfg

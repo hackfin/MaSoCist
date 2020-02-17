@@ -34,10 +34,12 @@ library work;
 entity versa_ecp5_top is
 	generic ( SIMULATION : boolean := false );
 	port (
+#ifndef SYNTHESIS_GHDL
 		tck         : in  std_logic;
 		tms         : in  std_logic;
 		tdi         : in  std_logic;
 		tdo         : out std_logic;
+#endif
 		-- clk_out     : out  std_logic;
 
 		spi_miso  : in  std_logic;
@@ -139,6 +141,12 @@ architecture behaviour of versa_ecp5_top is
 
 	-- MAC clocks:
 
+#ifdef SYNTHESIS_GHDL
+		signal tck         : std_logic := '0';
+		signal tms         : std_logic := '0';
+		signal tdi         : std_logic := '0';
+		signal tdo         : std_logic := '0';
+#endif
 
 begin
 

@@ -80,7 +80,7 @@ SYN_DUTIES = $(MY_DUTIES)
 
 ifdef CONFIG_GHDL_SYNTH
 include $(TOPDIR)/vendor/$(VENDOR)/ghdlsynth.mk
-SYN_DUTIES += synlib $(PLATFORM).bit
+SYN_DUTIES += synlib $(PLATFORM).svf
 else
 SYN_DUTIES += syntcl
 endif
