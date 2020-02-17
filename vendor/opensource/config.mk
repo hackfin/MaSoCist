@@ -19,6 +19,9 @@ TEST_PLATFORMS = virtual-main virtual_riscv-main virtual_neo430-main
 WORKDIR = work
 
 GHDLEX_VERSION    = sim-0.1dev
+
+MYHDL_VERSION = 011
+
 # We have the tap library:
 MODULE_TAPLIB = $(CONFIG_HAVE_VTAP)
 
