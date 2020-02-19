@@ -35,14 +35,14 @@ assign b_read = mem[addr_b];
 
 always @(posedge b_clk) begin: DUAL_RAW_PORT_B_PROC
     addr_b <= b_addr;
+    if (b_we) begin
+        mem[b_addr] <= b_write;
+    end
 end
 
 
 always @(posedge a_clk) begin: DUAL_RAW_PORT_A_PROC
     addr_a <= a_addr;
-    if (a_we) begin
-        mem[a_addr] <= a_write;
-    end
 end
 
 
@@ -85,14 +85,14 @@ assign b_read = mem[addr_b];
 
 always @(posedge b_clk) begin: DUAL_RAW_PORT_B_PROC
     addr_b <= b_addr;
+    if (b_we) begin
+        mem[b_addr] <= b_write;
+    end
 end
 
 
 always @(posedge a_clk) begin: DUAL_RAW_PORT_A_PROC
     addr_a <= a_addr;
-    if (a_we) begin
-        mem[a_addr] <= a_write;
-    end
 end
 
 
@@ -280,7 +280,7 @@ module dpram16_init_hex_ce_12_8_65f565ad5bd67187540823e9e4181e9ffef74dd1 #(
 (* ramstyle = "block_ram" *) reg [DATA-1:0] mem [(2**ADDR)-1:0] /* synthesis syn_ramstyle="block_ram" */;
 
 initial begin
-	$readmemh("../sw/bootrom_data_b1.hex", mem);
+	$readmemh("../sw/bootrom_data_b3.hex", mem);
 end
 
 reg [ADDR-1:0] addr_b;

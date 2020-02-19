@@ -19,6 +19,11 @@ end generate;
 	led_status <= led_status_int when test_enable = '1' else led_cpustat;
 #endif
 #else
+
+#if !defined(CONFIG_PWM_NONE)
+	pwm <= pwmout;
+#endif
+
 #if defined(CONFIG_versa_ecp5) || defined (CONFIG_netpp_node)
 	led_status <= led_cpustat;
 #endif

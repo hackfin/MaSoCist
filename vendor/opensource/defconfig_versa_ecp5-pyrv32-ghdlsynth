@@ -22,7 +22,7 @@ CONFIG_RISCV_PYRV32=y
 # CONFIG_papilio is not set
 CONFIG_versa_ecp5=y
 # CONFIG_xo2starter is not set
-CONFIG_PLAT_EXTENSION="ghdlsynth"
+CONFIG_PLAT_EXTENSION="pyrv32-ghdlsynth"
 CONFIG_HAVE_VTAP=y
 
 #
@@ -109,11 +109,11 @@ CONFIG_GHDLEX_DEFAULT=y
 #
 CONFIG_PRINTF=y
 # CONFIG_STRICT_PRECISION is not set
-CONFIG_LIBC_NONE=y
-# CONFIG_LIBC_MINIMUM is not set
+# CONFIG_LIBC_NONE is not set
+CONFIG_LIBC_MINIMUM=y
 # CONFIG_LIBC_NEWLIB is not set
-CONFIG_OPT_SIZE=y
-# CONFIG_OPT_SPEED is not set
+# CONFIG_OPT_SIZE is not set
+CONFIG_OPT_SPEED=y
 
 #
 # Networking

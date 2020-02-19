@@ -7,7 +7,10 @@ GHDL_GENERICS =
 include $(TOPDIR)/vendor/default/local_config.mk
 -include $(FPGA_VENDOR)/$(PLATFORM)/config.mk
 
-LIBGHDL = /src/lib-devel/synlib
+# SRCPREFIX = /src
+SRCPREFIX = $(HOME)/src/vhdl
+
+LIBGHDL = $(SRCPREFIX)/lib-devel/synlib
 
 GHDL_LIBFLAGS = -P$(LIBGHDL)/lattice/$(FPGA_ARCH)
 GHDL_LIBFLAGS += -P$(WORKDIR)
@@ -29,8 +32,11 @@ DOCKERARGS = run --rm -v $(MASOCIST_ABSOLUTE_DIR):/src \
 	$(MOUNT_DIAMOND_COMPONENTS) \
 	-v $(GHDL_LIB_ABSOLUTE_DIR):/src/lib-devel -w /src/syn
 
+GHDL      = ghdl
+YOSYS     = export LD_LIBRARY_PATH=/media/scratch/build/ghdl-synth; yosys
 
-GHDL      = $(DOCKER) $(DOCKERARGS) ghdl/synth:beta ghdl
+# GHDL      = $(DOCKER) $(DOCKERARGS) ghdl/synth:beta ghdl
+# YOSYS     = $(DOCKER) $(DOCKERARGS) ghdl/synth:beta yosys
 NEXTPNR   = $(DOCKER) $(DOCKERARGS) ghdl/synth:nextpnr-ecp5 nextpnr-ecp5
 ECPPACK   = $(DOCKER) $(DOCKERARGS) ghdl/synth:trellis ecppack
 OPENOCD   = $(DOCKER) $(DOCKERARGS) \
@@ -43,8 +49,6 @@ include $(TOPDIR)/ghdl.mk
 DOCKER=docker
 
 VHDL_STD = 93c
-
-YOSYS     = $(DOCKER) $(DOCKERARGS) ghdl/synth:beta yosys
 
 YOSYS_INTERACTIVE     = $(DOCKER) $(DOCKERARGS) -it  ghdl/synth:beta yosys
 

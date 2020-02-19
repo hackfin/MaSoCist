@@ -68,6 +68,43 @@ IOBUF PORT "seg[3]"   ;
 IOBUF PORT "seg[2]"   ;
 IOBUF PORT "seg[1]"   ;
 IOBUF PORT "seg[0]"   ;
+
+# Expansion connector X4
+
+LOCATE COMP "io[0]" SITE "A12" ;
+LOCATE COMP "io[1]" SITE "A13" ;
+LOCATE COMP "io[2]" SITE "B13" ;
+LOCATE COMP "io[3]" SITE "C13" ;
+LOCATE COMP "io[4]" SITE "D13" ;
+LOCATE COMP "io[5]" SITE "E13" ;
+LOCATE COMP "io[6]" SITE "A14" ;
+LOCATE COMP "io[7]" SITE "C14" ;
+LOCATE COMP "io[8]" SITE "D14" ;
+LOCATE COMP "io[9]" SITE "E14" ;
+LOCATE COMP "io[10]" SITE "D11" ;
+LOCATE COMP "io[11]" SITE "C10" ;
+LOCATE COMP "io[12]" SITE "A9" ;
+LOCATE COMP "io[13]" SITE "B10" ;
+LOCATE COMP "io[14]" SITE "D12" ;
+LOCATE COMP "io[15]" SITE "E12" ;
+LOCATE COMP "io[16]" SITE "B15" ;
+LOCATE COMP "io[17]" SITE "C15" ;
+LOCATE COMP "io[18]" SITE "D15" ;
+LOCATE COMP "io[19]" SITE "E15" ;
+LOCATE COMP "io[20]" SITE "A16" ;
+LOCATE COMP "io[21]" SITE "B16" ;
+LOCATE COMP "io[22]" SITE "C16" ;
+LOCATE COMP "io[23]" SITE "D16" ;
+LOCATE COMP "io[24]" SITE "B17" ;
+LOCATE COMP "io[25]" SITE "C17" ;
+LOCATE COMP "io[26]" SITE "A17" ;
+LOCATE COMP "io[27]" SITE "B18" ;
+LOCATE COMP "cardsel" SITE "A7" ;
+LOCATE COMP "io[28]" SITE "A18" ;
+
+LOCATE COMP "twi_scl" SITE "B19" ;
+LOCATE COMP "twi_sda" SITE "B12" ;
+
 ############################################################################
 # Ethernet
 #

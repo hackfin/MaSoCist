@@ -126,9 +126,10 @@ struct flash_info {
 	unsigned char fcode;
 	const char *desc;
 	unsigned short MB;
-}
+};
 
-const __rodata_ext st_spi_flashes[] = {
+const __rodata_ext
+struct flash_info st_spi_flashes[] = {
 	{ 0x00, "m25p80",  SECTORS( 16, 0x10000) },
 	{ 0x14, "m25p80",  SECTORS( 16, 0x10000) },
 	{ 0x15, "m25p16",  SECTORS( 32, 0x10000) },

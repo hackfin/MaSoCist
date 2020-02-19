@@ -19,7 +19,7 @@ define uart_sync
 end
 
 define uart_reset
-	set *$Reg_UART_UART_CONTROL = $UART_RESET | 5
-	set *$Reg_UART_UART_CONTROL =               5
+	set *$Reg_UART_UART_CONTROL = $UART_RESET | 12
+	set *$Reg_UART_UART_CONTROL =               12
 end
 	

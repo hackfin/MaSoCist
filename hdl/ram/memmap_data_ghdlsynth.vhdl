@@ -90,7 +90,6 @@ end function;
 
 begin
 
-
 	dram_ce <= lb_re or lb_we;
 	dma_dataout <= (others => '0');
 loop_bram:
@@ -120,100 +119,6 @@ loop_bram:
 	end generate;
 
 	daddr  <= unsigned(lb_addr(LB_ADDR_W-1 downto 2));
-
---		bram0: DPRAM16_init_hex_ce
---		generic map (
---			ADDR_W => LB_ADDR_W-2,
---			DATA_W => 8,
---			INIT_DATA => get_hex(0)
---		)
---		port map (
---			a_clk		=> clk,
---			-- Port A used by CPU:
---			a_ce	=> dram_ce,
---			a_we	=> dram_we(0),
---			a_addr	=> daddr,
---			a_write => dram_data8_wr(0),
---			a_read	=> dram_data8_rd(0),
---			-- Port B used by DMA:
---			b_clk		=> clk,
---			b_ce	=> dma_ce,
---			b_we	=> dma_data8_we(0),
---			b_addr	=> dma_addr32,
---			b_write => dma_data8_wr(0),
---			b_read	=> dma_data8_rd(0)
---		);
---		bram1: DPRAM16_init_hex_ce
---		generic map (
---			ADDR_W => LB_ADDR_W-2,
---			DATA_W => 8,
---			INIT_DATA => get_hex(1)
---		)
---		port map (
---			a_clk		=> clk,
---			-- Port A used by CPU:
---			a_ce	=> dram_ce,
---			a_we	=> dram_we(1),
---			a_addr	=> daddr,
---			a_write => dram_data8_wr(1),
---			a_read	=> dram_data8_rd(1),
---			-- Port B used by DMA:
---			b_clk		=> clk,
---			b_ce	=> dma_ce,
---			b_we	=> dma_data8_we(1),
---			b_addr	=> dma_addr32,
---			b_write => dma_data8_wr(1),
---			b_read	=> dma_data8_rd(1)
---		);
---
---
---		bram2: DPRAM16_init_hex_ce
---		generic map (
---			ADDR_W => LB_ADDR_W-2,
---			DATA_W => 8,
---			INIT_DATA => get_hex(2)
---		)
---		port map (
---			a_clk		=> clk,
---			-- Port A used by CPU:
---			a_ce	=> dram_ce,
---			a_we	=> dram_we(2),
---			a_addr	=> daddr,
---			a_write => dram_data8_wr(2),
---			a_read	=> dram_data8_rd(2),
---			-- Port B used by DMA:
---			b_clk		=> clk,
---			b_ce	=> dma_ce,
---			b_we	=> dma_data8_we(2),
---			b_addr	=> dma_addr32,
---			b_write => dma_data8_wr(2),
---			b_read	=> dma_data8_rd(2)
---		);
---
---		bram3: DPRAM16_init_hex_ce
---		generic map (
---			ADDR_W => LB_ADDR_W-2,
---			DATA_W => 8,
---			INIT_DATA => get_hex(3)
---		)
---		port map (
---			a_clk		=> clk,
---			-- Port A used by CPU:
---			a_ce	=> dram_ce,
---			a_we	=> dram_we(3),
---			a_addr	=> daddr,
---			a_write => dram_data8_wr(3),
---			a_read	=> dram_data8_rd(3),
---			-- Port B used by DMA:
---			b_clk		=> clk,
---			b_ce	=> dma_ce,
---			b_we	=> dma_data8_we(3),
---			b_addr	=> dma_addr32,
---			b_write => dma_data8_wr(3),
---			b_read	=> dma_data8_rd(3)
---		);
-
-
 
 ----------------------------------------------------------------------------
 -- 

@@ -50,8 +50,6 @@ begin
 	stat.rev_major <= to_unsigned(HWREV_system_map_MAJOR, 8);
 	stat.rev_minor <= to_unsigned(HWREV_system_map_MINOR, 8);
 
--- GHDL_SYNTH_FAILURE:
--- synthesis translate_off
 
 maybe_crc16:
 	if CONFIG_CRC16 generate
@@ -67,8 +65,6 @@ maybe_crc16:
 
 	end generate;
 
-
--- synthesis translate_on
 
 maybe_not_crc16:
 	if not CONFIG_CRC16 generate

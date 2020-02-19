@@ -27,5 +27,15 @@ component gsr is
 	);
 end component gsr;
 
+----------------------------------------------------------------------------
+-- Taken from ecp5u/components.vhdl:
+
+component usrmclk is
+  port (
+    usrmclki :   in  std_logic;
+    usrmclkts :   in  std_logic  );
+end component;
+
+
 end bb_components;
 

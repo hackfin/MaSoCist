@@ -53,12 +53,10 @@ architecture behaviour of sic_core is
 
 	signal irqo    : std_logic := '0';
 
-	type irq_t is array (integer range 0 to NUM_CHANNELS-1) of unsigned(4-1 downto 0);
-
-	type irqor_t is array (integer range 0 to 4-1) of unsigned(NUM_CHANNELS-1 downto 0);
+	type irq_t is
+		array (integer range 0 to 4-1) of unsigned(NUM_CHANNELS-1 downto 0);
 
 	signal imap : irq_t;
-	signal itmp : irqor_t;
 
 	signal dbg_sel : std_logic;
 
@@ -119,31 +117,38 @@ irq_mask:
 
 gen_irqmap:
 for i in 0 to 4-1 generate
-	irq(i) <= or_reduce(itmp(i));
+	irq(i) <= or_reduce(imap(i));
 end generate;
 
-gen_or:
-for i in 0 to NUM_CHANNELS-1 generate
-	flip:
-	for j in 0 to 4-1 generate
-		itmp(j)(i) <= imap(i)(j);
-	end generate;
-end generate;
 
 -- Generate priority assignment map:
-gen_map:
-for i in 0 to NUM_CHANNELS-1 generate
-	irq_map:
-		process (clk)
-		begin
-			-- IRQ channel assignment:
-			if rising_edge(clk) then
-				imap(i) <= (others => '0');
--- GHDL_SYNTH_FAILURE:
-				imap(i)(to_integer(ctrl.iar(i*2+1 downto i*2))) <= ipend(i);
-			end if;
-		end process;
-end generate;
+-- gen_map:
+-- for i in 0 to NUM_CHANNELS-1 generate
+-- 	irq_map:
+-- 		process (clk)
+-- 			variable itmp : irq_t := (others => (others => '0'));
+-- 		begin
+-- 			-- IRQ channel assignment:
+-- 			if rising_edge(clk) then
+-- 				itmp(to_integer(ctrl.iar(i*2+1 downto i*2)))(i) := ipend(i);
+-- 			end if;
+-- 		end process;
+-- end generate;
+
+irq_map:
+	process (clk)
+		variable itmp : irq_t := (others => (others => '0'));
+	begin
+		-- IRQ channel assignment:
+		if rising_edge(clk) then
+			for i in 0 to NUM_CHANNELS-1 loop
+				itmp(to_integer(ctrl.iar(i*2+1 downto i*2)))(i) := ipend(i);
+			end loop;
+			imap <= itmp;
+		end if;
+	end process;
+
+
 
 -- Generate a pulse when an IRQ with lower priority occurs
 -- while others are still pending

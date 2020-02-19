@@ -108,6 +108,73 @@ def dual_raw(a, b):
 	return instances()
 
 @block
+def meminit(mem, hexfile):
+    size = len(mem)
+    init_values = tuple([int(ss.val) for ss in mem])
+
+#    with open(hexfile, 'w') as f:
+#        for i in range(size):
+#            f.write("CE \n")
+
+    @instance
+    def initialize():
+        for i in range(size):
+            mem[i].next = init_values[i]
+        yield delay(10)
+
+    return initialize
+
+
+meminit.verilog_code = """
+initial begin
+	$$readmemh(\"$hexfile\", $mem, $size);
+end
+"""
+
+@block
+def dual_raw_bypass(HEXFILE, a, b):
+	"Uses a MUX to bypass data when read/write at the same time"
+	mem = [Signal(modbv(0)[len(a.read):]) for i in range(2 ** len(a.addr))]
+
+	addr_a, addr_b = [ Signal(modbv(0)[len(a.addr):]) for i in range(2) ]
+
+	bpa, bpb = [ Signal(bool()) for i in range(2) ]
+	datab = Signal(modbv(0)[len(b.read):])
+
+	inst_init = meminit(mem, HEXFILE)
+
+	@always(a.clk.posedge)
+	def port_a_proc():
+		addr_a.next = a.addr
+		if a.we:
+			mem[a.addr].next = a.write
+			# Do we have a bypass condition?
+			if a.addr == b.addr:
+				bpb.next = 1
+			else:
+				bpb.next = 0
+
+	@always(b.clk.posedge)
+	def port_b_proc():
+		addr_b.next = b.addr
+
+	@always_comb
+	def assign():
+		a.read.next = mem[addr_a];
+		datab.next = mem[addr_b];
+
+	@always_comb
+	def mux():
+		if bpb == 1:
+			b.read.next = a.write
+		else:
+			b.read.next = datab;
+
+
+	return instances()
+
+
+@block
 def dual_raw_sc(clk, a, b):
 
 	mem = [Signal(modbv(0)[len(a.read):]) for i in range(2 ** len(a.addr))]
@@ -181,6 +248,13 @@ def convert():
 	pa, pb = [ DPport(7, 8) for i in range(2) ]
 
 	dpram_inst = dual_raw(pa, pb)
+	dpram_inst.convert("VHDL")
+	dpram_inst.convert("Verilog")
+
+	p2a, p2b = [ DPport(7, 8) for i in range(2) ]
+
+	dpram_inst = dual_raw_bypass("../sw/bootrom_l.hex", p2a, p2b)
+	dpram_inst.convert("VHDL")
 	dpram_inst.convert("Verilog")
 
 

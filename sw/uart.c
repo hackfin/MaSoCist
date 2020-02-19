@@ -27,6 +27,9 @@ struct Uart_Context g_uart = {
 int uart_putc(char dev, char c)
 {
 	while ((MMR(Reg_UART_STATUS) & TXREADY) == 0);
+#ifdef RISCV_UGLY_WORKAROUND_HACK_MUST_BE_REMOVED
+	delay(1);
+#endif
 	MMR(Reg_UART_TXR) = c;
 	return 0;
 }
@@ -41,7 +44,7 @@ int uart_puts(char dev, const char *str)
 {
 	while (*str) {
 		while (!(MMR(Reg_UART_STATUS) & TXREADY));
-		MMR(Reg_UART_RXR) = *str++;
+		MMR(Reg_UART_TXR) = *str++;
 	}
 	return 0;
 
@@ -105,7 +108,7 @@ int uart_write(char dev, unsigned char *buf, unsigned int size)
 {
 	while (size--) {
 		while (!(MMR(Reg_UART_STATUS) & TXREADY));
-		MMR(Reg_UART_RXR) = *buf++;
+		MMR(Reg_UART_TXR) = *buf++;
 	}
 	return 0;
 }
@@ -115,7 +118,10 @@ int uart_read(char dev, unsigned char *buf, unsigned int size)
 	int n = 0;
 	int c;
 
-	while ((MMR(Reg_UART_STATUS) & RXREADY) && (n < size) ) {
+	volatile uint32_t *stat = &MMR(Reg_UART_STATUS);
+
+	
+	while ((*stat & RXREADY) && (n < size) ) {
 		c = MMR(Reg_UART_RXR); n++;
 		c &= 0xff;
 		*buf++ = c;
@@ -134,9 +140,11 @@ int uart_read(char dev, unsigned char *buf, unsigned int size)
 		}
 #endif
 	}
+#ifndef RISCV_UGLY_WORKAROUND_HACK_MUST_BE_REMOVED
 	if (MMR(Reg_UART_STATUS) & RXOVR) {
 		return ERR_READ;
 	}
+#endif
 	return n;
 }
 
@@ -162,15 +170,16 @@ int uart_init(char dev, int dll)
 	/* Index is currently unused */
 	uint32_t v;
 
+	MMR(Reg_UART_CONTROL) = UART_RESET;
+
 	dll--;
 	v = (dll << UART_CLKDIV_SHFT) & UART_CLKDIV;
-
-	MMR(Reg_UART_CONTROL) = v | UART_RESET;
-	MMR(Reg_UART_CONTROL) = v;
 
 #ifdef USE_UART_INTERRUPT
 	g_uart.head = g_uart.tail = 0;
 #endif
+
+	MMR(Reg_UART_CONTROL) = v;
 
 	return 0;
 }

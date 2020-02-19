@@ -6,6 +6,7 @@
 #elif defined(CONFIG_RISCV_ARCH)
 #define HAVE_STRLEN
 #define ARCH_RISCV
+#		define __rodata_ext
 #elif defined(CONFIG_NEO430)
 #warning "Experimental neo430 support"
 #define HAVE_STRLEN
@@ -42,6 +43,7 @@
 #			define EXTERN_PROG
 #		endif
 #	else
+#		define __rodata_ext
 #		define FORCE_L1RAM
 #		define EXTERN_PROG
 #	endif

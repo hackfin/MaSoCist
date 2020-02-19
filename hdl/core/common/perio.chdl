@@ -1,17 +1,17 @@
 // File for inclusion only
 
 
-#ifdef CONFIG_SIC
-	irq_input <= (others => '0');
-	exc <= '0';
-#else
+#ifndef CONFIG_SIC
 	irq_evt <= '0';
+	nmi <= '0';
 #endif
 
 #ifdef SYNTHESIS_GHDL
 	exec <= '0';
 	emuexec_d <= '0';
+#ifndef CONFIG_ZPUNG
 	xs_ucode <= '0';
+#endif
 	xs_unaligned <= '0';
 	a_we <= '0';
 #ifdef CONFIG_RISCV_ARCH
@@ -25,9 +25,6 @@
 	irq_override <= '0';
 	ivaddr <= (others => '0');
 #endif
-	-- a_write <= (others => '0');
-	sysio_exc <= '0';
-	nmi <= '0';
 #endif
 
 perio:
