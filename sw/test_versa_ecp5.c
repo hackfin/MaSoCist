@@ -181,17 +181,24 @@ int run_selftest(int is_sim)
 #endif
 
 #ifdef CONFIG_SPI
-	MMR(Reg_SPI_CLKDIV) = 4-1;
-	MMR(Reg_SPI_CONTROL) = SPIRESET;
-	MMR(Reg_SPI_CONTROL) = (7 << NBITS_SHFT) | LSBFIRST | PUMP;
-	MMR(Reg_SPI_TX) = 0x55;
-	while (MMR(Reg_SPI_STATUS) & SPIBUSY);
-	MMR(Reg_SPI_CONTROL) = (7 << NBITS_SHFT) | LSBFIRST;
-	// Delayed send on RX access:
-	MMR(Reg_SPI_TX) = 0x81;
-	MMR(Reg_SPI_CONTROL) = (7 << NBITS_SHFT) | LSBFIRST | PUMP | CPHA;
-	val = MMR(Reg_SPI_RX);
-	// if (val != 0x55) BREAK;
+	if (is_sim) {
+		MMR(Reg_SPI_CLKDIV) = 4-1;
+		MMR(Reg_SPI_CONTROL) = SPIRESET;
+		MMR(Reg_SPI_CONTROL) = (7 << NBITS_SHFT) | LSBFIRST | PUMP;
+		MMR(Reg_SPI_TX) = 0x55;
+		while (MMR(Reg_SPI_STATUS) & SPIBUSY);
+		MMR(Reg_SPI_CONTROL) = (7 << NBITS_SHFT) | LSBFIRST;
+		// Delayed send on RX access:
+		MMR(Reg_SPI_TX) = 0x81;
+		MMR(Reg_SPI_CONTROL) = (7 << NBITS_SHFT) | LSBFIRST | PUMP | CPHA;
+		val = MMR(Reg_SPI_RX);
+		// if (val != 0x55) BREAK;
+	} else {
+		char codes[3];
+		printf("\n\nProbing flash...");
+		spiflash_detect(codes);
+		flash_print_info(codes);
+	}
 #endif
 
 	return 0;
@@ -216,7 +223,7 @@ int board_init(void)
 #ifdef CONFIG_UART
 	uart_init(0, CONFIG_SYSCLK / 16 / CONFIG_DEFAULT_UART_BAUDRATE);
 	// Initialize handler for UART events:
-	uart_puts(0, "Hello.\r\n");
+	// uart_puts(0, "Hello.\r\n");
 #endif
 
 #ifdef CONFIG_TIMER
@@ -236,14 +243,17 @@ int board_init(void)
 		run_selftest(1);
 		BREAK;
 	}
+// XXX workaround:
+#if !defined(CONFIG_RISCV_PYRV32)
 	run_selftest(0);
+#endif
 
 	test_endian();
 	return 0;
 }
 
 #if defined(CONFIG_RISCV_ARCH)
-#define ARCH_INFO "Risc-V"
+#define ARCH_INFO "RISC-V"
 #elif defined(CONFIG_NEO430)
 #define ARCH_INFO "neo430"
 #elif defined(CONFIG_ZPUNG)

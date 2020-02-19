@@ -5,7 +5,6 @@
 
 #if CONFIG_SPI_BITS_POWER == 5
 #define SPI_32BIT
-#warning "8 bit SPI support only"
 #elif CONFIG_SPI_BITS_POWER == 3
 #else
 #error "Unsupported bit width"
@@ -122,6 +121,8 @@ int spiflash_detect(char *codes)
 
 #ifndef CONFIG_OPT_SIZE
 
+#include <stdio.h>
+
 struct flash_info {
 	unsigned char fcode;
 	const char *desc;
@@ -146,8 +147,7 @@ void flash_print_info(char *codes)
 	n = sizeof(st_spi_flashes) / sizeof(struct flash_info);
 	do {
 		if (codes[2] == f->fcode) {
-			printf("Flash Type: %-16s\n", f->desc);
-			printf("Capacity MB: %d", f->MB);
+			printf("\nFlash Type: %-16s\n", f->desc);
 			return;
 		}
 		f++;
