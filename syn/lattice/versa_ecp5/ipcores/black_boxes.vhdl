@@ -28,12 +28,14 @@ component gsr is
 end component gsr;
 
 ----------------------------------------------------------------------------
--- Taken from ecp5u/components.vhdl:
 
-component usrmclk is
+-- GHDLSYNTH_QUIRK: We have to use a 'spi_mclk_dummy' to prevent
+-- component from being optimized away (two inputs, no output)
+component usrmclk_wrapper is
   port (
     usrmclki :   in  std_logic;
-    usrmclkts :   in  std_logic  );
+    usrmclkts :   in  std_logic;
+    spi_mclk_dummy :   out  std_logic  );
 end component;
 
 

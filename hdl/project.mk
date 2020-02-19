@@ -13,23 +13,15 @@ ifndef CONFIG_NETPP_CPU
 ROMFILE = $(GENSOC_OUTPUT)/rom_generated.vhd
 endif
 
-############################################################################
-
-# SRCFILES = triggerpulse.vhd libprimitives.vhd
-
-# SRCFILES += dpram_wrapper.vhdl
-# i2c slave simulation_
-
-# Obsolete, manually written peripheral maps:
-# SRCFILES-$(CONFIG_LOCALBUS) += soc_periomap.vhdl
-# SRCFILES-$(CONFIG_WISHBONE) += perio_wb.vhdl
-
 # Add configuration specific sources to SRCFILES:
 
 ############################################################################
 # Platform specific:
 
+# If we have no generated version of this one, include it as VHDL:
+ifndef $(GENERATED_FILES-$(CONFIG_$(PLATFORM)))
 PLAT_SRCFILES-y =  $(PLATFORM)_top.vhdl
+endif
 
 # Architecture specific IP core supply:
 

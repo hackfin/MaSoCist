@@ -21,10 +21,6 @@ use IEEE.numeric_std.all;
 -- FIXME: We should make a legal clone of the components file
 library work;
 	use work.bb_components.all;
-#ifndef SYNTHESIS_GHDL
-library ECP5UM;
-	use ECP5UM.components.all;
-#endif
 
 library work;
 	use work.stdtap.all;
@@ -46,6 +42,7 @@ entity versa_ecp5_top is
 		spi_mosi  : out std_logic;
 		spi_cs    : out std_logic;
 
+
 		twi_scl  : inout std_logic;
 		twi_sda  : inout std_logic;
 
@@ -56,6 +53,7 @@ entity versa_ecp5_top is
 		seg          : out  std_logic_vector(13 downto 0);
 		segdp        : out  std_logic;
 		dip_sw       : in   std_logic_vector(7 downto 0);
+		io           : inout   std_logic_vector(28 downto 0);
 
 		-- MAC I/O
 --		phy_rgmii_txclk      : out std_logic;
@@ -106,11 +104,11 @@ architecture behaviour of versa_ecp5_top is
 	signal core2tap       : tap_in_rec;
 
 	signal uart_iosel     : std_logic;
-	-- signal spi_sclk       : std_logic;
+	signal spi_sclk       : std_logic;
+
+	signal spi_mclk_dummy : std_logic;
 	-- signal spi_sclk_en    : std_logic;
-#ifndef SYNTHESIS_GHDL
 	signal spi_ts         : std_logic;
-#endif
 #ifdef CONFIG_SPI
 	signal spi_cs_int     : std_logic;
 #endif
@@ -138,8 +136,7 @@ architecture behaviour of versa_ecp5_top is
 	signal cfg            : std_logic_vector(7 downto 0);
 
 	signal led            : unsigned(7 downto 0) := (others => '0');
-
-	-- MAC clocks:
+	signal ioports        : std_logic_vector(28 downto 0) := (others => 'X');
 
 #ifdef SYNTHESIS_GHDL
 		signal tck         : std_logic := '0';
@@ -270,6 +267,7 @@ soc: entity work.SoC
 		-- pwm       => pwm(CONFIG_NUM_TMR-1 downto 0),
 
 #ifdef CONFIG_SPI
+		spi_sclk       => spi_sclk,
 		spi_cs         => spi_cs_int,
 		spi_mosi       => spi_mosi,
 		spi_miso       => spi_miso,
@@ -292,15 +290,12 @@ soc: entity work.SoC
 
 
 #ifdef CONFIG_SPI
-#ifdef SYNTHESIS_GHDL
-	spi_cs <= '1';
-#else
 	spi_cs <= spi_cs_int;
 	spi_ts <= spi_cs_int; -- Use CS for tristate
 -- User SPI access via USRMCLK ECP5 primitive:
-	-- usrmclk_inst: USRMCLK
-	-- 	port map (usrmclki => spi_sclk, usrmclkts => spi_ts);
-#endif
+	usrmclk_inst: usrmclk_wrapper
+		port map (usrmclki => spi_sclk, usrmclkts => spi_ts,
+			spi_mclk_dummy => spi_mclk_dummy);
 #else
 	spi_mosi  <= 'H';
 	spi_cs    <= 'H';
@@ -315,14 +310,12 @@ soc: entity work.SoC
 	-- pclk <= mclk;
 
 	cfg <= not dip_sw;
-	-- eth_rst_n <= not phy_reset;
 
 	-- Note LED are low active
 	oled <= not std_logic_vector(led);
 
-	-- oled <= not std_logic_vector(core2tap.exstat);
+	ioports(0) <= spi_mclk_dummy;
+	io <= ioports;
 
 	-- txd_uart   <= rxd_uart;
-	
-
 end behaviour;

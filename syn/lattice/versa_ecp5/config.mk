@@ -4,6 +4,7 @@ ENABLE_TAP_BB = y
 TAP_GLUE = lattice/tap_glue/hdl/tap_lattice_glue.vhdl
 
 VERILOG_BB_WRAPPERS = pll_mac.v jtag_wrapper.v bram_2psync.v
+VERILOG_BB_WRAPPERS += usrmclk_wrapper.v
 
 # Split into architecture specific files, as they're dependent on
 # an existing *.hex:

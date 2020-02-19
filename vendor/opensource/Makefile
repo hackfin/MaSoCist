@@ -7,6 +7,8 @@
 # GENERATED_FILES-$(CONFIG_SCACHE) += 
 # SRCFILES-$(CONFIG_OPTION_FOO) += 
 
+GENERATED_FILES-$(CONFIG_versa_ecp5) += $(SRC)/plat/versa_ecp5_top.vhdl
+
 # search for libs in $HOME/lib:
 
 GHDL_LDFLAGS += -Wl,-L$(HOME)/lib
