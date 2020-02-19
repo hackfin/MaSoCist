@@ -7,54 +7,24 @@ GHDL_GENERICS =
 include $(TOPDIR)/vendor/default/local_config.mk
 -include $(FPGA_VENDOR)/$(PLATFORM)/config.mk
 
-# SRCPREFIX = /src
-SRCPREFIX = $(HOME)/src/vhdl
-
-LIBGHDL = $(SRCPREFIX)/lib-devel/synlib
+# SRCPREFIX = $(HOME)/src/vhdl
+ifeq ($(shell whoami),masocist)
+include masocist.mk
+else
+# Possible local overwrite settings:
+-include local.mk
+include docker.mk
+endif
 
 GHDL_LIBFLAGS = -P$(LIBGHDL)/lattice/$(FPGA_ARCH)
 GHDL_LIBFLAGS += -P$(WORKDIR)
 # GHDL_LIBFLAGS += -P$(LIBGHDL)
 
-CURDIR = $(shell pwd)
-
-MASOCIST_ABSOLUTE_DIR = $(CURDIR)/..
-GHDL_LIB_ABSOLUTE_DIR = $(HOME)/src/vhdl/lib-devel
-GHDLEX_ABSOLUTE_DIR = $(HOME)/src/vhdl/ghdlex
-# For some vendor specific components, we need a copy of the diamond libraries:
-# and set VENDOR_LIBRARY_DIR in config.mk or local_config.mk
-ifneq ($(VENDOR_LIBRARY_DIR),)
-MOUNT_DIAMOND_COMPONENTS = -v $(VENDOR_LIBRARY_DIR):/src/diamond_lib
-endif
-
-DOCKERARGS = run --rm -v $(MASOCIST_ABSOLUTE_DIR):/src \
-	-v $(GHDLEX_ABSOLUTE_DIR):/src/ghdlex \
-	$(MOUNT_DIAMOND_COMPONENTS) \
-	-v $(GHDL_LIB_ABSOLUTE_DIR):/src/lib-devel -w /src/syn
-
-GHDL      = ghdl
-YOSYS     = export LD_LIBRARY_PATH=/media/scratch/build/ghdl-synth; yosys
-
-# GHDL      = $(DOCKER) $(DOCKERARGS) ghdl/synth:beta ghdl
-# YOSYS     = $(DOCKER) $(DOCKERARGS) ghdl/synth:beta yosys
-NEXTPNR   = $(DOCKER) $(DOCKERARGS) ghdl/synth:nextpnr-ecp5 nextpnr-ecp5
-ECPPACK   = $(DOCKER) $(DOCKERARGS) ghdl/synth:trellis ecppack
-OPENOCD   = $(DOCKER) $(DOCKERARGS) \
-	--device /dev/bus/usb ghdl/synth:prog openocd
-
 GHDLSYNTH = ghdl
 
 include $(TOPDIR)/ghdl.mk
 
-DOCKER=docker
-
 VHDL_STD = 93c
-
-YOSYS_INTERACTIVE     = $(DOCKER) $(DOCKERARGS) -it  ghdl/synth:beta yosys
-
-LIB_CREATE     = $(DOCKER) $(DOCKERARGS) ghdl/synth:beta \
-	make -C /src/lib-devel VHDL_STD=$(VHDL_STD) SYNTHESIS=yes \
-	LATTICE_DIR=/src/diamond_lib
 
 # If we can, let's avoid this:
 #GHDL_FLAGS += --ieee=synopsys

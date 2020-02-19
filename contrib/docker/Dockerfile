@@ -1,8 +1,9 @@
-FROM ghdl/ghdl:buster-gcc-7.2.0
+#FROM ghdl/synth:beta
+FROM debian:buster-slim
 
 RUN apt-get update --allow-releaseinfo-change ; \
 	apt-get install -y xsltproc make git flex bison gperf wget bzip2 \
-	libncurses-dev \
+	libncurses-dev libz-dev tcl-dev libreadline-dev libffi-dev \
 	python python-pip \
 	minicom socat \
 	screen gnupg sudo pkg-config autoconf libtool
@@ -15,9 +16,10 @@ RUN wget -qO - https://section5.ch/section5-apt.key | apt-key add -
 RUN echo "deb http://section5.ch/debian buster non-free" > /etc/apt/sources.list.d/section5.list
 
 RUN apt-get update ; \
-	apt-get install -y gensoc binutils-msp430 gcc-msp430 msp430-libc \
+	apt-get install -y gensoc \
 		zpu-toolchain netpp-dev netpp-python \
-		riscv32-binutils riscv32-gcc riscv32-newlib-libc
+		riscv32-binutils riscv32-gcc riscv32-newlib-libc \
+		libtrellis nextpnr-ecp5 yosys-ghdl
 
 # Install some python modules:
 RUN pip install intelhex numpy

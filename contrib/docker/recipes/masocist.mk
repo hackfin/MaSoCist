@@ -7,7 +7,7 @@ src/vhdl:
 
 src/vhdl/masocist-opensource: | src/vhdl 
 	cd $(dir $@) && \
-		git clone $(MASOCIST_URL) $(notdir $@)
+		git clone $(MASOCIST_URL) $(notdir $@) -b ghdlsynth_release
 
 dry-run:
 	@echo Will install masocist from repo:

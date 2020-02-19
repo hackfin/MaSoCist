@@ -87,9 +87,6 @@ CROSS_COMPILE = riscv32-unknown-elf-
 endif
 
 SRCFILES-$(CONFIG_RISCV_PYRV32) += riscv/pyrv32/pyrv32_cpu.vhd
-SRCFILES-$(CONFIG_RISCV_PYRV32) += pck_myhdl_011.vhd
-
-SRCFILES-$(CONFIG_ZPUNG) += pck_myhdl_011.vhd
 
 ifdef CONFIG_RISCV_POTATO
 include $(TOPDIR)/hdl/riscv/potato.mk
