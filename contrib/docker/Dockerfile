@@ -19,7 +19,7 @@ RUN apt-get update ; \
 	apt-get install -y gensoc \
 		zpu-toolchain netpp-dev netpp-python \
 		riscv32-binutils riscv32-gcc riscv32-newlib-libc \
-		libtrellis nextpnr-ecp5 yosys-ghdl
+		ghdl libtrellis nextpnr-ecp5 yosys-ghdl
 
 # Install some python modules:
 RUN pip install intelhex numpy
