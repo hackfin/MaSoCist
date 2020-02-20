@@ -3,6 +3,7 @@ GHDL      = ghdl
 YOSYS     = yosys
 NEXTPNR   = nextpnr-ecp5
 ECPPACK   = ecppack
+OPENOCD   = openocd
 
 LIBPREFIX = $(HOME)/src/vhdl/lib-devel
 
