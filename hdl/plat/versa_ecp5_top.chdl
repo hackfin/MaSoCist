@@ -18,7 +18,6 @@ use IEEE.numeric_std.all;
 -- For some ECP5 specific entities:
 #define USE_SOC
 
--- FIXME: We should make a legal clone of the components file
 library work;
 	use work.bb_components.all;
 

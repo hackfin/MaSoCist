@@ -41,8 +41,7 @@ entity SoC is
 		spi_mosi    : out std_logic;
 #endif
 
-#if defined(CONFIG_versa_ecp5) || defined(CONFIG_hdr60) \
-	|| defined(CONFIG_virtual)
+#if defined(HAVE_VIDEOPORT)
 
 		video_resetn : out std_logic;
 		twi_sda      : inout std_logic;

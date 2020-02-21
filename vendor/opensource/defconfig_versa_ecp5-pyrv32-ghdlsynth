@@ -21,6 +21,7 @@ CONFIG_RISCV_PYRV32=y
 # CONFIG_virtual_rv32ui is not set
 # CONFIG_papilio is not set
 CONFIG_versa_ecp5=y
+# CONFIG_evdk_ecp5 is not set
 # CONFIG_xo2starter is not set
 CONFIG_PLAT_EXTENSION="pyrv32-ghdlsynth"
 CONFIG_HAVE_VTAP=y

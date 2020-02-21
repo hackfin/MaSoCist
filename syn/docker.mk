@@ -3,7 +3,7 @@ GHDLLIB_ABSOLUTE_DIR = $(HOME)/src/vhdl/lib-devel
 
 # GHDLEX_ABSOLUTE_DIR = $(HOME)/src/vhdl/ghdlex
 
-LIBPREFIX = /src/lib
+LIBPREFIX ?= /src/lib
 
 DOCKER = docker
 

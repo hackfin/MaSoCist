@@ -2,6 +2,8 @@
 #include "virtual_neo430.h"
 #elif defined(CONFIG_versa_ecp5)
 #include "versa_ecp5.h"
+#elif defined(CONFIG_evdk_ecp5)
+#include "evdk_ecp5.h"
 #else
 #warning "Unknown platform"
 #include "unknown.h"

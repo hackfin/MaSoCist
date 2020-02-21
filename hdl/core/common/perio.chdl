@@ -210,8 +210,7 @@ perio:
 	);
 
 
-#if defined(CONFIG_versa_ecp5) || defined(CONFIG_hdr60) \
-	|| defined(CONFIG_virtual) || defined(CONFIG_netpp_node)
+#if defined(HAVE_VIDEOPORT)
 
 #ifndef CONFIG_VIDEO
 	video_resetn <= '0';

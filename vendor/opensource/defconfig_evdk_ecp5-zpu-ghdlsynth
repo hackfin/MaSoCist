@@ -20,8 +20,8 @@ CONFIG_ZPUNG_VHDL_ONLY=y
 # CONFIG_virtual_neo430 is not set
 # CONFIG_virtual_rv32ui is not set
 # CONFIG_papilio is not set
-CONFIG_versa_ecp5=y
-# CONFIG_evdk_ecp5 is not set
+# CONFIG_versa_ecp5 is not set
+CONFIG_evdk_ecp5=y
 # CONFIG_xo2starter is not set
 CONFIG_PLAT_EXTENSION="zpu-ghdlsynth"
 CONFIG_HAVE_VTAP=y
