@@ -243,7 +243,7 @@ int board_init(void)
 
 // SECTION_RODATA
 const char s_info[] = "\r------------- test shell -------------\n"
-                        "--        SoC for Versa ECP5        --\n"
+                        "--        SoC for Lattice EVDK      --\n"
                         "           arch: " ARCH_INFO   "\n"
                         "--  (c) 2012-2020  www.section5.ch  --\n"
                         "--     type 'h' for help            --\n";
