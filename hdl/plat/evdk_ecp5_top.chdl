@@ -335,7 +335,7 @@ soc: entity work.SoC
 
 	-- vp1_mclk <= vp0_clk;
 
-	-- Debugging:
-	hdr  <=  vp1_clk & vp1_fv & vp1_lv & "XXXXX";
+	-- Debugging / prevent 'elimization':
+	hdr  <=  vp1_clk & vp1_fv & vp1_lv & "XXXX" & spi_mclk_dummy;
 
 end behaviour;
