@@ -146,7 +146,7 @@ swtap: VirtualTAP_Direct
 soc: entity work.SoC
 	port map (
 		clk        => mclk,
-		pclk       => pclk,
+		-- pclk       => pclk,
 		nmi_i      => '0',
 
 		perio_rst  => '0',

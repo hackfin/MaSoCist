@@ -1,3 +1,4 @@
+-- Black box components for GHDL synthesis
 library ieee;
 use ieee.std_logic_1164.all;
 

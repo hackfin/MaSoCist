@@ -24,9 +24,9 @@ SRCFILES-$(CONFIG_RISCV_ARCH) += ram/pkg_ram.vhdl
 
 ifdef SYNTHESIS
 	ifdef CONFIG_GHDL_SYNTH
-		SRCFILES-$(CONFIG_RISCV_ARCH) += ram/dpram_init_ghdlsynth.vhdl
+		# SRCFILES-$(CONFIG_RISCV_ARCH) += ram/dpram_init_ghdlsynth.vhdl
 		SRCFILES-$(CONFIG_RISCV_ARCH) += ram/memmap_data_ghdlsynth.vhdl
-		SRCFILES-$(CONFIG_ZPUNG) += ram/dpram_init_ghdlsynth.vhdl
+		# SRCFILES-$(CONFIG_ZPUNG) += ram/dpram_init_ghdlsynth.vhdl
 		# SRCFILES-$(CONFIG_ZPUNG) += ram/bram_ghdlsynth.vhdl
 		SRCFILES-$(CONFIG_ZPUNG) += ram/memmap_data_ghdlsynth.vhdl
 	else
@@ -50,3 +50,5 @@ SRCFILES-$(CONFIG_RISCV_ARCH) += ram/dpramc2_init.vhdl
 
 ram:
 	echo $(SRCFILES-y)
+
+-include Makefile.synth

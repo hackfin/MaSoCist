@@ -305,13 +305,17 @@ int exec_cmd(int argc, char **argv)
 
 static long int g_cycle = 0;
 
-int mainloop_handler(int state)
+void do_timer_stuff(void)
 {
 	g_cycle++;
 	if (g_cycle == 4000) {
 		g_cycle = 0;
 		seg_cycle();
 	}
+}
+
+int mainloop_handler(int state)
+{
 	return 0;
 }
 

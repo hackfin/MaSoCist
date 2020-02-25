@@ -83,7 +83,7 @@ architecture behaviour of versa_ecp5_top is
 	signal pclk           : std_logic;
 
 	signal comb_reset     : std_logic;
-	signal delayed_reset  : std_logic;
+	signal delayed_reset  : std_logic := '1';
 	signal reset_delay    : unsigned(3 downto 0);
 
 	constant CLK_FREQUENCY : integer := 12500000;
@@ -294,7 +294,7 @@ soc: entity work.SoC
 -- User SPI access via USRMCLK ECP5 primitive:
 	usrmclk_inst: usrmclk_wrapper
 		port map (usrmclki => spi_sclk, usrmclkts => spi_ts,
-			spi_mclk_dummy => spi_mclk_dummy);
+			spi_mclk_dummy => open);
 #else
 	spi_mosi  <= 'H';
 	spi_cs    <= 'H';
