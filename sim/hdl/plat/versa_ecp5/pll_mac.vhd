@@ -44,4 +44,6 @@ lockit:
 		wait;
 	end process;
 
+	lock <= locked;
+
 end architecture;

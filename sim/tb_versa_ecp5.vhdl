@@ -12,8 +12,9 @@ entity tb_versa_ecp5 is
 end entity;
 
 architecture sim of tb_versa_ecp5 is
+	constant UCLK_HZ : natural := 50100000;
 	constant UCLK_PERIOD    : time := 
-		real(500000000) / real(50100000) * (1 ns);
+		real(500000000) / real(UCLK_HZ) * (1 ns);
 	constant SYSCLK_PERIOD    : time := 
 		real(500000000) / real(CONFIG_SYSCLK) * (1 ns);
 
@@ -74,7 +75,7 @@ initialize:
 
 vuart: entity work.VirtualUART
 	generic map (
-		DIVIDER => CONFIG_SYSCLK / CONFIG_DEFAULT_UART_BAUDRATE / 16 - 1
+		DIVIDER => UCLK_HZ / CONFIG_DEFAULT_UART_BAUDRATE / 16 - 1
 	)
 	port map (
 		rxi     => uart_tx,
@@ -101,8 +102,8 @@ uut: entity work.versa_ecp5_top
 		twi_scl          => i2c_scl,
 		twi_sda          => i2c_sda,
 
-		txd_uart         => uart_rx,
-		rxd_uart         => uart_tx,
+		txd_uart         => uart_tx,
+		rxd_uart         => uart_rx,
 
 		oled             => led,
 		dip_sw           => "00110001",

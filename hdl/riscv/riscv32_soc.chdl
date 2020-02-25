@@ -486,7 +486,7 @@ rom_l: DPRAM16_init_ce
 		INIT_DATA => ram16_init_t(BOOTROM_PROG_INIT(0))
 	)
 	port map (
-		clk		  => clk,
+		clk       => clk,
 		a_ce      => imem_req,
 		a_we	  => a_we,
 		a_addr	  => a_addr,

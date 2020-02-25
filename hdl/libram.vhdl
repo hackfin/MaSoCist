@@ -46,7 +46,7 @@ package ram is
 			SYN_RAMTYPE : string := "block_ram"
 		);
 		port (
-			a_clk   : in  std_logic;
+			clk   : in  std_logic;
 			-- Port A
 			a_ce    : in  std_logic;
 			a_we    : in  std_logic;
@@ -54,7 +54,6 @@ package ram is
 			a_write : in  unsigned(DATA_W-1 downto 0);
 			a_read  : out unsigned(DATA_W-1 downto 0);
 			-- Port B
-			b_clk   : in  std_logic;
 			b_ce    : in  std_logic;
 			b_we    : in  std_logic;
 			b_addr  : in  unsigned(ADDR_W-1 downto 0);

@@ -1,0 +1,37 @@
+[*]
+[*] GTKWave Analyzer v3.3.66 (w)1999-2015 BSI
+[*] Tue Feb 25 18:09:36 2020
+[*]
+[dumpfile] "(null)"
+[savefile] "/home/strubi/src/vhdl/masocist-work/sim/versa_ecp5-zpu-ghdlsynth.sav"
+[timestart] 976149000000
+[size] 1000 600
+[pos] -1 -1
+*-29.469225 977379000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] tb_versa_ecp5.
+[treeopen] tb_versa_ecp5.uut.
+[treeopen] tb_versa_ecp5.uut.soc.
+[sst_width] 196
+[signals_width] 134
+[sst_expanded] 1
+[sst_vpaned_height] 150
+@29
+tb_versa_ecp5.uut.mclk
+@8022
+[color] 5
+tb_versa_ecp5.uut.soc.zpucore.pc[14:0]
+@20000
+-
+@8022
+[color] 3
+tb_versa_ecp5.uut.soc.zpucore.sp[14:0]
+@28
+tb_versa_ecp5.uut.mclk_locked
+tb_versa_ecp5.uut.soc.perio.uartio_rx
+tb_versa_ecp5.uut.soc.perio.uartio_tx
+tb_versa_ecp5.uut.soc.perio.spio_cs
+tb_versa_ecp5.uut.soc.perio.spio_miso
+tb_versa_ecp5.uut.soc.perio.spio_mosi
+tb_versa_ecp5.uut.soc.perio.spio_sclk
+[pattern_trace] 1
+[pattern_trace] 0

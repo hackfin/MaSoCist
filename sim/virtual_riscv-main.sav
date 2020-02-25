@@ -1,13 +1,13 @@
 [*]
-[*] GTKWave Analyzer v3.3.70 (w)1999-2016 BSI
-[*] Sat Oct 19 09:15:46 2019
+[*] GTKWave Analyzer v3.3.66 (w)1999-2015 BSI
+[*] Tue Feb 18 18:20:41 2020
 [*]
 [dumpfile] "(null)"
-[savefile] "/home/strubi/src/vhdl/masocist/sim/virtual_riscv-rv32.sav"
-[timestart] 4720000000
-[size] 1274 902
+[savefile] "/home/strubi/src/vhdl/masocist-work/sim/virtual_riscv-main.sav"
+[timestart] 1676690000000
+[size] 1274 716
 [pos] 506 1079
-*-30.243607 6868000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-32.582264 2052020000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tb_virtual_riscv.
 [treeopen] tb_virtual_riscv.m25p80_flash.
 [treeopen] tb_virtual_riscv.maybe_vuart.
@@ -15,10 +15,8 @@
 [treeopen] tb_virtual_riscv.maybe_vuart.vuart.uart.
 [treeopen] tb_virtual_riscv.uut.
 [treeopen] tb_virtual_riscv.uut.maybe_swtap.
-[treeopen] tb_virtual_riscv.uut.soc.
 [treeopen] tb_virtual_riscv.uut.soc.perio.
 [treeopen] tb_virtual_riscv.uut.soc.perio.inst_dev_uart.
-[treeopen] tb_virtual_riscv.uut.soc.perio.pwm_multi(0).
 [sst_width] 320
 [signals_width] 410
 [sst_expanded] 1
@@ -31,8 +29,11 @@ tb_virtual_riscv.uut.soc.uart_rx
 tb_virtual_riscv.uut.soc.uart_tx
 tb_virtual_riscv.uut.soc.spi_miso
 tb_virtual_riscv.uut.soc.spi_mosi
+@29
+tb_virtual_riscv.uut.soc.spi_sclk
+@28
 tb_virtual_riscv.uut.soc.spi_cs
-@8023
+@8022
 tb_virtual_riscv.uut.soc.pyrv32_cpu_inst.expc[14:0]
 @20000
 -
@@ -43,8 +44,6 @@ tb_virtual_riscv.uut.soc.pyrv32_cpu_inst.evt_brk
 tb_virtual_riscv.uut.soc.pyrv32_cpu_inst.evt_stall
 @200
 -DEBUG_TAP
-@22
-tb_virtual_riscv.uut.soc.pyrv32_cpu_inst.s3_execute_inst_csr_csrreg_dscratch0[31:0]
 @28
 tb_virtual_riscv.uut.soc.pyrv32_cpu_inst.action_rete
 tb_virtual_riscv.uut.soc.pyrv32_cpu_inst.evt_rete
@@ -69,9 +68,4 @@ tb_virtual_riscv.uut.soc.pyrv32_cpu_inst.tap_emuir[31:0]
 @20000
 -
 [pattern_trace] 1
-!100000@@
-?"1A4
-@8023
-tb_virtual_riscv.uut.soc.pyrv32_cpu_inst.expc[14:0]
-!!
 [pattern_trace] 0

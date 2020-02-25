@@ -1,30 +1,38 @@
 [*]
-[*] GTKWave Analyzer v3.3.70 (w)1999-2016 BSI
-[*] Wed Feb 19 11:47:16 2020
+[*] GTKWave Analyzer v3.3.66 (w)1999-2015 BSI
+[*] Tue Feb 25 18:52:59 2020
 [*]
 [dumpfile] "(null)"
 [savefile] "/home/strubi/src/vhdl/masocist-work/sim/versa_ecp5-pyrv32-ghdlsynth.sav"
 [timestart] 0
 [size] 1000 600
-[pos] 617 0
-*-36.483238 171620000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[pos] 360 30
+*-38.645187 863383240440 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] tb_versa_ecp5.
 [treeopen] tb_versa_ecp5.uut.
 [treeopen] tb_versa_ecp5.uut.soc.
 [treeopen] tb_versa_ecp5.vuart.
 [sst_width] 196
-[signals_width] 102
+[signals_width] 118
 [sst_expanded] 1
 [sst_vpaned_height] 207
 @28
 tb_versa_ecp5.clk
 @20000
 -
+@8022
+[color] 5
+tb_versa_ecp5.uut.soc.pyrv32_cpu_inst.curpc[14:0]
+@20000
 -
 @28
 tb_versa_ecp5.uut.rxd_uart
+@29
 tb_versa_ecp5.uut.txd_uart
-tb_versa_ecp5.uut.usrmclk_inst.usrmclki
-tb_versa_ecp5.uut.usrmclk_inst.usrmclkts
+@28
+tb_versa_ecp5.uut.spi_cs
+tb_versa_ecp5.uut.spi_miso
+tb_versa_ecp5.uut.spi_mosi
+tb_versa_ecp5.uut.spi_sclk
 [pattern_trace] 1
 [pattern_trace] 0

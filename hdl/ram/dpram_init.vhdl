@@ -20,7 +20,7 @@ entity DPRAM16_init_ce is
 		SYN_RAMTYPE : string := "block_ram"
 	);
 	port (
-		clk     : in  std_logic;
+		clk   : in  std_logic;
 		-- Port A
 		a_ce    : in  std_logic;
 		a_we    : in  std_logic;
