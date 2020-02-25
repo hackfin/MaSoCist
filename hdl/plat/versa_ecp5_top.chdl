@@ -294,7 +294,7 @@ soc: entity work.SoC
 -- User SPI access via USRMCLK ECP5 primitive:
 	usrmclk_inst: usrmclk_wrapper
 		port map (usrmclki => spi_sclk, usrmclkts => spi_ts,
-			spi_mclk_dummy => open);
+			spi_mclk_dummy => spi_mclk_dummy);
 #else
 	spi_mosi  <= 'H';
 	spi_cs    <= 'H';
