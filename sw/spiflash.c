@@ -145,16 +145,16 @@ void flash_print_info(char *codes)
 	char n;
 	const struct flash_info *f = st_spi_flashes;
 	n = sizeof(st_spi_flashes) / sizeof(struct flash_info);
-	do {
-		if (codes[2] == f->fcode) {
-			printf("\nFlash Type: %-16s\n", f->desc);
-			return;
-		}
-		f++;
-	} while (--n);
-	puts("<undetected: ");
-	put_byteval(codes[2]);
-	puts(">");
+	if (codes[0] == 0x20) {
+		do {
+			if (codes[2] == f->fcode) {
+				printf("\nFlash Type: %-16s\n", f->desc);
+				return;
+			}
+			f++;
+		} while (--n);
+	}
+	printf("<undetected: %02x>\n", codes[2]);
 }
 #endif
 
