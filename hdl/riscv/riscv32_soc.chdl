@@ -432,10 +432,11 @@ vram_h: VirtualDualPortRAM_ce
 	a_read <= a_read_h & a_read_l;
 	b_read <= b_read_h & b_read_l;
 
-rom_l: DPRAM16_init_hex_ce
+rom_l: DPRAM_init_hex_ce
 	generic map (
 		ADDR_W => CONFIG_BRAM_ADDR_WIDTH-2, -- 32 bit wide, LSB 0 aligned
-		INIT_DATA => "bootrom_l.hex"
+		DATA_W => 16,
+		INIT_HEX => "bootrom_l.hex"
 	)
 	port map (
 		a_clk	  => clk,
@@ -455,10 +456,11 @@ rom_l: DPRAM16_init_hex_ce
 
 
 
-rom_h: DPRAM16_init_hex_ce
+rom_h: DPRAM_init_hex_ce
 	generic map (
 		ADDR_W => CONFIG_BRAM_ADDR_WIDTH-2, -- 32 bit wide, LSB 0 aligned
-		INIT_DATA => "bootrom_h.hex"
+		DATA_W => 16,
+		INIT_HEX => "bootrom_h.hex"
 	)
 	port map (
 		a_clk	  => clk,

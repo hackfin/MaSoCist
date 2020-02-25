@@ -94,11 +94,11 @@ begin
 	dma_dataout <= (others => '0');
 loop_bram:
 	for i in 0 to 3 generate
-		bram: DPRAM16_init_hex_ce
+		bram: DPRAM_init_hex_ce
 		generic map (
 			ADDR_W => LB_ADDR_W-2,
 			DATA_W => 8,
-			INIT_DATA => get_hex(i)
+			INIT_HEX => get_hex(i)
 		)
 		port map (
 			a_clk	=> clk,
