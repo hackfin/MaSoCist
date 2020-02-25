@@ -721,7 +721,7 @@ DO NOT move them to the bottom without checking CFG_sys!-->
           <info>Enable system IRQ for timer unit if '1'</info>
         </bitfield>
 
-        <bitfield lsb="1" msb="1" name="DEFAULT">
+        <bitfield lsb="1" msb="1" name="PWM_DEFAULT">
           <info>Default pin value at PWM output</info>
         </bitfield>
 

@@ -31,7 +31,7 @@ architecture behaviour of pwm_core is
 	signal counter  : unsigned(16-1 downto 0) := (others => '0');
 
 	signal outp     : std_logic := '0';
-	signal default  : std_logic;
+	signal pwm_default  : std_logic;
 
 	-- Buffered signals:
 	signal pwm_width   : unsigned(16-1 downto 0);
@@ -43,7 +43,7 @@ architecture behaviour of pwm_core is
 
 begin
 
-	default <= ctrl.default;
+	pwm_default <= ctrl.pwm_default;
 
 	output <= outp;
 
@@ -63,12 +63,12 @@ begin
 						pwm_period <= ctrl.pwm_period;
 						pwm_width <= ctrl.pwm_width;
 					end if;
-					outp <= default;
+					outp <= pwm_default;
 					counter <= (others => '0'); -- <= ctrl.pwm_start;
 				when S_RUNNING =>
 					counter <= counter + 1;
 					if counter = pwm_period then
-						outp <= default;
+						outp <= pwm_default;
 						counter <= (others => '0'); -- ctrl.pwm_start;
 						irq <= ctrl.tmr_irqen;
 						-- Update PWM values to allow "live" modification
@@ -79,7 +79,7 @@ begin
 							state <= S_READY;
 						end if;
 					elsif counter = pwm_width then
-						outp <= not default;
+						outp <= not pwm_default;
 					end if;
 				end case;
 			end if;

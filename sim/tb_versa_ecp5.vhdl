@@ -16,7 +16,6 @@ architecture sim of tb_versa_ecp5 is
 		real(500000000) / real(50100000) * (1 ns);
 	constant SYSCLK_PERIOD    : time := 
 		real(500000000) / real(CONFIG_SYSCLK) * (1 ns);
-	constant MACCLK_PERIOD    : time := 8000 ps;
 
 	signal clk                : std_logic := '0';
 	signal uclk               : std_logic := '0';

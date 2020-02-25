@@ -24,7 +24,7 @@ GHDLSYNTH = ghdl
 
 include $(TOPDIR)/ghdl.mk
 
-VHDL_STD = 93c
+VHDL_STD = 08
 
 # If we can, let's avoid this:
 #GHDL_FLAGS += --ieee=synopsys
@@ -96,7 +96,7 @@ yosys:
 	$(YOSYS_INTERACTIVE)
 
 synlib:
-	$(LIB_CREATE) GHDL_TARGET_DIR=synlib
+	$(LIB_CREATE) GHDL_TARGET_DIR=synlib  VHDL_STD=$(VHDL_STD)
 
 .PHONY: synlib
 
