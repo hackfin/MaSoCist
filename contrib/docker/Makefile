@@ -40,5 +40,5 @@ masocist-installer.tgz: $(DISTFILES)
 	tar cfz $@ $^
 
 dist: masocist-installer.tgz
-	cat self-extract.sh $< >masocist_sfx.sh
+	cat self-extract.sh $< >masocist-synth_sfx.sh
 
