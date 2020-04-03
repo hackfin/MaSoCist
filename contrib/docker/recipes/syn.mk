@@ -7,12 +7,12 @@ $(SVFFILE):
 	$(MAKE) -C $(MASOCIST) sw syn
 
 
-$(MASOCIST)/.config
+$(MASOCIST)/.config:
 	$(MAKE) -C $(MASOCIST) versa_ecp5-zpu-ghdlsynth
 
 all: $(MASOCIST)/.config
 
-test: $(SVFFILE)
+test: $(MASOCIST)/.config $(SVFFILE)
 
 clean:
 	rm -f $(MASOCIST)/.config $(SVFFILE)
