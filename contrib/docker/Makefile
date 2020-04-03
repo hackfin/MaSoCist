@@ -36,6 +36,9 @@ clean: $(CLEAN_PACKAGES)
 DISTFILES = Makefile config.mk $(wildcard recipes/*)
 DISTFILES += $(wildcard recipes/scripts/*.sh)
 
+distclean:
+	cd recipes && git clean -f .
+
 masocist-installer.tgz: $(DISTFILES)
 	tar cfz $@ $^
 
