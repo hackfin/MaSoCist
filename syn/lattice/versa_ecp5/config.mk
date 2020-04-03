@@ -10,7 +10,7 @@ VERILOG_BB_WRAPPERS += usrmclk_wrapper.v jtag_wrapper.v bram_2psync.v
 # an existing *.hex:
 ARCH_DEP_V-$(CONFIG_NEO430)     = dpram16_init_neo430.v
 ARCH_DEP_V-$(CONFIG_ZPUNG)      = dpram16_init_zpu.v
-ARCH_DEP_V-$(CONFIG_RISCV_ARCH) = dpram16_init.v
+# ARCH_DEP_V-$(CONFIG_RISCV_ARCH) = dpram16_init.v
 
 VERILOG_IP_BSP += $(ARCH_DEP_V-y)
 

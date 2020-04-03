@@ -2,31 +2,31 @@
 // Note: No true dual port RAM support yet
 //
 	// Port A
-	input	wire				a_clk,
-	input	wire				a_ce,
-	input	wire				a_we,
-	input	wire	[ADDR-1:0]	a_addr,
-	input	wire	[DATA-1:0]	a_write,
-	output	reg		[DATA-1:0]	a_read,
+	input	wire					a_clk,
+	input	wire					a_ce,
+	input	wire					a_we,
+	input	wire	[ADDR_W-1:0]	a_addr,
+	input	wire	[DATA_W-1:0]	a_write,
+	output	reg		[DATA_W-1:0]	a_read,
 
 	// Port B
-	input	wire				b_clk,
-	input	wire				b_ce,
-	input	wire				b_we,
-	input	wire	[ADDR-1:0]	b_addr,
-	input	wire	[DATA-1:0]	b_write,
-	output	reg		[DATA-1:0]	b_read
+	input	wire					b_clk,
+	input	wire					b_ce,
+	input	wire					b_we,
+	input	wire	[ADDR_W-1:0]	b_addr,
+	input	wire	[DATA_W-1:0]	b_write,
+	output	reg		[DATA_W-1:0]	b_read
 );
 
 // Shared memory
-(* ramstyle = "block_ram" *) reg [DATA-1:0] mem [(2**ADDR)-1:0] /* synthesis syn_ramstyle="block_ram" */;
+(* ramstyle = "block_ram" *) reg [DATA_W-1:0] mem [(2**ADDR_W)-1:0] /* synthesis syn_ramstyle="block_ram" */;
 
 initial begin
 	$readmemh(INIT_HEX, mem);
 end
 
-reg [ADDR-1:0] addr_b;
-reg [ADDR-1:0] addr_a;
+reg [ADDR_W-1:0] addr_b;
+reg [ADDR_W-1:0] addr_a;
 
 
 // Note we got A/B ports swapped to support writing to ROM, for the

@@ -1,7 +1,8 @@
 #!/bin/bash
 
-wget https://section5.ch/downloads/masocist_sfx.sh -nc && \
-	sh masocist_sfx.sh
+SFX=masocist-synth_1.0_sfx.sh
+wget https://section5.ch/downloads/$SFX -nc && \
+	sh $SFX
 
 # Create pipe for testing, explicitely. Don't rely on
 # init-pty.sh entry point.

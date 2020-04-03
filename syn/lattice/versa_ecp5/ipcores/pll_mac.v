@@ -10,15 +10,15 @@
   */
 
 module pll_mac(
-	input clki,
-	output clkop,
-	output clkos,
-	output clkos2,
-	output clkos3,
-	output lock
+	input CLKI,
+	output CLKOP,
+	output CLKOS,
+	output CLKOS2,
+	output CLKOS3,
+	output LOCK
 );
 
-	wire clkop_int;
+	wire CLKOP_INT;
 
 (* FREQUENCY_PIN_CLKOS3 = "75.000000" *)
 (* FREQUENCY_PIN_CLKOS2 = "50.000000" *)
@@ -63,10 +63,10 @@ EHXPLLL #(
     ) pll_i (
         .RST(1'b0),
         .STDBY(1'b0),
-        .CLKI(clki),
-        .CLKOP(clkop_int),
-        .CLKOS(clkos),
-        .CLKFB(clkop_int),
+        .CLKI(CLKI),
+        .CLKOP(CLKOP_INT),
+        .CLKOS(CLKOS),
+        .CLKFB(CLKOP_INT),
         .CLKINTFB(),
         .PHASESEL0(1'b0),
         .PHASESEL1(1'b0),
@@ -75,10 +75,10 @@ EHXPLLL #(
         .PHASELOADREG(1'b1),
         .PLLWAKESYNC(1'b0),
         .ENCLKOP(1'b0),
-        .LOCK(lock)
+        .LOCK(LOCK)
 	);
 
-	assign clkop = clkop_int;
+	assign CLKOP = CLKOP_INT;
 
 
 endmodule

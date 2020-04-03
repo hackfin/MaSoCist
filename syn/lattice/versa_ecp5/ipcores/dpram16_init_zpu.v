@@ -1,8 +1,9 @@
 
-module dpram_init_hex_ce_12_32_763e113b4d24162647bd88f925f728963cb7c6a0 #(
-	parameter DATA = 32,
-	parameter ADDR = 12,
-	parameter INIT_HEX = "../sw/bootrom32.hex"
+module DPRAM_init_hex_ce #(
+	parameter DATA_W = 16,
+	parameter ADDR_W = 13,
+	parameter INIT_HEX = "../sw/bootrom32.hex",
+	parameter SYN_RAMTYPE = "unused"
 ) (
 
 `include "../../common/dpram_hack.vh"

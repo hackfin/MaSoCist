@@ -2,9 +2,9 @@
 #
 
 include config.mk
-
+GHDLLIB_TGZ = ghdllib-1.0-devel.tgz
 # GHDLLIB_URL = $(REPO_SERVER)/ghdllib.git
-GHDLLIB_URL = https://section5.ch/downloads/ghdllib-devel.tgz
+GHDLLIB_URL = https://section5.ch/downloads/$(GHDLLIB_TGZ)
 
 # We depend on ghdlex:
 GHDLEX ?= $(VHDL)/ghdlex
@@ -34,7 +34,7 @@ src/vhdl:
 $(GHDLLIB): | src/vhdl
 	cd $(dir $(GHDLLIB)) && \
 	wget $(GHDLLIB_URL) && \
-	tar xfz ghdllib-devel.tgz
+	tar xfz $(GHDLLIB_TGZ)
 
 # src/vhdl/lib: | $(GHDLLIB)
 # 	cd src/vhdl && ln -s ghdllib lib

@@ -58,7 +58,7 @@ SYN_ARGS = \
 	$(GHDL_LIBFLAGS) $(GHDL_FLAGS) $^ -e $(TOPLEVEL); \
 	$(READ_NETLIST) \
 	$(READ_BB_WRAPPERS) \
-	synth_ecp5 -top $(TOPLEVEL)_0 -json
+	synth_ecp5 -top $(TOPLEVEL) -json
 
 $(PLATFORM).json: $(PROJECTFILES)
 	$(YOSYS) -m $(GHDLSYNTH) -p "$(SYN_ARGS) $@" 2>&1 | tee $(LOGFILE_YS)
