@@ -11,4 +11,4 @@ VCOM=/tmp/virtualcom
 socat PTY,link=/tmp/ghdlsim,raw,echo=0,user=$me \
 	   PTY,link=$VCOM,raw,echo=0,user=$me &
 
-make all test-neo430
+make all test-syn
