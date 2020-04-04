@@ -219,6 +219,7 @@ class ELFObject:
 			else:
 				raise ELFException("Invalid encoding %d", e)
 
+			self.detected_endian = endian
 	
 			(self.e_ident, self.e_type, self.e_machine, self.e_version,
 			self.e_entry, self.e_phoff, self.e_shoff,
@@ -335,8 +336,6 @@ class ELFObject:
 
 		if symtab and strtab:
 			n = len(symtab.data) / m
-
-
 
 			lookupdict = {}
 			s0 = 0
