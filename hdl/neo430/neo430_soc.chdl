@@ -178,9 +178,8 @@ begin
 		mem_data_o => cpu_bus.wdata,    -- write data
 		mem_data_i => cpu_bus.rdata,    -- read data
 		-- interrupt system --
-		irq_i      => irq,             -- interrupt request lines
-		irq_ack_o  => irq_ack	       -- IRQ acknowledge
-	);
+		irq_i      => irq               -- interrupt request lines
+	 );
 
 #ifdef SYNTHESIS_GHDL
 
