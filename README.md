@@ -3,8 +3,8 @@ The MaSoCist environment
 
 [![Docker build status](https://img.shields.io/docker/cloud/build/hackfin/masocist)](https://hub.docker.com/r/hackfin/masocist/builds)
 
+**Note**: This opensource variant is no longer under development and will remain here for reference purposes only.
 
-<info@section5.ch>
 ---
 (**Ma**rtin's **SoC** **I**nstancing and **S**imulation/Synthesis **T**oolchain)
 
